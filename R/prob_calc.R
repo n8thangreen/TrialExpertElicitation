@@ -1,12 +1,18 @@
-## Functions for calculating P{pE <= q}, P{pE <= q|data}, P{pC <= q|data}, P{theta <= q|data}.
 
-## Function input:	q = hypothesized 100*prob percentile of the distribution.	
-##					norm = normalising constant of joint posterior distribution of (pE, pC) given data
-##					a, b, mu, sigma2 = parameters of priors pC~Beta(a,b), theta~N(mu, sigma2)
-##					sc, fc, se, fe = number of successes and failures on treatments CYC and MMF
-##					posterior = indicator (posterior =1 implies inferences concern posterior distribution)
-## Function returns P{pE <= q} - prob.
-
+#' Probability pE
+#' 
+#' Functions for calculating P{pE <= q}, P{pE <= q|data}, P{pC <= q|data}, P{theta <= q|data}.
+#'
+#' @param q hypothesized 100*prob percentile of the distribution.	
+#' @param prob Probability
+#' @param norm normalising constant of joint posterior distribution of (pE, pC) given data
+#' @param a,b,mu,sigma2 parameters of priors pC~Beta(a,b), theta~N(mu, sigma2) 
+#' @param sc,fc,s,fe number of successes and failures on treatments CYC and MMF 
+#' @param posterior indicator (posterior =1 implies inferences concern posterior distribution)
+#'
+#' @return P{pE <= q} - prob.
+#' @export
+#'
 prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
 	
 	## Use a fine mesh to integrate the joint prior density (pE, pC) over pC.
