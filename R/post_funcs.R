@@ -106,27 +106,21 @@ post_pc <- function(a,b, mu, sigma2, sc, fc, se, fe){
     fval[2] =  prob_pC(0.995, 0.95, norm, se, sc, fe, fc,  a, b, mu, sigma2)
     z = uniroot(prob_pC, interval=c(0.1, 0.995), 0.95, norm,se, sc, fe, fc,  a, b, mu, sigma2, lower = 0.1, upper=0.995, f.lower=fval[1], f.upper=fval[2])
     ci_upp = z$root   
-    
   }
-  return(data.frame(expect, sd1, mode1, ci_low, ci_upp, norm))
+  
+  data.frame(expect, sd1, mode1, ci_low, ci_upp, norm)
 }
 
 
-## Function to plot the posterior distribution of pe
-## Function inputs:	a,b = parameters of prior distribution of pC
-##					mu, sigma2 = parameters of prior distribution of theta
-##					sc, fc, se, fe = number of successes and failures observed on C and E
-## Function returns:a 
-
-#' Posterior pe
+#' plot the posterior distribution of pe
 #'
-#' @param a,b 
-#' @param mu,sigma2 
-#' @param sc,fc,se,fe 
+#' @param a,b parameters of prior distribution of pC
+#' @param mu,sigma2 parameters of prior distribution of theta
+#' @param sc,fc,se,fe number of successes and failures observed on C and E
 #'
 #' @return dataframe containing posterior expectation, SD, mode,
-#' limits of the 90% credibility interval of pE and the normalisation
-#' constant of the posterior joint distribution of (pC, pE)
+#'    limits of the 90% credibility interval of pE and the normalisation
+#'    constant of the posterior joint distribution of (pC, pE)
 #' @export
 #'
 post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
@@ -229,22 +223,17 @@ post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
 }
 
 
-## Function to plot the posterior distribution of theta.
-## Function inputs:	a,b = parameters of prior distribution of pC
-##					sc, fc, se, fe = number of successes and failures observed on CYC and MMF
-##					mu, sigma2 = parameters of prior distribution of theta
-##					c2 = non-inferiority margin for the trial
 
-#' Posterior theta
+#' plot the posterior distribution of theta
 #'
-#' @param a,b 
-#' @param sc,se,fc,fe 
-#' @param mu,sigma2 
-#' @param c2 
+#' @param a,b parameters of prior distribution of pC
+#' @param sc,se,fc,fe number of successes and failures observed on CYC and MMF
+#' @param mu,sigma2 parameters of prior distribution of theta
+#' @param c2 non-inferiority margin for the trial
 #'
 #' @return dataframe containing posterior expectation, SD, mode,
-#' limits of the 90% credibility interval of theta and the normalisation
-#' constant of the posterior joint distribution of (pC, theta)
+#'    limits of the 90% credibility interval of theta and the normalisation
+#'    constant of the posterior joint distribution of (pC, theta)
 #' @export
 #'
 post_theta <- function(a,b, sc, se, fc, fe, mu, sigma2, c2){
@@ -337,19 +326,13 @@ post_theta <- function(a,b, sc, se, fc, fe, mu, sigma2, c2){
   data.frame(expect, sd1, mode1, ci_low, ci_upp, norm)
 }
 
-## Function to produce a course estimate of posterior variance of theta.
-## Function inputs:	a,b = parameters of prior distribution of pC
-##					sc, fc, se, fe = number of successes and failures observed on CYC and MMF
-##					mu, sigma2 = parameters of prior distribution of theta
-## Function returns:	an estimate of variance of the posterior distribution of theta.
-
-#' Posterior variance of theta
+#' produce a course estimate of posterior variance of theta
 #'
-#' @param a,b 
-#' @param sc,se,fc,fe 
-#' @param mu,sigma2 
+#' @param a,b parameters of prior distribution of pC
+#' @param sc,se,fc,fe number of successes and failures observed on CYC and MMF
+#' @param mu,sigma2 parameters of prior distribution of theta
 #'
-#' @return
+#' @return estimate of variance of the posterior distribution of theta.
 #' @export
 #'
 thetavar <- function(a,b, sc, se, fc, fe, mu, sigma2){

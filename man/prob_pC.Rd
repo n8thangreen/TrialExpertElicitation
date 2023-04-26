@@ -2,23 +2,26 @@
 % Please edit documentation in R/prob_calc.R
 \name{prob_pC}
 \alias{prob_pC}
-\title{Title}
+\title{prob_pC}
 \usage{
 prob_pC(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2)
 }
 \arguments{
-\item{q}{}
+\item{q}{hypothesized 100*prob percentile of the distribution.    iu}
 
-\item{prob}{}
+\item{prob}{indicator (posterior =1 implies inferences concern posterior distribution)}
 
-\item{norm}{}
+\item{norm}{normalisation constant of joint posterior distribution of (pC, pE)}
 
-\item{se, sc, fe, fc}{}
+\item{se, sc, fe, fc}{number of successes and failures on treatments CYC and MMF}
 
-\item{a, b}{}
+\item{a, b}{parameters of priors pC~Beta(a,b)}
 
-\item{mu, sigma2}{}
+\item{mu, sigma2}{parameters of priors theta~N(mu, sigma2)}
+}
+\value{
+P{pC <= q|data} - prob.
 }
 \description{
-Title
+prob_pC
 }

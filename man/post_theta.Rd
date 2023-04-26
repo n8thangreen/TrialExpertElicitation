@@ -2,18 +2,18 @@
 % Please edit documentation in R/post_funcs.R
 \name{post_theta}
 \alias{post_theta}
-\title{Posterior theta}
+\title{plot the posterior distribution of theta}
 \usage{
 post_theta(a, b, sc, se, fc, fe, mu, sigma2, c2)
 }
 \arguments{
-\item{a, b}{}
+\item{a, b}{parameters of prior distribution of pC}
 
-\item{sc, se, fc, fe}{}
+\item{sc, se, fc, fe}{number of successes and failures observed on CYC and MMF}
 
-\item{mu, sigma2}{}
+\item{mu, sigma2}{parameters of prior distribution of theta}
 
-\item{c2}{}
+\item{c2}{non-inferiority margin for the trial}
 }
 \value{
 dataframe containing posterior expectation, SD, mode,
@@ -21,5 +21,5 @@ limits of the 90\% credibility interval of theta and the normalisation
 constant of the posterior joint distribution of (pC, theta)
 }
 \description{
-Posterior theta
+plot the posterior distribution of theta
 }

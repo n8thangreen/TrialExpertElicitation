@@ -2,16 +2,16 @@
 % Please edit documentation in R/post_funcs.R
 \name{post_pe}
 \alias{post_pe}
-\title{Posterior pe}
+\title{plot the posterior distribution of pe}
 \usage{
 post_pe(a, b, mu, sigma2, sc, fc, se, fe)
 }
 \arguments{
-\item{a, b}{}
+\item{a, b}{parameters of prior distribution of pC}
 
-\item{mu, sigma2}{}
+\item{mu, sigma2}{parameters of prior distribution of theta}
 
-\item{sc, fc, se, fe}{}
+\item{sc, fc, se, fe}{number of successes and failures observed on C and E}
 }
 \value{
 dataframe containing posterior expectation, SD, mode,
@@ -19,5 +19,5 @@ limits of the 90\% credibility interval of pE and the normalisation
 constant of the posterior joint distribution of (pC, pE)
 }
 \description{
-Posterior pe
+plot the posterior distribution of pe
 }

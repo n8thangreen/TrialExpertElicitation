@@ -2,17 +2,20 @@
 % Please edit documentation in R/post_funcs.R
 \name{thetavar}
 \alias{thetavar}
-\title{Posterior variance of theta}
+\title{produce a course estimate of posterior variance of theta}
 \usage{
 thetavar(a, b, sc, se, fc, fe, mu, sigma2)
 }
 \arguments{
-\item{a, b}{}
+\item{a, b}{parameters of prior distribution of pC}
 
-\item{sc, se, fc, fe}{}
+\item{sc, se, fc, fe}{number of successes and failures observed on CYC and MMF}
 
-\item{mu, sigma2}{}
+\item{mu, sigma2}{parameters of prior distribution of theta}
+}
+\value{
+estimate of variance of the posterior distribution of theta.
 }
 \description{
-Posterior variance of theta
+produce a course estimate of posterior variance of theta
 }

@@ -2,25 +2,28 @@
 % Please edit documentation in R/prob_calc.R
 \name{prob_theta}
 \alias{prob_theta}
-\title{Title}
+\title{prob_theta}
 \usage{
 prob_theta(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2, postexp, postsd)
 }
 \arguments{
-\item{q}{}
+\item{q}{hypothesized 100*prob percentile of the distribution.}
 
 \item{prob}{}
 
-\item{norm}{}
+\item{norm}{normalisation constant of joint posterior distribution of (pC, theta)}
 
-\item{se, sc, fe, fc}{}
+\item{se, sc, fe, fc}{number of successes and failures on treatments CYC and MMF}
 
-\item{a, b}{}
+\item{a, b}{parameters of priors pC~Beta(a,b)}
 
-\item{mu, sigma2}{}
+\item{mu, sigma2}{parameters of priors theta~N(mu, sigma2)}
 
-\item{postexp, postsd}{}
+\item{postexp, postsd}{expectation and standard deviation of posterior distribution of theta.}
+}
+\value{
+P{theta <= q|data} - prob.
 }
 \description{
-Title
+prob_theta
 }
