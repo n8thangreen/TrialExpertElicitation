@@ -2,17 +2,17 @@
 % Please edit documentation in R/ess_prior.R
 \name{ess_pc}
 \alias{ess_pc}
-\title{ESS pc}
+\title{Effective sample size (ESS) pc}
 \usage{
 ess_pc(a, b)
 }
 \arguments{
-\item{a, b}{parameters of the prior distribution of pC~Beta(a,b)}
+\item{a, b}{parameters of the prior distribution of \deqn{pC~Beta(a,b)}}
 }
 \value{
-Effective sample size of prior for log\link{pC/(1-pc)}
+Effective sample size of prior for \deqn{\log[pC/(1-pc)]}
 (expressed in terms of effective observations on CYC)
 }
 \description{
-Function to calculate prior effective sample size of log\link{pc/(1-pC)}.
+Calculate prior effective sample size of \deqn{log[pc/(1-pC)]}.
 }

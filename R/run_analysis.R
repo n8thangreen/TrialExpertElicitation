@@ -15,6 +15,17 @@
 ## The function also outputs a file saved as "expert-priorplot.pdf" in the current working directory containing plots of the prior densities
 ## and a file "expert-D1answer.txt" storing the expert's answers to the elicitation questions.  
 
+#' Title
+#'
+#' @param q1 
+#' @param q2 
+#' @param q3 
+#' @param q4 
+#' @param expert 
+#'
+#' @return
+#' @export
+#'
 priorcall <- function(q1, q2, q3, q4, expert){
   
   c2 = as.double(0.10) 	## non-inferiority margin cited in Day 1 elicitation question (iv)
@@ -85,12 +96,23 @@ priorcall <- function(q1, q2, q3, q4, expert){
 ##						posterior40 = logical variable indicating whether wish to calculate posterior distribution assuming nE+nC = 40
 ##										(if false assume wish to calculate posterior distribution assuming nE + nC = 20)
 
-## Function outputs: vector containing summaries of posterior distributions given hypothetical dataset
 ##	x[1] = E(pC|data), x[2] = mode(pC|data), x[3] = SD(pC|data), (x[4], x[5]) = 90% posterior credibility interval for pC, x[18] = normalising constant of g(pC, pE|data)
 ##	x[6] = E(pE|data), x[7] = mode(pE|data), x[8] = SD(pE|data), (x[9], x[10]) = 90% posterior credibility interval for pE, x[19] = normalising constant of g(pC, pE|data)
 ##	x[11] = E(theta|data), x[12] = mode(theta|data), x[13] = SD(theta|data), (x[14], x[15]) = 90% posterior credibility interval for theta, 
 ## 	x[16] = P{pE > pC|data}, x[17] = P{pE - pC > -c2|data},  x[20] = normalising constant of joint posterior distribution f(theta, pC|data)
 
+#' Summaries of posterior distributions given hypothetical dataset
+#'
+#' @param n_mmf 
+#' @param mmf_succ 
+#' @param n_cyc 
+#' @param cyc_succ 
+#' @param priorParm 
+#' @param posterior40 
+#'
+#' @return
+#' @export
+#'
 postSumry <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
   
   c2 = as.double(0.10) 		## non-inferiority margin for the trial
@@ -141,7 +163,6 @@ postSumry <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
 }
 
 
-## Functions to evaluate the prior and posterior densities of pC, pE and theta ready for plotting
 ## Function inputs: 	n_mmf = number of patients randomised to E (nE)
 ## 						mmf_succ = number of successes on E (SE)
 ## 						n_cyc = number randomised to C (nC)
@@ -152,6 +173,20 @@ postSumry <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
 ## 						postind = integer determining whether we wish to plot the prior or posterior density of the stated parameter.
 ## Function outputs: a dataframe containing a grid of values of the parameter of interest and the marginal density evaluated at those values.
 
+#' Prior and posterior densities of pC, pE and theta ready for plotting
+#'
+#' @param n_mmf 
+#' @param mmf_succ 
+#' @param n_cyc 
+#' @param cyc_succ 
+#' @param postParm 
+#' @param priorParm 
+#' @param parmInd 
+#' @param postind 
+#'
+#' @return
+#' @export
+#'
 distPlot <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm, parmInd, postind){
   
   if(postind){
@@ -224,13 +259,25 @@ distPlot <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm, parm
 }
 
 
-## Functions to evaluate posterior density of pC
 ## Function inputs: 	gridc = vector of values of pC
 ##						fe, se, fc, sc = number of successes and failures on MMF and CYC
 ##						priorParm = output of priorcall() summarising elicited prior distributions
 ##						norm = normalising constant of joint posterior distribution g(pC, pE|data)
 ## Function output: posterior density of pC eveluated at gridc	
 
+#' Posterior density of pC
+#'
+#' @param gridc 
+#' @param fe 
+#' @param se 
+#' @param fc 
+#' @param sc 
+#' @param priorParm 
+#' @param norm 
+#'
+#' @return
+#' @export
+#'
 pc_dens <- function(gridc, fe, se, fc, sc, priorParm, norm){
   
   lc = length(gridc)
@@ -266,13 +313,21 @@ pc_dens <- function(gridc, fe, se, fc, sc, priorParm, norm){
 }
 
 
-## Functions to evaluate posterior density of pE
 ## Function inputs: 	gride = vector of values of pE
-##						fe, se, fc, sc = number of successes and failures on MMF and CYC
 ##						priorParm = output of priorcall() summarising elicited prior distributions
 ##						norm = normalising constant of joint posterior distribution g(pC, pE|data)
 ## Function output: posterior density of pE eveluated at gride	
 
+#' Posterior density of pE
+#'
+#' @param gride 
+#' @param fe,se,fc,sc number of successes and failures on MMF and CYC
+#' @param priorParm 
+#' @param norm 
+#'
+#' @return
+#' @export
+#'
 pe_dens <- function(gride, fe, se, fc, sc, priorParm, norm){
   
   le = length(gride)
@@ -308,8 +363,6 @@ pe_dens <- function(gride, fe, se, fc, sc, priorParm, norm){
   postd
 }
 
-#' theta_dens
-#'
 #' Evaluate posterior density of theta
 #'  
 #' @param gridt vector of values of theta
@@ -317,7 +370,7 @@ pe_dens <- function(gride, fe, se, fc, sc, priorParm, norm){
 #' @param priorParm output of priorcall() summarising elicited prior distributions
 #' @param norm normalising constant of joint posterior distribution g(pC, theta|data)
 #'
-#' @return posterior density of theta eveluated at gridt	
+#' @return posterior density of theta evaluated at gridt	
 #' @export
 #'
 theta_dens <- function(gridt, fe, se, fc, sc, priorParm, norm){
@@ -353,10 +406,4 @@ theta_dens <- function(gridt, fe, se, fc, sc, priorParm, norm){
   
   postd
 }
-
-
-
-
-
-
 

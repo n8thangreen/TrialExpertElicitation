@@ -1,7 +1,8 @@
 
 #' Probability pE
 #' 
-#' Functions for calculating P{pE <= q}, P{pE <= q|data}, P{pC <= q|data}, P{theta <= q|data}.
+#' Functions for calculating
+#' \deqn{P{pE <= q}, P{pE <= q|data}, P{pC <= q|data}, P{theta <= q|data}}.
 #'
 #' @param q hypothesized 100*prob percentile of the distribution.	
 #' @param prob Probability
@@ -10,7 +11,7 @@
 #' @param sc,fc,s,fe number of successes and failures on treatments CYC and MMF 
 #' @param posterior indicator (posterior =1 implies inferences concern posterior distribution)
 #'
-#' @return P{pE <= q} - prob.
+#' @return \deqn{P{pE <= q} - prob}.
 #' @export
 #'
 prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
@@ -101,6 +102,18 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
 ##					posterior = indicator (posterior =1 implies inferences concern posterior distribution)
 ## Function returns P{pC <= q|data} - prob.
 
+#' Title
+#'
+#' @param q 
+#' @param prob 
+#' @param norm 
+#' @param se,sc,fe,fc 
+#' @param a,b 
+#' @param mu,sigma2 
+#'
+#' @return
+#' @export
+#'
 prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
 	
 	gride = seq(0.001, 0.999, by=0.001)
@@ -168,6 +181,19 @@ prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
 ##					postexp, postsd = expectation and standard deviation of posterior distribution of theta. 
 ## Function returns P{theta <= q|data} - prob.
 
+#' Title
+#'
+#' @param q 
+#' @param prob 
+#' @param norm 
+#' @param se,sc,fe,fc 
+#' @param a,b 
+#' @param mu,sigma2 
+#' @param postexp,postsd 
+#'
+#' @return
+#' @export
+#'
 prob_theta <- function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2, postexp, postsd){
 	
 	gridc = seq(0.001, 0.999, by=0.001)

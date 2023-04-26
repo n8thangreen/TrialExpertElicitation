@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_analysis.R
 \name{theta_dens}
 \alias{theta_dens}
-\title{theta_dens}
+\title{Evaluate posterior density of theta}
 \usage{
 theta_dens(gridt, fe, se, fc, sc, priorParm, norm)
 }
@@ -16,7 +16,7 @@ theta_dens(gridt, fe, se, fc, sc, priorParm, norm)
 \item{norm}{normalising constant of joint posterior distribution g(pC, theta|data)}
 }
 \value{
-posterior density of theta eveluated at gridt
+posterior density of theta evaluated at gridt
 }
 \description{
 Evaluate posterior density of theta

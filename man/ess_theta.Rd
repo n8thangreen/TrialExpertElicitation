@@ -2,7 +2,7 @@
 % Please edit documentation in R/ess_prior.R
 \name{ess_theta}
 \alias{ess_theta}
-\title{ESS theta}
+\title{Effective sample size (ESS) theta}
 \usage{
 ess_theta(R, mu, sigma2, a, b)
 }
@@ -10,9 +10,9 @@ ess_theta(R, mu, sigma2, a, b)
 \item{R}{number of subjects randomised to MMF for every one on control
 (E:C allocation ratio R:1) in a hypothetical study}
 
-\item{mu, sigma2}{mean and variance of the prior distribution of theta~N(mu, sigma2)}
+\item{mu, sigma2}{mean and variance of the prior distribution of \deqn{\theta~N(mu, sigma2)}}
 
-\item{a, b}{parameters of the prior distribution of pC~Beta(a,b)}
+\item{a, b}{parameters of the prior distribution of \deqn{pC~Beta(a,b)}}
 }
 \value{
 prior effective sample size of theta prior (expressed in terms of the effective

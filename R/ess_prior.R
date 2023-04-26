@@ -1,12 +1,12 @@
 
-#' ESS theta
+#' Effective sample size (ESS) theta
 #'
 #' Compute the effective sample size of the prior distribution of theta.
 #'
 #' @param R number of subjects randomised to MMF for every one on control
 #'   (E:C allocation ratio R:1) in a hypothetical study
-#' @param mu,sigma2 mean and variance of the prior distribution of theta~N(mu, sigma2)
-#' @param a,b parameters of the prior distribution of pC~Beta(a,b) 
+#' @param mu,sigma2 mean and variance of the prior distribution of \deqn{\theta~N(mu, sigma2)}
+#' @param a,b parameters of the prior distribution of \deqn{pC~Beta(a,b)}
 #'
 #' @return  prior effective sample size of theta prior (expressed in terms of the effective
 #'   total number of observations accrued across MMF and CYC)
@@ -81,13 +81,13 @@ ess_theta <- function(R, mu, sigma2, a, b){
 }
 
 
-#' ESS pc
+#' Effective sample size (ESS) pc
 #' 
-#' Function to calculate prior effective sample size of log[pc/(1-pC)].
+#' Calculate prior effective sample size of \deqn{log[pc/(1-pC)]}.
 #'
-#' @param a,b parameters of the prior distribution of pC~Beta(a,b)
+#' @param a,b parameters of the prior distribution of \deqn{pC~Beta(a,b)}
 #'
-#' @return Effective sample size of prior for log[pC/(1-pc)]
+#' @return Effective sample size of prior for \deqn{\log[pC/(1-pc)]}
 #'   (expressed in terms of effective observations on CYC)
 #' @export
 #'

@@ -20,8 +20,9 @@ prob_pE(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior)
 \item{posterior}{indicator (posterior =1 implies inferences concern posterior distribution)}
 }
 \value{
-P{pE <= q} - prob.
+\deqn{P{pE <= q} - prob}.
 }
 \description{
-Functions for calculating P{pE <= q}, P{pE <= q|data}, P{pC <= q|data}, P{theta <= q|data}.
+Functions for calculating
+\deqn{P{pE <= q}, P{pE <= q|data}, P{pC <= q|data}, P{theta <= q|data}}.
 }

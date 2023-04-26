@@ -18,7 +18,7 @@ calc_pi(se, mu, sigma2, pmean, pvar, a, b, ne, sc, fc)
 \item{ne, sc, fc}{number randomised to MMF; number of successes and failures on CYC.}
 }
 \value{
-P{pE > pC|data}
+\deqn{P{pE > pC|data}}
 }
 \description{
 Calculate pi

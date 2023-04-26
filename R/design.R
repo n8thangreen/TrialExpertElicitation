@@ -7,7 +7,7 @@
 #' @param a,b parameters of prior distribution of pC
 #' @param ne,sc,fc number randomised to MMF; number of successes and failures on CYC.
 #'
-#' @return P{pE > pC|data}
+#' @return \deqn{P{pE > pC|data}}
 #' @export
 #'
 calc_pi <- function(se, mu, sigma2, pmean, pvar, a, b, ne, sc, fc) {

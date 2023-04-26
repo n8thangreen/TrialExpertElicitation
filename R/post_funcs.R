@@ -1,10 +1,17 @@
-## Function to plot the posterior distribution of pc
-## Function inputs:	a,b = parameters of prior distribution of pC
-##					mu, sigma2 = parameters of prior distribution of theta
-##					sc, fc, se, fe = number of successes and failures observed on CYC and MMF, respectively
-## Function returns:a dataframe containing posterior expectation, SD, mode, limits of the 90% credibility interval of pC and the normalisation
-## constant of the posterior joint distribution of (pC, pE)
 
+#' Posterior pc
+#'
+#' plot the posterior distribution of pc
+#' 
+#' @param a,b parameters of prior distribution of pC
+#' @param mu,sigma2 parameters of prior distribution of theta
+#' @param sc,fc,se,fe number of successes and failures observed on CYC and MMF, respectively 
+#'
+#' @return dataframe containing posterior expectation, SD, mode,
+#'   limits of the 90% credibility interval of pC and the normalisation
+#'   constant of the posterior joint distribution of (pC, pE)
+#' @export
+#'
 post_pc <- function(a,b, mu, sigma2, sc, fc, se, fe){
   
   ## Use a mesh for integrating pC which should be adequate if P(0.001 <= pC <= 0.999|data) >= 0.998 
@@ -109,9 +116,19 @@ post_pc <- function(a,b, mu, sigma2, sc, fc, se, fe){
 ## Function inputs:	a,b = parameters of prior distribution of pC
 ##					mu, sigma2 = parameters of prior distribution of theta
 ##					sc, fc, se, fe = number of successes and failures observed on C and E
-## Function returns:a dataframe containing posterior expectation, SD, mode, limits of the 90% credibility interval of pE and the normalisation
-## constant of the posterior joint distribution of (pC, pE)
+## Function returns:a 
 
+#' Posterior pe
+#'
+#' @param a,b 
+#' @param mu,sigma2 
+#' @param sc,fc,se,fe 
+#'
+#' @return dataframe containing posterior expectation, SD, mode,
+#' limits of the 90% credibility interval of pE and the normalisation
+#' constant of the posterior joint distribution of (pC, pE)
+#' @export
+#'
 post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
   
   ## Use a mesh for integrating pE which should be adequate if P(0.001 <= pE <= 0.999|data) >= 0.998 
@@ -217,9 +234,19 @@ post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
 ##					sc, fc, se, fe = number of successes and failures observed on CYC and MMF
 ##					mu, sigma2 = parameters of prior distribution of theta
 ##					c2 = non-inferiority margin for the trial
-## Function returns:a dataframe containing posterior expectation, SD, mode, limits of the 90% credibility interval of theta and the normalisation
-## constant of the posterior joint distribution of (pC, theta)
 
+#' Posterior theta
+#'
+#' @param a,b 
+#' @param sc,se,fc,fe 
+#' @param mu,sigma2 
+#' @param c2 
+#'
+#' @return dataframe containing posterior expectation, SD, mode,
+#' limits of the 90% credibility interval of theta and the normalisation
+#' constant of the posterior joint distribution of (pC, theta)
+#' @export
+#'
 post_theta <- function(a,b, sc, se, fc, fe, mu, sigma2, c2){
   
   gridc = seq(0.0001, 0.9999, by=0.0001)
@@ -314,7 +341,17 @@ post_theta <- function(a,b, sc, se, fc, fe, mu, sigma2, c2){
 ## Function inputs:	a,b = parameters of prior distribution of pC
 ##					sc, fc, se, fe = number of successes and failures observed on CYC and MMF
 ##					mu, sigma2 = parameters of prior distribution of theta
-## Function returns:	an estimate of variance of the posterior distribution of theta. 
+## Function returns:	an estimate of variance of the posterior distribution of theta.
+
+#' Posterior variance of theta
+#'
+#' @param a,b 
+#' @param sc,se,fc,fe 
+#' @param mu,sigma2 
+#'
+#' @return
+#' @export
+#'
 thetavar <- function(a,b, sc, se, fc, fe, mu, sigma2){
   
   gridc = seq(0.001, 0.999, by=0.001)
@@ -387,5 +424,4 @@ thetavar <- function(a,b, sc, se, fc, fe, mu, sigma2){
   
   sum(wtheta*gridt*gridt*int) - (expect^2)
 }
-
 
