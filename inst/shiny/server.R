@@ -1,7 +1,6 @@
 
 shinyServer(function(input, output){
 	
-	
 	## Need to determine parameters of the prior distribution
 	## Reactive expression to generate the requested distribution. This is called
 	## whenever the inputs change. The renderers defined below then all use the value 
@@ -204,7 +203,6 @@ shinyServer(function(input, output){
 		}
 	})
 	
-	
 	output$pepc_density <- renderPlot({		
 		## Plot the prior and posterior distributions for pE
 		if((input$posterior40 | input$posterior20) & !input$postsum){
@@ -269,7 +267,6 @@ shinyServer(function(input, output){
 			legend("topleft", c("CYC/steroids", "MMF/steroids"), col = c("red","green"), lty = c(1,1), lwd = c(3,3), cex=1.2, bty="n")	
 		}
 	})
-	
 	
 	output$theta_density <- renderPlot({	
 		## Plot the prior and posterior distributions for theta
@@ -467,5 +464,4 @@ shinyServer(function(input, output){
 			cat("Prior probability that the 6-month remission rate on CYC exceeds that on MMF by more than 10% is ", round(x[12], 2), "\n")
 		}		
 	})
-		
 })

@@ -1,11 +1,9 @@
-rm(list = ls())
 
 shinyUI(pageWithSidebar(
 
 	headerPanel("Prior Specification"),
 	
 	sidebarPanel(
-	
 	
 		helpText("Before any data are observed, please answer the following questions to specify your prior distributions: "),
 		br(),
@@ -82,7 +80,6 @@ shinyUI(pageWithSidebar(
 					value = FALSE)
 	),
 	
-	
 	submitButton("Update Bayesian Distributions")
 
 	),
@@ -95,7 +92,6 @@ shinyUI(pageWithSidebar(
 			tabPanel(title = "Density: Log-odds Ratio", plotOutput(outputId = "theta_density", height="700px")),
 			tabPanel(title = "Summary", verbatimTextOutput(outputId = "summary"))
 		)
-		
 	)	
 ))
 	
