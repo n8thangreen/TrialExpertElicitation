@@ -70,6 +70,15 @@ shinyUI(pageWithSidebar(
 			numericInput(inputId = "mmf_succ20", label = "Number of successes on MMF:", value=7, min = 0, step=1)
 	),
 	
+	conditionalPanel(condition = "input.hypo_data_size == 20 | input.hypo_data_size == 40",
+	                 numericInput(inputId = "n_cyc", label = "Number randomized to CYC", value=10, min = 1, max= 20,  step=1),
+	                 br(),
+	                 numericInput(inputId = "cyc_succ", label = "Number of successes on CYC:", value=7, min = 0, max = 40, step =1),
+	                 br(),
+	                 helpText("For the remaining patients randomized to MMF: "),
+	                 numericInput(inputId = "mmf_succ", label = "Number of successes on MMF:", value=7, min = 0, step=1)
+	),
+	
 	conditionalPanel(condition = "input.posterior40 == true | input.posterior20 == true",
 			checkboxInput(inputId = "postsum", 
 					label = strong("Summarise posterior distributions for a variety of data scenarios"),

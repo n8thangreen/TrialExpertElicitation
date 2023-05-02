@@ -4,7 +4,7 @@ shinyServer(function(input, output){
   posterior20 <- reactive({
     length(input$hypo_data_size) > 0 && input$hypo_data_size == 20
   })
-
+  
   posterior40 <- reactive({
     length(input$hypo_data_size) > 0 && input$hypo_data_size == 40
   })
@@ -15,9 +15,6 @@ shinyServer(function(input, output){
   ## computed from this expression
   priorParam <- reactive({
     ## prior returns a vector containing the summaries of the posterior distributions of pC, pE and theta
-    ## x[1], x[2] parameters of beta prior distribution for pC, x[3] = ESS of log(pC/(1-pC)) given elicited prior for pC
-    ## x[4] = E(pE), x[5] = mode(pE), x[6] = SD(pE), (x[7], x[8]) = 90% credibility interval, x[14] = quantile such that P(pE <= x[14]) = 0.25
-    ## x[9] = E(theta), x[10] = var(theta), x[11] = P(pE > pC), x[12] = P(pE < pC - 0.1), x[13] = ESS of theta
     priorcall(input$pc_q1, input$pc_q2, input$theta_q1, input$theta_q2, input$expert)	
   })
   
@@ -25,32 +22,17 @@ shinyServer(function(input, output){
     if (!posterior40() && !posterior20())
       return(NULL)
     
-    ## postSumry returns a vector containing the summaries of the posterior distributions of pC, pE and theta
-    ##	x[1] = E(pC|data), x[2] = mode(pC|data), x[3] = SD(pC|data), (x[4], x[5]) = 90% posterior credibility interval for pC, x[18] = normalising constant of g(pC, pE|data)
-    ##	x[6] = E(pE|data), x[7] = mode(pE|data), x[8] = SD(pE|data), (x[9], x[10]) = 90% posterior credibility interval for pE, x[19] = normalising constant of g(pC, pE|data)
-    ##	x[11] = E(theta|data), x[12] = mode(theta|data), x[13] = SD(theta|data), (x[14], x[15]) = 90% posterior credibility interval for theta, 
-    ## 	x[16] = P{pE > pC|data}, x[17] = P{pE - pC > -c2|data},  x[20] = normalising constant of joint posterior distribution f(theta, pC|data)
-    
-    if(posterior40()){
-      postSumry(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, priorParam(), posterior40())
-    }else{
-      postSumry(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, priorParam(), posterior40())
-    }
+    postSumry(as.numeric(input$hypo_data_size) - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, priorParam(), posterior40())
   })
   
   postSumary <- reactive({
     if((posterior40() | posterior20()) & input$postsum){
-      if(posterior40()){
-        dtacase <- scan("data_scenario40.txt") 
-        scen1 = postSumry(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], priorParam(), posterior40())	
-        scen2 = postSumry(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], priorParam(), posterior40())
-        scen3 = postSumry(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], priorParam(), posterior40())
-      }else{
-        dtacase <- scan("data_scenario20.txt") 
-        scen1 = postSumry(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], priorParam(), posterior40())	
-        scen2 = postSumry(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], priorParam(), posterior40())
-        scen3 = postSumry(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], priorParam(), posterior40())
-      }
+      n <- as.numeric(input$hypo_data_size)
+      dtacase <- scan(glue::glue("data_scenario{n}.txt"))
+      scen1 = postSumry(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], priorParam(), posterior40())	
+      scen2 = postSumry(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], priorParam(), posterior40())
+      scen3 = postSumry(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], priorParam(), posterior40())
+      
       return(data.frame(scen1, scen2, scen3))	
     }else{
       NULL
@@ -62,54 +44,40 @@ shinyServer(function(input, output){
     ## Return the data to plot the prior and posterior densities of theta.
     z = priorParam()
     x = vector(mode="numeric", length =20)
-    
-    distPlot(0,0,0,0, x, z, as.character("pC"), as.logical("T"))
+    distPlot(0,0,0,0, x, z, as.character("pC"), TRUE)
   })
   
   pC_postDens <- reactive({
     z = priorParam()
     x = postParam()
-    if(posterior40()){
-      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("pC"), FALSE)
-    }else{
-      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("pC"), FALSE)
-    }
-    return(y)
+    n <- as.numeric(input$hypo_data_size)
+    distPlot(n - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, x, z, as.character("pC"), FALSE)
   })
   
   pE_priorDens <- reactive({
     z = priorParam()
     x = vector(mode="numeric", length =20)
-    
-    distPlot(0,0,0,0, x, z, as.character("pE"), as.logical("T"))
+    distPlot(0,0,0,0, x, z, as.character("pE"), TRUE)
   })
   pE_postDens <- reactive({
     z = priorParam()
     x = postParam()
-    if(posterior40()){ 	
-      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("pE"), FALSE)
-    }else{
-      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("pE"), FALSE)
-    }
-    return(y)
+    n <- as.numeric(input$hypo_data_size)
+    distPlot(n - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, x, z, as.character("pE"), FALSE)
   })
   
   theta_priorDens <- reactive({
     z = priorParam()
     x = vector(mode="numeric", length =20)
     
-    distPlot(0,0,0,0,x, z, as.character("theta"), as.logical("T"))
+    distPlot(0,0,0,0,x, z, as.character("theta"), TRUE)
   })
   
   theta_postDens <- reactive({
     z = priorParam()
     x = postParam() 
-    if(posterior40()){
-      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("theta"), FALSE)
-    }else{
-      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("theta"), FALSE)
-    }
-    return(y)
+    n <- as.numeric(input$hypo_data_size)
+    distPlot(n - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, x, z, as.character("theta"), FALSE)
   })
   
   ###########
@@ -128,7 +96,10 @@ shinyServer(function(input, output){
         leg1 = c(bquote("Posterior" ~ n[C] ==  .(input$n_cyc20) ~ S[C]  == .(input$cyc_succ20) ~ n[M] == .(20 - input$n_cyc20) ~ S[M] ==  .(input$mmf_succ20)), "Prior")
       }
       
-      postPlot = plot(x$gridc, x$postd, type="l", lty=2, lwd=3, col="dark red", main = "Prior and posterior densities of 6-month remission rate on CYC", xlab = "CYC 6-month remission rate", ylab="Density", xlim = c(0,1), ylim = range(c(x$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
+      postPlot = plot(x$gridc, x$postd, type="l", lty=2, lwd=3, col="dark red",
+                      main = "Prior and posterior densities of 6-month remission rate on CYC",
+                      xlab = "CYC 6-month remission rate", ylab="Density",
+                      xlim = c(0,1), ylim = range(c(x$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
       lines(y$gridc, y$dens, lty=1, lwd=3, col="red")
       legend("topleft", as.expression(leg1), col = c("dark red","red"), lty = c(2,1), lwd = c(3,3), cex=1.2, bty="n")	
       
@@ -136,20 +107,16 @@ shinyServer(function(input, output){
       y = pC_priorDens()
       z = priorParam()
       w = postSumary()
+      n <- as.numeric(input$hypo_data_size)
+      dtacase = scan(glue::glue("data_scenario{n}.txt"))
+      u1 = distPlot(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
+      u2 = distPlot(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
+      u3 = distPlot(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
       
-      if(posterior40()){
-        dtacase = scan("data_scenario40.txt")
-        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
-        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
-        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
-      }else{
-        dtacase = scan("data_scenario20.txt")
-        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
-        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
-        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
-      }
-      
-      postPlot = plot(u1$gridc, u1$postd, type="l", lty=2, lwd=3, col="dark red", main="Prior and posterior densities of 6-month remission rate on CYC/steroids", xlab = "CYC 6-month remission rate", ylab="Density", xlim =c(0,1), ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
+      postPlot = plot(u1$gridc, u1$postd, type="l", lty=2, lwd=3, col="dark red",
+                      main="Prior and posterior densities of 6-month remission rate on CYC/steroids",
+                      xlab = "CYC 6-month remission rate", ylab="Density",
+                      xlim =c(0,1), ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
       lines(u2$gridc, u2$postd, lty=3, lwd=3, col="dark red")
       lines(u3$gridc, u3$postd, lty=4, lwd=3, col="dark red")
       lines(y$gridc, y$dens, lty=1, lwd=3, col="red")
@@ -163,7 +130,9 @@ shinyServer(function(input, output){
     }else{
       x = pC_priorDens()
       ## Only want to plot the prior density in this scenario
-      plot(x$gridc, x$dens, type="l", lty=1, lwd=3, col="red", main = "Prior density of 6-month remission rate on CYC/steroids", xlab = "CYC 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
+      plot(x$gridc, x$dens, type="l", lty=1, lwd=3, col="red",
+           main = "Prior density of 6-month remission rate on CYC/steroids",
+           xlab = "CYC 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
     }
   })
   
@@ -172,34 +141,30 @@ shinyServer(function(input, output){
     if((posterior40() | posterior20()) & !input$postsum){
       y = pE_priorDens()
       x = pE_postDens()
+      ns <- as.numeric(input$hypo_data_size)
+      leg1 = c(bquote("Posterior" ~ n[C] ==  .(input$n_cyc) ~ S[C]  == .(input$cyc_succ) ~ n[M] == .(ns - input$n_cyc) ~ S[M] ==  .(input$mmf_succ)), "Prior")
       
-      if(posterior40()){
-        leg1 = c(bquote("Posterior" ~ n[C] ==  .(input$n_cyc40) ~ S[C]  == .(input$cyc_succ40) ~ n[M] == .(40 - input$n_cyc40) ~ S[M] ==  .(input$mmf_succ40)), "Prior")
-      }else{
-        leg1 = c(bquote("Posterior" ~ n[C] ==  .(input$n_cyc20) ~ S[C]  == .(input$cyc_succ20) ~ n[M] == .(20 - input$n_cyc20) ~ S[M] ==  .(input$mmf_succ20)), "Prior")
-      }
-      
-      postPlot = plot(x$gride, x$postd, type="l", lty=2, lwd=3, col="dark green", main="Prior and posterior densities of 6-month remission rate on MMF", xlab = "MMF 6-month remission rate", ylab="Density", xlim =c(0,1), ylim = range(c(x$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
+      postPlot = plot(x$gride, x$postd, type="l", lty=2, lwd=3, col="dark green",
+                      main="Prior and posterior densities of 6-month remission rate on MMF",
+                      xlab = "MMF 6-month remission rate", ylab="Density",
+                      xlim =c(0,1), ylim = range(c(x$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
       lines(y$gride, y$dens, lty=1, lwd=3, col="green")
       legend("topleft", as.expression(leg1), col = c("dark green","green"), lty = c(2,1), lwd = c(3,3), cex=1.2, bty="n")	
     }else if((posterior40() | posterior20()) & input$postsum){
       y = pE_priorDens()
       z = priorParam()
       w = postSumary()
+      n <- as.numeric(input$hypo_data_size)
+      dtacase = scan(glue::glue("data_scenario{n}.txt"))
+      u1 = distPlot(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
+      u2 = distPlot(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
+      u3 = distPlot(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
       
-      if(posterior40()){
-        dtacase = scan("data_scenario40.txt")
-        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"),FALSE)
-        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
-        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
-      }else{
-        dtacase = scan("data_scenario20.txt")
-        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
-        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
-        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
-      }
-      
-      postPlot = plot(u1$gride, u1$postd, type="l", lty=2, lwd=3, col="dark green", main="Prior and posterior densities of 6-month remission rate on MMF", xlab = "MMF 6-month remission rate", ylab="Density", xlim =c(0,1), ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
+      postPlot = plot(u1$gride, u1$postd, type="l", lty=2, lwd=3, col="dark green",
+                      main="Prior and posterior densities of 6-month remission rate on MMF",
+                      xlab = "MMF 6-month remission rate", ylab="Density",
+                      xlim =c(0,1), ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)),
+                      cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
       lines(u2$gride, u2$postd, lty=3, lwd=3, col="dark green")
       lines(u3$gride, u3$postd, lty=4, lwd=3, col="dark green")
       lines(y$gride, y$dens, lty=1, lwd=3, col="green")
@@ -212,7 +177,10 @@ shinyServer(function(input, output){
     }else{
       x = pE_priorDens()
       ## Only want to plot the prior density in this scenario
-      priorPlot = plot(x$gride, x$dens, type="l", lty=1, lwd=3, col="green", main = "Prior density of 6-month remission rate on MMF", xlab = "MMF 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
+      priorPlot = plot(x$gride, x$dens, type="l", lty=1, lwd=3, col="green",
+                       main = "Prior density of 6-month remission rate on MMF",
+                       xlab = "MMF 6-month remission rate", ylab="Density",
+                       xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
     }
   })
   
@@ -221,49 +189,37 @@ shinyServer(function(input, output){
     if((posterior40() | posterior20()) & !input$postsum){
       y = pC_postDens()
       x = pE_postDens()
-      postPlot = plot(y$gridc, y$postd, type="l", lty=2, lwd=3, col="dark red", main="Posterior densities of 6-month remission rates on MMF and CYC", xlab = "6-month remission rate", ylab="Density", xlim =c(0,1), ylim = range(c(y$postd, x$postd)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
+      postPlot = plot(y$gridc, y$postd, type="l", lty=2, lwd=3, col="dark red",
+                      main="Posterior densities of 6-month remission rates on MMF and CYC",
+                      xlab = "6-month remission rate", ylab="Density",
+                      xlim =c(0,1), ylim = range(c(y$postd, x$postd)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
       lines(x$gride, x$postd, lty=2, lwd=3, col="dark green")
       legend("topleft", c("CYC/steroids", "MMF/steroids"), col = c("dark red","dark green"), lty = c(2,2), lwd = c(3,3), cex=1.2, bty="n")	
     }else if((posterior40() | posterior20()) & input$postsum){
       z = priorParam()
       w = postSumary()
+      ns <- as.numeric(input$hypo_data_size)
+      dtacase = scan(glue::glue("data_scenario{ns}.txt"))
+      u1pe = distPlot(ns - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
+      u2pe = distPlot(ns - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
+      u3pe = distPlot(ns - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
       
-      if(posterior40()){
-        dtacase = scan("data_scenario40.txt")
-        u1pe = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
-        u2pe = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
-        u3pe = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
-        
-        u1pc = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
-        u2pc = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
-        u3pc = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
-        
-        leg1 = bquote("CYC:" ~ n[C] == .(dtacase[1]) ~ S[C]  == .(dtacase[2]) ~ n[M] == .(40 - dtacase[1]) ~ S[M] ==  .(dtacase[3]))
-        leg2 = bquote("CYC:" ~ n[C] == .(dtacase[4]) ~ S[C]  == .(dtacase[5]) ~ n[M] == .(40 - dtacase[4]) ~ S[M] ==  .(dtacase[6]))
-        leg3 = bquote("CYC:" ~ n[C] == .(dtacase[7]) ~ S[C]  == .(dtacase[8]) ~ n[M] == .(40 - dtacase[7]) ~ S[M] ==  .(dtacase[9]))
-        leg4 = bquote("MMF:" ~ S[C]  == .(dtacase[2]) ~ S[M] ==  .(dtacase[3]))
-        leg5 = bquote("MMF:" ~ S[C]  == .(dtacase[5]) ~ S[M] ==  .(dtacase[6]))
-        leg6 = bquote("MMF:" ~ S[C]  == .(dtacase[8]) ~ S[M] ==  .(dtacase[9]))
-        
-      }else{
-        dtacase = scan("data_scenario20.txt")
-        u1pe = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
-        u2pe = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
-        u3pe = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
-        
-        u1pc = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
-        u2pc = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
-        u3pc = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
-        
-        leg1 = bquote("CYC:" ~ n[C] == .(dtacase[1]) ~ S[C]  == .(dtacase[2]) ~ n[M] == .(20 - dtacase[1]) ~ S[M] ==  .(dtacase[3]))
-        leg2 = bquote("CYC:" ~ n[C] == .(dtacase[4]) ~ S[C]  == .(dtacase[5]) ~ n[M] == .(20 - dtacase[4]) ~ S[M] ==  .(dtacase[6]))
-        leg3 = bquote("CYC:" ~ n[C] == .(dtacase[7]) ~ S[C]  == .(dtacase[8]) ~ n[M] == .(20 - dtacase[7]) ~ S[M] ==  .(dtacase[9]))
-        leg4 = bquote("MMF:" ~ S[C]  == .(dtacase[2]) ~ S[M] ==  .(dtacase[3]))
-        leg5 = bquote("MMF:" ~ S[C]  == .(dtacase[5]) ~ S[M] ==  .(dtacase[6]))
-        leg6 = bquote("MMF:" ~ S[C]  == .(dtacase[8]) ~ S[M] ==  .(dtacase[9]))
-      }
+      u1pc = distPlot(ns - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
+      u2pc = distPlot(ns - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
+      u3pc = distPlot(ns - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
       
-      postPlot = plot(u1pc$gridc, u1pc$postd, type="l", lty=2, lwd=3, col="dark red", main="Posterior densities of 6-month remission rates on MMF and CYC", xlab = "6-month remission rate", ylab="Density", xlim =c(0,1), ylim = range(c(u1pc$postd, u2pc$postd, u3pc$postd, u1pe$postd, u2pe$postd, u3pe$postd)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
+      leg1 = bquote("CYC:" ~ n[C] == .(dtacase[1]) ~ S[C]  == .(dtacase[2]) ~ n[M] == .(ns - dtacase[1]) ~ S[M] ==  .(dtacase[3]))
+      leg2 = bquote("CYC:" ~ n[C] == .(dtacase[4]) ~ S[C]  == .(dtacase[5]) ~ n[M] == .(ns - dtacase[4]) ~ S[M] ==  .(dtacase[6]))
+      leg3 = bquote("CYC:" ~ n[C] == .(dtacase[7]) ~ S[C]  == .(dtacase[8]) ~ n[M] == .(ns - dtacase[7]) ~ S[M] ==  .(dtacase[9]))
+      leg4 = bquote("MMF:" ~ S[C]  == .(dtacase[2]) ~ S[M] ==  .(dtacase[3]))
+      leg5 = bquote("MMF:" ~ S[C]  == .(dtacase[5]) ~ S[M] ==  .(dtacase[6]))
+      leg6 = bquote("MMF:" ~ S[C]  == .(dtacase[8]) ~ S[M] ==  .(dtacase[9]))
+      
+      postPlot = plot(u1pc$gridc, u1pc$postd, type="l", lty=2, lwd=3, col="dark red",
+                      main="Posterior densities of 6-month remission rates on MMF and CYC",
+                      xlab = "6-month remission rate", ylab="Density",
+                      xlim =c(0,1), ylim = range(c(u1pc$postd, u2pc$postd, u3pc$postd, u1pe$postd, u2pe$postd, u3pe$postd)),
+                      cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
       lines(u2pc$gridc, u2pc$postd, lty=3, lwd=3, col="dark red")
       lines(u3pc$gridc, u3pc$postd, lty=4, lwd=3, col="dark red")
       lines(u1pe$gride, u1pe$postd, lty=2, lwd=3, col="dark green")
@@ -275,7 +231,10 @@ shinyServer(function(input, output){
       y = pC_priorDens()
       x = pE_priorDens()
       ## Only want to plot the prior density in this scenario
-      priorPlot = plot(y$gridc, y$dens, type="l", lty=1, lwd=3, col="red", main = "Prior density of 6-month remission rates on MMF and CYC", xlab = "6-month remission rate", ylab="Density", xlim =c(0,1), ylim = range(c(y$dens, x$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
+      priorPlot = plot(y$gridc, y$dens, type="l", lty=1, lwd=3, col="red",
+                       main = "Prior density of 6-month remission rates on MMF and CYC",
+                       xlab = "6-month remission rate", ylab="Density",
+                       xlim =c(0,1), ylim = range(c(y$dens, x$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
       lines(x$gride, x$dens, lty=1, lwd=3, col="green")
       legend("topleft", c("CYC/steroids", "MMF/steroids"), col = c("red","green"), lty = c(1,1), lwd = c(3,3), cex=1.2, bty="n")	
     }
@@ -283,12 +242,6 @@ shinyServer(function(input, output){
   
   output$theta_density <- renderPlot({	
     ## Plot the prior and posterior distributions for theta
-    
-    # pe_lim1 = 1.0/(1 + exp(-(-2 + log(input$pc_q1/(1-input$pc_q1)))))
-    # pe_lim2 = 1.0/(1 + exp(-(-1 + log(input$pc_q1/(1-input$pc_q1)))))
-    # pe_lim3 = 1.0/(1 + exp(-(0 + log(input$pc_q1/(1-input$pc_q1)))))
-    # pe_lim4 = 1.0/(1 + exp(-(1 + log(input$pc_q1/(1-input$pc_q1)))))
-    # pe_lim5 = 1.0/(1 + exp(-(2 + log(input$pc_q1/(1-input$pc_q1)))))
     
     pc_to_pe_transformation <- function(pc, a)
       1.0/(1 + exp(-(a + log(pc/(1 - pc)))))
