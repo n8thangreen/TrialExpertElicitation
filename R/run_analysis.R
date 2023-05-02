@@ -108,7 +108,7 @@ priorcall <- function(q1, q2, q3, q4, expert){
 #' @param n_cyc 
 #' @param cyc_succ 
 #' @param priorParm 
-#' @param posterior40 
+#' @param posterior40 is posterior 40 selected? Logical
 #'
 #' @return
 #' @export

@@ -41,12 +41,15 @@ shinyUI(pageWithSidebar(
 		br(),
 		br(),	
 				
-		checkboxInput(inputId = "posterior40", 
-					label = strong("Update MYPAN prior distributions with a hypothetical dataset on 40 patients "),
-					value = FALSE),
-		checkboxInput(inputId = "posterior20", 
-					label = strong("Update MYPAN prior distributions with a hypothetical dataset on 20 patients "),
-					value = FALSE),  
+		# checkboxInput(inputId = "posterior40", 
+		# 			label = strong("Update MYPAN prior distributions with a hypothetical dataset on 40 patients "),
+		# 			value = FALSE),
+		# checkboxInput(inputId = "posterior20", 
+		# 			label = strong("Update MYPAN prior distributions with a hypothetical dataset on 20 patients "),
+		# 			value = FALSE),
+		
+		radioButtons(inputId="hypo_data_size", label="Update MYPAN prior distributions with a hypothetical dataset of patient size ", 
+		             choices=c(20, 40), selected = character(0)),
 
 	## Output two tabs: one to plot the density of the (prior/posterior) distribution
 	## and one to summarise the (prior/posterior) distribution
@@ -86,7 +89,7 @@ shinyUI(pageWithSidebar(
 	
 	mainPanel(
 		tabsetPanel(
-			tabPanel(title= "Density: CYC Remission Rate", plotOutput(outputId = "pc_density", height="700px")),
+			tabPanel(title = "Density: CYC Remission Rate", plotOutput(outputId = "pc_density", height="700px")),
 			tabPanel(title = "Density: MMF Remission Rate", plotOutput(outputId = "pe_density", height="700px")),
 			tabPanel(title = "Density: CYC & MMF Remission", plotOutput(outputId = "pepc_density", height="700px")),
 			tabPanel(title = "Density: Log-odds Ratio", plotOutput(outputId = "theta_density", height="700px")),
