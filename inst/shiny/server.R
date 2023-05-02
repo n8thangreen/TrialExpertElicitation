@@ -290,23 +290,17 @@ shinyServer(function(input, output){
       y = theta_priorDens()
       z = priorParam()
       w = postSumary()
-      
-      if(posterior40()){
-        dtacase = scan("data_scenario40.txt")
-        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("theta"), FALSE)
-        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("theta"), FALSE)
-        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("theta"), FALSE)
-      }else{
-        dtacase = scan("data_scenario20.txt")
-        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("theta"), FALSE)
-        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("theta"), FALSE)
-        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("theta"), FALSE)
-      }
+      ns <- as.numeric(input$hypo_data_size)
+      dtacase = scan(glue::glue("data_scenario{n}.txt"))
+      u1 = distPlot(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("theta"), FALSE)
+      u2 = distPlot(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("theta"), FALSE)
+      u3 = distPlot(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("theta"), FALSE)
       
       par(pty="m", plt=c(0.1, 1, 0, 1), omd=c(0.1,1.0,0,0.9))
       par(mfrow = c(2, 1))
       
-      postPlot = plot(u1$gridt, u1$postd, type="l", lty=2, lwd=3, col="dark blue", main="", ylab="Density", xaxt="n", cex.lab = 1.5, cex.axis=1.5, ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)))
+      postPlot = plot(u1$gridt, u1$postd, type="l", lty=2, lwd=3, col="dark blue",
+                      main="", ylab="Density", xaxt="n", cex.lab = 1.5, cex.axis=1.5, ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)))
       lines(u2$gridt, u2$postd, lty=3, lwd=3, col="dark blue")
       lines(u3$gridt, u3$postd, lty=4, lwd=3, col="dark blue")
       lines(y$gridt, y$dens, lty=1, lwd=3, col="blue")
@@ -362,17 +356,13 @@ shinyServer(function(input, output){
     if(posterior40() | posterior20()){
       
       x = postParam()
+      ns <- as.numeric(input$hypo_data_size)
       
       cat("Posterior distributions update the priors implied by the opinions: Q1 = ", input$pc_q1, ", Q2 = ", input$pc_q2, ", Q3 = ", input$theta_q1, ", Q4 = ", input$theta_q2, "\n")
       cat("\n")
       cat("Posterior distributions incorporate the following data: \n")
-      if(posterior40()){
-        cat(input$n_cyc40, "patients randomised to CYC of whom ", input$cyc_succ40, "were in remission within six months \n")
-        cat(40 - input$n_cyc40, "patients randomised to MMF of whom ", input$mmf_succ40, "were in remission within six months \n")
-      }else{
-        cat(input$n_cyc20, "patients randomised to CYC of whom ", input$cyc_succ20, "were in remission within six months \n")
-        cat(20 - input$n_cyc20, "patients randomised to MMF of whom ", input$mmf_succ20, "were in remission within six months \n")
-      }
+      cat(input$n_cyc, "patients randomised to CYC of whom ", input$cyc_succ, "were in remission within six months \n")
+      cat(ns - input$n_cyc, "patients randomised to MMF of whom ", input$mmf_succ, "were in remission within six months \n")
       cat("\n")
       cat("\n")
       cat("Summary of the posterior distribution of the 6-month remission rate on CYC/steroids: \n")
