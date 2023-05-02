@@ -70,9 +70,9 @@ shinyServer(function(input, output){
     z = priorParam()
     x = postParam()
     if(posterior40()){
-      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("pC"), as.logical("F"))
+      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("pC"), FALSE)
     }else{
-      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("pC"), as.logical("F"))
+      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("pC"), FALSE)
     }
     return(y)
   })
@@ -87,9 +87,9 @@ shinyServer(function(input, output){
     z = priorParam()
     x = postParam()
     if(posterior40()){ 	
-      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("pE"), as.logical("F"))
+      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("pE"), FALSE)
     }else{
-      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("pE"), as.logical("F"))
+      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("pE"), FALSE)
     }
     return(y)
   })
@@ -105,9 +105,9 @@ shinyServer(function(input, output){
     z = priorParam()
     x = postParam() 
     if(posterior40()){
-      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("theta"), as.logical("F"))
+      y = distPlot(40 - input$n_cyc40, input$mmf_succ40, input$n_cyc40, input$cyc_succ40, x, z, as.character("theta"), FALSE)
     }else{
-      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("theta"), as.logical("F"))
+      y = distPlot(20 - input$n_cyc20, input$mmf_succ20, input$n_cyc20, input$cyc_succ20, x, z, as.character("theta"), FALSE)
     }
     return(y)
   })
@@ -139,14 +139,14 @@ shinyServer(function(input, output){
       
       if(posterior40()){
         dtacase = scan("data_scenario40.txt")
-        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), as.logical("F"))
-        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), as.logical("F"))
-        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), as.logical("F"))
+        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
+        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
+        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
       }else{
         dtacase = scan("data_scenario20.txt")
-        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), as.logical("F"))
-        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), as.logical("F"))
-        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), as.logical("F"))
+        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
+        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
+        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
       }
       
       postPlot = plot(u1$gridc, u1$postd, type="l", lty=2, lwd=3, col="dark red", main="Prior and posterior densities of 6-month remission rate on CYC/steroids", xlab = "CYC 6-month remission rate", ylab="Density", xlim =c(0,1), ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
@@ -189,14 +189,14 @@ shinyServer(function(input, output){
       
       if(posterior40()){
         dtacase = scan("data_scenario40.txt")
-        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"),as.logical("F"))
-        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), as.logical("F"))
-        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), as.logical("F"))
+        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"),FALSE)
+        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
+        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
       }else{
         dtacase = scan("data_scenario20.txt")
-        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), as.logical("F"))
-        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), as.logical("F"))
-        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), as.logical("F"))
+        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
+        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
+        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
       }
       
       postPlot = plot(u1$gride, u1$postd, type="l", lty=2, lwd=3, col="dark green", main="Prior and posterior densities of 6-month remission rate on MMF", xlab = "MMF 6-month remission rate", ylab="Density", xlim =c(0,1), ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
@@ -230,13 +230,13 @@ shinyServer(function(input, output){
       
       if(posterior40()){
         dtacase = scan("data_scenario40.txt")
-        u1pe = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), as.logical("F"))
-        u2pe = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), as.logical("F"))
-        u3pe = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), as.logical("F"))
+        u1pe = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
+        u2pe = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
+        u3pe = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
         
-        u1pc = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), as.logical("F"))
-        u2pc = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), as.logical("F"))
-        u3pc = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), as.logical("F"))
+        u1pc = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
+        u2pc = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
+        u3pc = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
         
         leg1 = bquote("CYC:" ~ n[C] == .(dtacase[1]) ~ S[C]  == .(dtacase[2]) ~ n[M] == .(40 - dtacase[1]) ~ S[M] ==  .(dtacase[3]))
         leg2 = bquote("CYC:" ~ n[C] == .(dtacase[4]) ~ S[C]  == .(dtacase[5]) ~ n[M] == .(40 - dtacase[4]) ~ S[M] ==  .(dtacase[6]))
@@ -247,13 +247,13 @@ shinyServer(function(input, output){
         
       }else{
         dtacase = scan("data_scenario20.txt")
-        u1pe = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), as.logical("F"))
-        u2pe = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), as.logical("F"))
-        u3pe = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), as.logical("F"))
+        u1pe = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
+        u2pe = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
+        u3pe = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
         
-        u1pc = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), as.logical("F"))
-        u2pc = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), as.logical("F"))
-        u3pc = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), as.logical("F"))
+        u1pc = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
+        u2pc = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
+        u3pc = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
         
         leg1 = bquote("CYC:" ~ n[C] == .(dtacase[1]) ~ S[C]  == .(dtacase[2]) ~ n[M] == .(20 - dtacase[1]) ~ S[M] ==  .(dtacase[3]))
         leg2 = bquote("CYC:" ~ n[C] == .(dtacase[4]) ~ S[C]  == .(dtacase[5]) ~ n[M] == .(20 - dtacase[4]) ~ S[M] ==  .(dtacase[6]))
@@ -340,14 +340,14 @@ shinyServer(function(input, output){
       
       if(posterior40()){
         dtacase = scan("data_scenario40.txt")
-        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("theta"), as.logical("F"))
-        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("theta"), as.logical("F"))
-        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("theta"), as.logical("F"))
+        u1 = distPlot(40 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("theta"), FALSE)
+        u2 = distPlot(40 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("theta"), FALSE)
+        u3 = distPlot(40 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("theta"), FALSE)
       }else{
         dtacase = scan("data_scenario20.txt")
-        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("theta"), as.logical("F"))
-        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("theta"), as.logical("F"))
-        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("theta"), as.logical("F"))
+        u1 = distPlot(20 - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("theta"), FALSE)
+        u2 = distPlot(20 - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("theta"), FALSE)
+        u3 = distPlot(20 - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("theta"), FALSE)
       }
       
       par(pty="m", plt=c(0.1, 1, 0, 1), omd=c(0.1,1.0,0,0.9))

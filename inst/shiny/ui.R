@@ -40,14 +40,7 @@ shinyUI(pageWithSidebar(
 				min = 0, max=1, value = 0.3, step=0.05),
 		br(),
 		br(),	
-				
-		# checkboxInput(inputId = "posterior40", 
-		# 			label = strong("Update MYPAN prior distributions with a hypothetical dataset on 40 patients "),
-		# 			value = FALSE),
-		# checkboxInput(inputId = "posterior20", 
-		# 			label = strong("Update MYPAN prior distributions with a hypothetical dataset on 20 patients "),
-		# 			value = FALSE),
-		
+
 		radioButtons(inputId="hypo_data_size", label="Update MYPAN prior distributions with a hypothetical dataset of patient size ", 
 		             choices=c(20, 40), selected = character(0)),
 
