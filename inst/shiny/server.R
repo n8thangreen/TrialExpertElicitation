@@ -244,8 +244,8 @@ shinyServer(function(input, output){
   output$theta_density <- renderPlot({	
     ## Plot the prior and posterior distributions for theta
     
-    pc_to_pe_transformation <- function(pc, a)
-      1.0/(1 + exp(-(a + log(pc/(1 - pc)))))
+    pc_to_pe_transformation <- function(pc, lor)
+      1.0/(1 + exp(-(lor + log(pc/(1 - pc)))))
     
     pe_lim1 = pc_to_pe_transformation(input$pc_q1, -2)
     pe_lim2 = pc_to_pe_transformation(input$pc_q1, -1)
@@ -331,7 +331,8 @@ shinyServer(function(input, output){
       x = theta_priorDens()
       ## Only want to plot the prior density in this scenario
       par(pty="m", plt=c(0.1, 1, 0, 1), omd=c(0.1,1.0,0,0.9))
-      par(mfrow = c(2, 1))
+      par(mfrow = c(3, 1))
+      
       priorPlot = plot(x$gridt, x$dens, type="l", lty=1, lwd=3, col="blue", main="", ylab="Density", xaxt="n", cex.lab = 1.5, cex.axis=1.5)
       mtext(side=3, "Prior density of the log-odds ratio", line=1.5, cex = 2)
       
@@ -342,6 +343,17 @@ shinyServer(function(input, output){
       mtext(side=1, "log-odds ratio", line=2.5, cex=1.5, col="black")
       
       ## axis 2
+      xaxis2 = seq(-2, 2, by=1)
+      par(plt=c(0.1,1,0.6,1))
+      plot(xaxis2, type="n",xaxt="n", xlab="", yaxt="n", ylab="", xlim = c(-2, 2), bty="n")
+      axis(side=1, at = c(-2, -1, 0, 1, 2),
+           labels = round(c(pe_lim1, pe_lim2, pe_lim3, pe_lim4, pe_lim5), 2),
+           col="red", col.axis="red", cex.axis=1.5)
+      linloc <- par()$usr[3]
+      abline(h=linloc, col="red")
+      mtext(side=1, label1, line=3.0, cex=1.5, col="red")	
+      
+      ## axis 3
       xaxis2 = seq(-2, 2, by=1)
       par(plt=c(0.1,1,0.6,1))
       plot(xaxis2, type="n",xaxt="n", xlab="", yaxt="n", ylab="", xlim = c(-2, 2), bty="n")
