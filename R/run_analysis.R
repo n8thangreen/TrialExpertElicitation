@@ -15,7 +15,7 @@
 ## The function also outputs a file saved as "expert-priorplot.pdf" in the current working directory containing plots of the prior densities
 ## and a file "expert-D1answer.txt" storing the expert's answers to the elicitation questions.  
 
-#' Title
+#' priorcall
 #'
 #' @param q1 
 #' @param q2 
@@ -26,7 +26,7 @@
 #' @return
 #' @export
 #'
-priorcall <- function(q1, q2, q3, q4, expert){
+priorcall <- function(q1, q2, q3, q4, expert, out_dir = "plots"){
   
   c2 = as.double(0.10) 	## non-inferiority margin cited in Day 1 elicitation question (iv)
   
@@ -63,12 +63,16 @@ priorcall <- function(q1, q2, q3, q4, expert){
   y1 = distPlot(0,0,0,0, z, x, as.character("pC"), 1)
   y2 = distPlot(0,0,0,0, z, x, as.character("pE"), 1)
   y3 = distPlot(0,0,0,0, z, x, as.character("theta"), 1)
-  outputfile <- paste(expert, "-priorplot.pdf", sep="")
-  title1 <- paste(expert, "'s prior density of CYC remission rate", sep="")
-  title2 <- paste(expert, "'s prior density of MMF remission rate", sep="")
-  title3 <- paste(expert, "'s prior density of log-odds ratio", sep="")
+  
+  outputfile <- here::here(paste0(out_dir, "/", expert, "-priorplot.pdf"))
+  
+  title1 <- paste0(expert, "'s prior density of CYC remission rate")
+  title2 <- paste0(expert, "'s prior density of MMF remission rate")
+  title3 <- paste0(expert, "'s prior density of log-odds ratio")
   title4 <- as.character("Prior density of CYC & MMF remission rate")
+  
   pdf(outputfile)
+  
   par(mfrow = c(2,2), pty="s")
   
   plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title1, xlab = "CYC 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1) 
@@ -79,7 +83,7 @@ priorcall <- function(q1, q2, q3, q4, expert){
   dev.off()
   
   ## Write answers to elicitation questions to file 
-  outputfile <- paste(expert, "-D1answer.txt", sep="")
+  outputfile <- here::here(paste0(out_dir, "/", expert, "-D1answer.txt"))
   cat(expert, "'s answers to Day 1 prior elicitation questions were: \n", file = outputfile, append=FALSE)
   cat(q1, file = outputfile, sep="\n", append=TRUE)
   cat(q2, file = outputfile, sep="\n", append=TRUE)

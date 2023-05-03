@@ -79,6 +79,8 @@ shinyUI(pageWithSidebar(
 	                 numericInput(inputId = "mmf_succ", label = "Number of successes on MMF:", value=7, min = 0, step=1)
 	),
 	
+	# read in (hypothetical) trial data
+	# rows grouped
 	conditionalPanel(condition = "input.posterior40 == true | input.posterior20 == true",
 			checkboxInput(inputId = "postsum", 
 					label = strong("Summarise posterior distributions for a variety of data scenarios"),
