@@ -1,4 +1,4 @@
-library(TrialExpertElicitation)
+# require(TrialExpertElicitation)
 
 shinyServer(function(input, output){
   
@@ -16,7 +16,8 @@ shinyServer(function(input, output){
   ## computed from this expression
   priorParam <- reactive({
     ## prior returns a vector containing the summaries of the posterior distributions of pC, pE and theta
-    TrialExpertElicitation::priorcall(input$pc_q1, input$pc_q2, input$theta_q1, input$theta_q2, input$expert)	
+    priorcall(input$pc_q1, input$pc_q2, input$theta_q1, input$theta_q2, input$expert)	
+    # TrialExpertElicitation::priorcall(input$pc_q1, input$pc_q2, input$theta_q1, input$theta_q2, input$expert)	
   })
   
   postParam <- reactive({
@@ -44,7 +45,7 @@ shinyServer(function(input, output){
   pC_priorDens <- reactive({
     ## Return the data to plot the prior and posterior densities of theta.
     z = priorParam()
-    x = vector(mode="numeric", length =20)
+    x = vector(mode="numeric", length = 20)
     distPlot(0,0,0,0, x, z, as.character("pC"), TRUE)
   })
   

@@ -11,7 +11,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3.9000
 Imports: 
     pkgload,
-    shiny
+    shiny,
 Depends: R (>= 3.5.0)
-Remotes:
-  remotes::install_github("n8thangreen/TrialExpertElicitation")
