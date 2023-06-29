@@ -64,7 +64,7 @@ priorcall <- function(q1, q2, q3, q4, expert, out_dir = "plots"){
   y2 = distPlot(0,0,0,0, z, x, as.character("pE"), 1)
   y3 = distPlot(0,0,0,0, z, x, as.character("theta"), 1)
   
-  outputfile <- here::here(paste0(out_dir, "/", expert, "-priorplot.pdf"))
+  outputfile <- system.file(paste0(out_dir, "/", expert, "-priorplot.pdf"), package = "TrialExpertElicitation", mustWork = TRUE)
   
   title1 <- paste0(expert, "'s prior density of CYC remission rate")
   title2 <- paste0(expert, "'s prior density of MMF remission rate")
@@ -83,7 +83,8 @@ priorcall <- function(q1, q2, q3, q4, expert, out_dir = "plots"){
   dev.off()
   
   ## Write answers to elicitation questions to file 
-  outputfile <- here::here(paste0(out_dir, "/", expert, "-D1answer.txt"))
+  outputfile <- system.file(paste0(out_dir, "/", expert, "-D1answer.txt"), package = "TrialExpertElicitation", mustWork = TRUE)
+  
   cat(expert, "'s answers to Day 1 prior elicitation questions were: \n", file = outputfile, append=FALSE)
   cat(q1, file = outputfile, sep="\n", append=TRUE)
   cat(q2, file = outputfile, sep="\n", append=TRUE)

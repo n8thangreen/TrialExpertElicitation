@@ -1,0 +1,13 @@
+name: TrialExpertElicitationTool
+title: TrialExpertElicitationTool
+username:
+account: n8thangreen
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9383234
+bundleId: 7401482
+url: https://n8thangreen.shinyapps.io/TrialExpertElicitationTool/
+when: 1688036930.13668
+lastSyncTime: 1688036930.13669
+asMultiple: FALSE
+asStatic: FALSE

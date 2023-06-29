@@ -2,9 +2,9 @@
 % Please edit documentation in R/run_analysis.R
 \name{priorcall}
 \alias{priorcall}
-\title{Title}
+\title{priorcall}
 \usage{
-priorcall(q1, q2, q3, q4, expert)
+priorcall(q1, q2, q3, q4, expert, out_dir = "plots")
 }
 \arguments{
 \item{q1}{}
@@ -18,5 +18,5 @@ priorcall(q1, q2, q3, q4, expert)
 \item{expert}{}
 }
 \description{
-Title
+priorcall
 }

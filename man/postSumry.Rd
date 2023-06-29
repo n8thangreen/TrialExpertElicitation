@@ -17,7 +17,7 @@ postSumry(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40)
 
 \item{priorParm}{}
 
-\item{posterior40}{}
+\item{posterior40}{is posterior 40 selected? Logical}
 }
 \description{
 Summaries of posterior distributions given hypothetical dataset
