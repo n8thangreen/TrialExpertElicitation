@@ -1,59 +1,59 @@
 
-#' find the parameters of prior Beta distribution of pc~Beta(a,b)
+#' Find the parameters of prior Beta distribution of pc~Beta(a,b)
 #'
 #' @param mode prior mode of pc as identified by Day 1 elicitation Q1
-#' @param intvl 25th percentile of prior distribution for pC as identified by Day 1 elicitation Q2.
+#' @param interval 25th percentile of prior distribution for pC as identified by Day 1 elicitation Q2.
 #'
-#' @return vector with param[1] = a, param[2] = b (parameters of Beta prior distribution for pC).
+#' @return vector (a,b) (parameters of Beta prior distribution for pC).
 #' @export
 #'
-prior_beta <- function(mode, intvl){
+prior_beta <- function(mode, interval){
   browser()
-  
-  lim_low <- 0.001
-  lim_high <- 0.999
   
   check_interval_valid_for_a(mode, intvl)
   
-  z <- 
-    uniroot(
-      f = beta_calc, interval = c(0.5, 50), mode, intvl
-      # lower = 0.5, upper=50, f.lower=fval[1], f.upper=fval[2]   ##TODO: remove duplication?
-    )
+  z <- uniroot(f = beta_calc, interval = c(0.5, 50), mode, interval)
   
-  ## pc ~ Beta(a,b)
   a_root = z$root
   b_root = (a_root - 1)/mode - (a_root - 2) 
   
-  istop = pbeta(lim_high, a_root, b_root, lower.tail=TRUE) - pbeta(lim_low, a_root, b_root, lower.tail=TRUE)
+  check_accuracy_of_uniroot(a_root, b_root) 
   
-  if(istop < (lim_high - lim_low)){
-    stop("Error identifying CYC prior distribution: Stop because we cannot guarantee the accuracy of the numerical integration")
-  }
-  
-  param
+  c(a_root, b_root)
 }
 
 #
-check_interval_valid_for_a <- function(mode, intvl) {
-  # end-points of the interval to be searched for the root
-  fval = vector(mode = "numeric", length = 2)
-  fval[1] = beta_calc(a = 0.5, mode, intvl)
-  fval[2] = beta_calc(a = 50, mode, intvl)
+check_accuracy_of_uniroot <- function(a, b) {
+  # quantile limits
+  q_low <- 0.001
+  q_high <- 0.999
   
-  invalid_quantiles <- identical(sign(fval[1]), sign(fval[2]))
+  diff_pbeta <- pbeta(q_high, a, b, lower.tail = TRUE) - pbeta(q_low, a, b, lower.tail = TRUE)
+  
+  if (diff_pbeta < (q_high - q_low)){
+    stop("Error identifying CYC prior distribution: Stop because we cannot guarantee the accuracy of the numerical integration")
+  }
+}
+
+#
+check_interval_valid_for_a <- function(mode, interval) {
+  # end-points of the interval to be searched for the root
+  q0.5 <- beta_calc(a = 0.5, mode, interval)
+  q50 <- beta_calc(a = 50, mode, interval)
+  
+  invalid_quantiles <- identical(sign(q0.5), sign(q50))
   
   if (invalid_quantiles) {
-    cat("Given answers to elicitation questions Q1 and Q2, we cannot determine a Beta prior distribution for CYC/steroid remission rate. \n")
-    cat("Please revise either the answer to elicitation Q1 or Q2. \n")
-    stop("Error in answers to elication questions Q1 and Q2: cannot determine Beta prior distribution for CYC/steroid remission rate.")
+    stop("\nGiven answers to elicitation questions Q1 and Q2, we cannot determine a Beta prior distribution for CYC/steroid remission rate. \n",
+         "Please revise either the answer to elicitation Q1 or Q2. \n",
+         "Error in answers to elication questions Q1 and Q2: cannot determine Beta prior distribution for CYC/steroid remission rate.")
   }
 }
 
 # shifted 25% quantile
-beta_calc <- function(a, mode, intvl){
-  b = (a - 1)/mode - (a-2)
-  qbeta(0.25, shape1 = a, shape2 = b, lower.tail = TRUE) - intvl
+beta_calc <- function(a, mode, interval){
+  b <- (a - 1)/mode - (a - 2)
+  qbeta(0.25, shape1 = a, shape2 = b, lower.tail = TRUE) - interval
 }
 
 
