@@ -8,39 +8,52 @@
 #' @export
 #'
 prior_beta <- function(mode, intvl){
+  browser()
   
-  beta_calc <- function(a, mode, intvl){
-    b = ((a - 1)/mode) - (a-2)
-    x = qbeta(0.25, shape1 = a, shape2 = b, lower.tail=TRUE) - intvl
-    return(x)
-  }
+  lim_low <- 0.001
+  lim_high <- 0.999
   
-  lim1 = as.double(0.001)
-  lim2 = as.double(0.999)
+  check_interval_valid_for_a(mode, intvl)
   
-  fval = vector(mode="numeric", length=2)
-  fval[1] = beta_calc(a = 0.5, mode, intvl)
-  fval[2] = beta_calc(a = 50, mode, intvl)
+  z <- 
+    uniroot(
+      f = beta_calc, interval = c(0.5, 50), mode, intvl
+      # lower = 0.5, upper=50, f.lower=fval[1], f.upper=fval[2]   ##TODO: remove duplication?
+    )
   
-  if(identical(sign(fval[1]), sign(fval[2]))){
-    cat("Given answers to elicitation questions Q1 and Q2, we cannot determine a Beta prior distribution for CYC/steroid remission rate. \n")
-    cat("Please revise either the answer to elicitation Q1 or Q2. \n")
-    stop("Error in answers to elication questions Q1 and Q2: cannot determine Beta prior distribution for CYC/steroid remission rate.")
-  }
+  ## pc ~ Beta(a,b)
+  a_root = z$root
+  b_root = (a_root - 1)/mode - (a_root - 2) 
   
-  z = uniroot(beta_calc, interval=c(0.5, 50), mode, intvl,
-              lower = 0.5, upper=50, f.lower=fval[1], f.upper=fval[2])
-  param = vector(mode="numeric", length=2)
-  ## pc ~ Beta(a,b) where param[1]=a, param[2]=b
-  param[1] = z$root
-  param[2] = ((param[1] - 1)/mode) - (param[1] - 2) 
+  istop = pbeta(lim_high, a_root, b_root, lower.tail=TRUE) - pbeta(lim_low, a_root, b_root, lower.tail=TRUE)
   
-  istop = pbeta(lim2, param[1], param[2], lower.tail=TRUE) - pbeta(lim1, param[1], param[2], lower.tail=TRUE)
-  if(istop < (lim2 - lim1)){
+  if(istop < (lim_high - lim_low)){
     stop("Error identifying CYC prior distribution: Stop because we cannot guarantee the accuracy of the numerical integration")
   }
   
   param
+}
+
+#
+check_interval_valid_for_a <- function(mode, intvl) {
+  # end-points of the interval to be searched for the root
+  fval = vector(mode = "numeric", length = 2)
+  fval[1] = beta_calc(a = 0.5, mode, intvl)
+  fval[2] = beta_calc(a = 50, mode, intvl)
+  
+  invalid_quantiles <- identical(sign(fval[1]), sign(fval[2]))
+  
+  if (invalid_quantiles) {
+    cat("Given answers to elicitation questions Q1 and Q2, we cannot determine a Beta prior distribution for CYC/steroid remission rate. \n")
+    cat("Please revise either the answer to elicitation Q1 or Q2. \n")
+    stop("Error in answers to elication questions Q1 and Q2: cannot determine Beta prior distribution for CYC/steroid remission rate.")
+  }
+}
+
+# shifted 25% quantile
+beta_calc <- function(a, mode, intvl){
+  b = (a - 1)/mode - (a-2)
+  qbeta(0.25, shape1 = a, shape2 = b, lower.tail = TRUE) - intvl
 }
 
 

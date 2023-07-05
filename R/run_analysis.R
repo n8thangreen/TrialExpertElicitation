@@ -30,7 +30,8 @@ priorcall <- function(q1, q2, q3, q4, expert, out_dir = "plots"){
   
   c2 = as.double(0.10) 	## non-inferiority margin cited in Day 1 elicitation question (iv)
   
-  ## Numerical searches to find the parameters of the prior distributions for pC and theta assuming our statistical model holds 
+  # Numerical searches to find the parameters of the prior distributions
+  # for pC and theta assuming our statistical model holds 
   bparam = prior_beta(q1, q2)
   tparam = prior_theta(q3, 1-q4, bparam[1], bparam[2], c2)
   
