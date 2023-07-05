@@ -2,20 +2,22 @@
 #' Find the parameters of prior Beta distribution of pc~Beta(a,b)
 #'
 #' @param mode prior mode of pc as identified by Day 1 elicitation Q1
-#' @param interval 25th percentile of prior distribution for pC as identified by Day 1 elicitation Q2.
+#' @param percentile25 25th percentile of prior distribution for pC as identified by Day 1 elicitation Q2.
 #'
 #' @return vector (a,b) (parameters of Beta prior distribution for pC).
 #' @export
 #'
-prior_beta <- function(mode, interval){
+prior_beta <- function(mode, percentile25){
   browser()
   
-  check_interval_valid_for_a(mode, intvl)
+  check_interval_valid_for_a(mode, percentile25)
   
-  z <- uniroot(f = beta_calc, interval = c(0.5, 50), mode, interval)
+  centred_beta_percentile <- function(a, mode) beta_percentile25(a, mode) - percentile25
   
-  a_root = z$root
-  b_root = (a_root - 1)/mode - (a_root - 2) 
+  z <- uniroot(f = centred_beta_percentile, interval = c(0.5, 50), mode)
+  
+  a_root <- z$root
+  b_root <- (a_root - 1)/mode - (a_root - 2) 
   
   check_accuracy_of_uniroot(a_root, b_root) 
   
@@ -36,28 +38,28 @@ check_accuracy_of_uniroot <- function(a, b) {
 }
 
 #
-check_interval_valid_for_a <- function(mode, interval) {
+check_interval_valid_for_a <- function(mode, percentile25) {
   # end-points of the interval to be searched for the root
-  q0.5 <- beta_calc(a = 0.5, mode, interval)
-  q50 <- beta_calc(a = 50, mode, interval)
+  q0.5 <- beta_percentile25(a = 0.5, mode) - percentile25
+  q50 <- beta_percentile25(a = 50, mode) - percentile25
   
-  invalid_quantiles <- identical(sign(q0.5), sign(q50))
+  no_root_in_range <- identical(sign(q0.5), sign(q50))
   
-  if (invalid_quantiles) {
-    stop("\nGiven answers to elicitation questions Q1 and Q2, we cannot determine a Beta prior distribution for CYC/steroid remission rate. \n",
-         "Please revise either the answer to elicitation Q1 or Q2. \n",
+  if (no_root_in_range) {
+    stop("\nGiven answers to elicitation questions Q1 and Q2, we cannot determine a Beta prior distribution for CYC/steroid remission rate.\n",
+         "Please revise either the answer to elicitation Q1 or Q2.\n",
          "Error in answers to elication questions Q1 and Q2: cannot determine Beta prior distribution for CYC/steroid remission rate.")
   }
 }
 
-# shifted 25% quantile
-beta_calc <- function(a, mode, interval){
+#
+beta_percentile25 <- function(a, mode){
   b <- (a - 1)/mode - (a - 2)
-  qbeta(0.25, shape1 = a, shape2 = b, lower.tail = TRUE) - interval
+  qbeta(0.25, shape1 = a, shape2 = b, lower.tail = TRUE) 
 }
 
 
-#' identify parameters of a prior normal distribution for theta~N(mu, sigma2)
+#' Identify parameters of a prior normal distribution for theta~N(mu, sigma2)
 #'
 #' @param pi1 P(pE > pC) as identified by Day 1 Elicitation Q3
 #' @param gamma P(pE - pC > -c2) as identified by 1 - Q4
