@@ -15,8 +15,18 @@ shinyServer(function(input, output){
   ## whenever the inputs change. The renderers defined below then all use the value 
   ## computed from this expression
   priorParam <- reactive({
+    no_root_in_range <- !check_interval_valid_for_a(input$pc_q1, input$pc_q2)
+    
+    if (no_root_in_range) {
+      q1 <- 0.7
+      q2 <- 0.5
+    } else {
+      q1 <- input$pc_q1
+      q2 <- input$pc_q2
+    }
+    
     ## prior returns a vector containing the summaries of the posterior distributions of pC, pE and theta
-    priorcall(input$pc_q1, input$pc_q2, input$theta_q1, input$theta_q2, input$expert)	
+    priorcall(q1, q2, input$theta_q1, input$theta_q2, input$expert)	
     # TrialExpertElicitation::priorcall(input$pc_q1, input$pc_q2, input$theta_q1, input$theta_q2, input$expert)	
   })
   
@@ -35,7 +45,7 @@ shinyServer(function(input, output){
       scen2 = postSumry(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], priorParam(), posterior40())
       scen3 = postSumry(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], priorParam(), posterior40())
       
-      return(data.frame(scen1, scen2, scen3))	
+      return(data.frame(scen1, scen2, scen3))
     }else{
       NULL
     }

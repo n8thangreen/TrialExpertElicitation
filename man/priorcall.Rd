@@ -4,7 +4,7 @@
 \alias{priorcall}
 \title{priorcall}
 \usage{
-priorcall(q1, q2, q3, q4, expert, out_dir = "plots")
+priorcall(q1, q2, q3, q4, expert = "", out_dir = "plots")
 }
 \arguments{
 \item{q1}{}

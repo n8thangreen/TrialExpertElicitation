@@ -2,18 +2,18 @@
 % Please edit documentation in R/prior_funcs.R
 \name{prior_beta}
 \alias{prior_beta}
-\title{find the parameters of prior Beta distribution of pc~Beta(a,b)}
+\title{Find the parameters of prior Beta distribution of pc~Beta(a,b)}
 \usage{
-prior_beta(mode, intvl)
+prior_beta(mode, percentile25)
 }
 \arguments{
 \item{mode}{prior mode of pc as identified by Day 1 elicitation Q1}
 
-\item{intvl}{25th percentile of prior distribution for pC as identified by Day 1 elicitation Q2.}
+\item{percentile25}{25th percentile of prior distribution for pC as identified by Day 1 elicitation Q2.}
 }
 \value{
-vector with param\link{1} = a, param\link{2} = b (parameters of Beta prior distribution for pC).
+vector (a,b) (parameters of Beta prior distribution for pC).
 }
 \description{
-find the parameters of prior Beta distribution of pc~Beta(a,b)
+Find the parameters of prior Beta distribution of pc~Beta(a,b)
 }

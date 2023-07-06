@@ -7,12 +7,20 @@
 #' @return vector (a,b) (parameters of Beta prior distribution for pC).
 #' @export
 #'
-prior_beta <- function(mode, percentile25){
-  browser()
+prior_beta <- function(mode, percentile25) {
   
-  check_interval_valid_for_a(mode, percentile25)
+  no_root_in_range <- !check_interval_valid_for_a(mode, percentile25)
   
-  centred_beta_percentile <- function(a, mode) beta_percentile25(a, mode) - percentile25
+  if (no_root_in_range) {
+    stop("\nGiven answers to elicitation questions Q1 and Q2, ",
+         "we cannot determine a Beta prior distribution for CYC/steroid remission rate.\n",
+         "Please revise either the answer to elicitation Q1 or Q2.\n",
+         "Error in answers to elication questions Q1 and Q2: ",
+         "cannot determine Beta prior distribution for CYC/steroid remission rate.")
+  }
+  
+  centred_beta_percentile <-
+    function(a, mode) beta_percentile25(a, mode) - percentile25
   
   z <- uniroot(f = centred_beta_percentile, interval = c(0.5, 50), mode)
   
@@ -30,10 +38,12 @@ check_accuracy_of_uniroot <- function(a, b) {
   q_low <- 0.001
   q_high <- 0.999
   
-  diff_pbeta <- pbeta(q_high, a, b, lower.tail = TRUE) - pbeta(q_low, a, b, lower.tail = TRUE)
+  diff_pbeta <-
+    pbeta(q_high, a, b, lower.tail = TRUE) - pbeta(q_low, a, b, lower.tail = TRUE)
   
   if (diff_pbeta < (q_high - q_low)){
-    stop("Error identifying CYC prior distribution: Stop because we cannot guarantee the accuracy of the numerical integration")
+    stop("Error identifying CYC prior distribution: ",
+         "Stop because we cannot guarantee the accuracy of the numerical integration")
   }
 }
 
@@ -43,17 +53,11 @@ check_interval_valid_for_a <- function(mode, percentile25) {
   q0.5 <- beta_percentile25(a = 0.5, mode) - percentile25
   q50 <- beta_percentile25(a = 50, mode) - percentile25
   
-  no_root_in_range <- identical(sign(q0.5), sign(q50))
-  
-  if (no_root_in_range) {
-    stop("\nGiven answers to elicitation questions Q1 and Q2, we cannot determine a Beta prior distribution for CYC/steroid remission rate.\n",
-         "Please revise either the answer to elicitation Q1 or Q2.\n",
-         "Error in answers to elication questions Q1 and Q2: cannot determine Beta prior distribution for CYC/steroid remission rate.")
-  }
+  !identical(sign(q0.5), sign(q50))
 }
 
 #
-beta_percentile25 <- function(a, mode){
+beta_percentile25 <- function(a, mode) {
   b <- (a - 1)/mode - (a - 2)
   qbeta(0.25, shape1 = a, shape2 = b, lower.tail = TRUE) 
 }
