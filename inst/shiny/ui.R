@@ -97,7 +97,12 @@ shinyUI(pageWithSidebar(
 			tabPanel(title = "Density: MMF Remission Rate", plotOutput(outputId = "pe_density", height="700px")),
 			tabPanel(title = "Density: CYC & MMF Remission", plotOutput(outputId = "pepc_density", height="700px")),
 			tabPanel(title = "Density: Log-odds Ratio", plotOutput(outputId = "theta_density", height="700px")),
-			tabPanel(title = "Summary", verbatimTextOutput(outputId = "summary"))
+			tabPanel(title = "Summary", htmlOutput("summary"),
+			         tags$head(tags$style("#summary{color: black;
+                                 font-size: 20px;
+                                 }")
+			         )
+			)
 		)
 	)	
 ))
