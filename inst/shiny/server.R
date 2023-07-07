@@ -386,65 +386,56 @@ shinyServer(function(input, output){
       ns <- as.numeric(input$hypo_data_size)
       
       summary_text <- paste(
-        "Posterior distributions update the priors implied by the opinions: Q1 = ",
-        input$pc_q1, ", Q2 = ", input$pc_q2, ", Q3 = ", input$theta_q1, ", Q4 = ", input$theta_q2, "\n",
-        "\n", "Posterior distributions incorporate the following data: \n")
-      # cat(input$n_cyc, "patients randomised to CYC of whom ", input$cyc_succ, "were in remission within six months \n")
-      # cat(ns - input$n_cyc, "patients randomised to MMF of whom ", input$mmf_succ, "were in remission within six months \n")
-      # cat("\n")
-      # cat("\n")
-      # cat("Summary of the posterior distribution of the 6-month remission rate on CYC/steroids: \n")
-      # cat("\n")
-      # cat("90% credibility interval for CYC remission rate is (", round(x[4], 2), ",", round(x[5], 2), ") \n") 
-      # cat("Your distribution has mode ", round(x[2], 2), " and mean ", round(x[1], 2), "and standard deviation ", round(x[3], 2))	
-      # cat("\n")
-      # cat("\n")
-      # cat("Summary of the posterior distribution of the 6-month remission rate on MMF/steroids: \n")
-      # cat("\n")
-      # cat("90% credibility interval for MMF remission rate is (", round(x[9], 2), ",", round(x[10], 2), ") \n")
-      # cat("Your distribution has mode ", round(x[7], 2), " and mean ", round(x[6], 2), "and standard deviation", round(x[8], 2), "\n")
-      # cat("\n")
-      # cat("\n")
-      # cat("Summary of the posterior distribution of the log-odds ratio: \n")
-      # cat("\n")
-      # cat("90% credibility interval for the log-odds ratio is (", round(x[14], 2), ",", round(x[15], 2), ") \n") 
-      # cat("Your distribution for the log-odds ratio has mode ", round(x[12], 2), " and mean ", round(x[11], 2), "and standard deviation ", round(x[13], 2), "\n")			
-      # cat("\n")
-      # cat("\n")
-      # cat("Posterior probability that the 6-month remission rate on MMF exceeds that on CYC is ", round(x[16], 2), "\n")
-      # cat("Posterior probability that the 6-month remission rate on MMF is at worst 10% less than that on CYC is", round(x[17], 2), "\n")
-      # cat("Posterior probability that the 6-month remission rate on CYC exceeds that on MMF by more than 10% is ", round(1 - x[17], 2), "\n")
+        glue::glue("Posterior distributions update the priors implied by the opinions:<br/> Q1 = {input$pc_q1}, Q2 = {input$pc_q2}, Q3 = {input$theta_q1}, Q4 = {input$theta_q2}."),
+         glue::glue("<br/><br/>Posterior distributions incorporate the following data:"),
+      glue::glue("<ul><li>{input$n_cyc} patients randomised to CYC of whom {input$cyc_succ} were in remission within six months</li>"),
+      glue::glue("<li>{ns - input$n_cyc} patients randomised to MMF of whom {input$mmf_succ} were in remission within six months</li></ul>"),
+      glue::glue("<br/><br/>Summary of the posterior distribution of the 6-month remission rate on CYC/steroids:"),
+      glue::glue("<ul><li>90% credibility interval for CYC remission rate is ({round(x[4], 2)}, {round(x[5], 2)})</li>"),
+      glue::glue("<li>Your distribution has mode {round(x[2], 2)} and mean {round(x[1], 2)} and standard deviation {round(x[3], 2)}</li></ul>"),
+      glue::glue("<br/><br/>Summary of the posterior distribution of the 6-month remission rate on MMF/steroids:"),
+      glue::glue("<ul><li>90% credibility interval for MMF remission rate is ({round(x[9], 2)}, {round(x[10], 2)})</li>"),
+      glue::glue("<li>Your distribution has mode {round(x[7], 2)} and mean {round(x[6], 2)} and standard deviation {round(x[8], 2)}</li></ul>"),
+      glue::glue("<br/><br/>Summary of the posterior distribution of the log-odds ratio:"),
+      glue::glue("<ul><li>90% credibility interval for the log-odds ratio is ({round(x[14], 2)}, {round(x[15], 2)})</li>"),
+      glue::glue("<li>Your distribution for the log-odds ratio has mode {round(x[12], 2)} and mean {round(x[11], 2)} and standard deviation {round(x[13], 2)}</li>"),
+      glue::glue("<li>Posterior probability that the 6-month remission rate on MMF exceeds that on CYC is {round(x[16], 2)}</li>"),
+      glue::glue("<li>Posterior probability that the 6-month remission rate on MMF is at worst 10% less than that on CYC is {round(x[17], 2)}</li>"),
+      glue::glue("<li>Posterior probability that the 6-month remission rate on CYC exceeds that on MMF by more than 10% is {round(1 - x[17], 2)}</li></ul>"),
+      sep = '')
       
       HTML(summary_text)
     }else{
       x <- priorParam()
       
+      pcquantile0_05 = qbeta(0.05, shape1 = x[1], shape2 = x[2], lower.tail=TRUE)
+      pcquantile0_95 = qbeta(0.95, shape1 = x[1], shape2 = x[2], lower.tail=TRUE)
+      pc_mode = (x[1] - 1)/(x[1] + x[2] - 2)
+      pc_mean = x[1]/(x[1] + x[2])
+      pc_var = (x[1]*x[2])/(((x[1] + x[2])^2)*(x[1] + x[2] + 1))
+      
+      tquantile0_05 = qnorm(0.05, mean=x[9], sd = sqrt(x[10]), lower.tail=TRUE)
+      tquantile0_95 = qnorm(0.95, mean=x[9], sd = sqrt(x[10]), lower.tail=TRUE)
+      
       summary_text <- paste(
         glue::glue("Prior distributions are determined by the opinions: <br/> Q1 = {input$pc_q1} <br/> Q2 = {input$pc_q2} <br/> Q3 = {input$theta_q1} <br/> Q4 = {input$theta_q2}"),
-        "<br/>Summary of the prior distribution of the 6-month remission rate on CYC/steroids:",
-        glue::glue("pcquantile0_05 = {round(qbeta(0.05, shape1 = x[1], shape2 = x[2], lower.tail=TRUE),3)}"),
-        glue::glue("pcquantile0_95 = {round(qbeta(0.95, shape1 = x[1], shape2 = x[2], lower.tail=TRUE),3)}"),
-        glue::glue("pc_mode = {round((x[1] - 1)/(x[1] + x[2] -2),3)}"),
-        glue::glue("pc_mean = {round(x[1]/(x[1] + x[2]),3)}"),
-        glue::glue("pc_var = {round((x[1]*x[2])/(((x[1] + x[2])^2)*(x[1] + x[2] +1)),3)}"),
-        glue::glue("tquantile0_05 = {round(qnorm(0.05, mean=x[9], sd = sqrt(x[10]), lower.tail=TRUE),3)}"),
-        glue::glue("tquantile0_95 = {round(qnorm(0.95, mean=x[9], sd = sqrt(x[10]), lower.tail=TRUE),3)}"),  sep = '<br/>')
-      
-      # cat("90% credibility interval for CYC remission rate is (", round(pcquantile0_05, 2), " , ", round(pcquantile0_95, 2), ") \n")
-      # cat("Your distribution is Beta with parameters ", round(x[1], 2), " and ", round(x[2], 2), "\n")
-      # cat("with mode ", round(pc_mode, 3), " and mean ",round(pc_mean, 2), "and standard deviation ", round(sqrt(pc_var), 2), "\n")		
-      # cat("This information is equivalent to ", round(x[3], 0), "observations on CYC. \n")
-      # cat("Summary of the prior distribution of MMF/steroid 6-month remission rate: \n")
-      # cat("90% credibility interval for MMF remission rate is (", round(x[7], 2), ",", round(x[8], 2), ") \n")
-      # cat("Your distribution has mode ", round(x[5], 2), " and mean ", round(x[4], 2), " and standard deviation ", round(x[6], 2), "\n")
-      # cat("Proportion which we are 75% confident the true 6-month remission rate on MMF exceeds is ", round(x[14], 2), "\n")
-      # cat("Summary of the prior distribution of log-odds ratio : \n")
-      # cat("90% credibility interval for log-odds ratio is (", round(tquantile0_05, 2), ",", round(tquantile0_95, 2), ") \n")
-      # cat("Your distribution is Gaussian with mode ", round(x[9], 2), " and mean", round(x[9], 2), " and standard deviation ", round(sqrt(x[10]), 2), "\n")
-      # cat("This information is equivalent to what would be generated by a RCT comparing CYC with MMF recruiting ", round(0.5*x[13], 0), "patients per treatment arm \n")
-      # cat("Prior probability that the 6-month remission rate on MMF exceeds that on CYC is ", round(x[11], 2),  "\n")
-      # cat("Prior probability that the 6-month remission rate on MMF is at worst 10% less than that on CYC is", round(1 - x[12], 2), "\n")
-      # cat("Prior probability that the 6-month remission rate on CYC exceeds that on MMF by more than 10% is ", round(x[12], 2), "\n")
+        "<br/><br/>Summary of the prior distribution of the 6-month remission rate on CYC/steroids:",
+        glue::glue("<ul><li>90% credibility interval for CYC remission rate is ({round(pcquantile0_05, 2)}, {round(pcquantile0_95, 2)})"),
+        glue::glue("<li>Your distribution is Beta with parameters {round(x[1], 2)} and {round(x[2], 2)}</li>"),
+        glue::glue("<li>with mode {round(pc_mode, 3)} and mean {round(pc_mean, 2)} and standard deviation {round(sqrt(pc_var), 2)}</li>"),
+        glue::glue("<li>This information is equivalent to {round(x[3], 0)} observations on CYC</li></ul>"),
+        "<br/><br/>Summary of the prior distribution of MMF/steroid 6-month remission rate:",
+        glue::glue("<ul><li>90% credibility interval for MMF remission rate is ({round(x[7], 2)}, {round(x[8], 2)})</li>"),
+        glue::glue("<li>Your distribution has mode {round(x[5], 2)} and mean {round(x[4], 2)} and standard deviation {round(x[6], 2)}</li>"),
+        glue::glue("<li>Proportion which we are 75% confident the true 6-month remission rate on MMF exceeds is {round(x[14], 2)}</li></ul>"),
+        "<br/><br/>Summary of the prior distribution of log-odds ratio:",
+        glue::glue("<ul><li>90% credibility interval for log-odds ratio is ({round(tquantile0_05, 2)}, {round(tquantile0_95, 2)})</li>"),
+        glue::glue("<li>Your distribution is Gaussian with mode {round(x[9], 2)} and mean {round(x[9], 2)} and standard deviation {round(sqrt(x[10]), 2)}</li>"),
+        glue::glue("<li>This information is equivalent to what would be generated by a RCT comparing CYC with MMF recruiting {round(0.5*x[13], 0)} patients per treatment arm</li>"),
+        glue::glue("<li>Prior probability that the 6-month remission rate on MMF exceeds that on CYC is {round(x[11], 2)}</li>"),
+        glue::glue("<li>Prior probability that the 6-month remission rate on MMF is at worst 10% less than that on CYC is {round(1 - x[12], 2)}</li>"),
+        glue::glue("<li>Prior probability that the 6-month remission rate on CYC exceeds that on MMF by more than 10% is {round(x[12], 2)}</li></ul>"),
+        sep = '')
       
       HTML(summary_text)
     }		

@@ -99,7 +99,7 @@ shinyUI(pageWithSidebar(
 			tabPanel(title = "Density: Log-odds Ratio", plotOutput(outputId = "theta_density", height="700px")),
 			tabPanel(title = "Summary", htmlOutput("summary"),
 			         tags$head(tags$style("#summary{color: black;
-                                 font-size: 20px;
+                                 font-size: 15px;
                                  }")
 			         )
 			)
