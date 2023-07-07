@@ -1,50 +1,74 @@
 
-#' find the parameters of prior Beta distribution of pc~Beta(a,b)
+#' Find the parameters of prior Beta distribution of pc~Beta(a,b)
 #'
 #' @param mode prior mode of pc as identified by Day 1 elicitation Q1
-#' @param intvl 25th percentile of prior distribution for pC as identified by Day 1 elicitation Q2.
+#' @param percentile25 25th percentile of prior distribution for pC as identified by Day 1 elicitation Q2.
 #'
-#' @return vector with param[1] = a, param[2] = b (parameters of Beta prior distribution for pC).
+#' @return vector (a,b) (parameters of Beta prior distribution for pC).
 #' @export
 #'
-prior_beta <- function(mode, intvl){
+prior_beta <- function(mode, percentile25) {
   
-  beta_calc <- function(a, mode, intvl){
-    b = ((a - 1)/mode) - (a-2)
-    x = qbeta(0.25, shape1 = a, shape2 = b, lower.tail=TRUE) - intvl
-    return(x)
+  no_root_in_range <- !check_interval_valid_for_a(mode, percentile25)
+  
+  if (no_root_in_range) {
+    stop("\nGiven answers to elicitation questions Q1 and Q2, ",
+         "we cannot determine a Beta prior distribution for CYC/steroid remission rate.\n",
+         "Please revise either the answer to elicitation Q1 or Q2.\n",
+         "Error in answers to elication questions Q1 and Q2: ",
+         "cannot determine Beta prior distribution for CYC/steroid remission rate.")
   }
   
-  lim1 = as.double(0.001)
-  lim2 = as.double(0.999)
+  centred_beta_percentile <-
+    function(a, mode) beta_percentile25(a, mode) - percentile25
   
-  fval = vector(mode="numeric", length=2)
-  fval[1] = beta_calc(a = 0.5, mode, intvl)
-  fval[2] = beta_calc(a = 50, mode, intvl)
+  z <- uniroot(f = centred_beta_percentile, interval = c(0.5, 50), mode)
   
-  if(identical(sign(fval[1]), sign(fval[2]))){
-    cat("Given answers to elicitation questions Q1 and Q2, we cannot determine a Beta prior distribution for CYC/steroid remission rate. \n")
-    cat("Please revise either the answer to elicitation Q1 or Q2. \n")
-    stop("Error in answers to elication questions Q1 and Q2: cannot determine Beta prior distribution for CYC/steroid remission rate.")
+  a_root <- z$root
+  b_root <- (a_root - 1)/mode - (a_root - 2) 
+  
+  check_accuracy_of_uniroot(a_root, b_root) 
+  
+  c(a_root, b_root)
+}
+
+#
+check_accuracy_of_uniroot <- function(a, b) {
+  # quantile limits
+  q_low <- 0.001
+  q_high <- 0.999
+  
+  diff_pbeta <-
+    pbeta(q_high, a, b, lower.tail = TRUE) - pbeta(q_low, a, b, lower.tail = TRUE)
+  
+  if (diff_pbeta < (q_high - q_low)){
+    stop("Error identifying CYC prior distribution: ",
+         "Stop because we cannot guarantee the accuracy of the numerical integration")
+  }
+}
+
+#
+check_interval_valid_for_a <- function(mode, percentile25) {
+  # end-points of the interval to be searched for the root
+  q0.5 <- beta_percentile25(a = 0.5, mode) - percentile25
+  q50 <- beta_percentile25(a = 50, mode) - percentile25
+  
+  !identical(sign(q0.5), sign(q50))
+}
+
+#
+beta_percentile25 <- function(a, mode) {
+  b <- (a - 1)/mode - (a - 2)
+  
+  if (b <= 0) {
+    stop("Beta disribution b parameter is less than zero. Try different a or mode.")
   }
   
-  z = uniroot(beta_calc, interval=c(0.5, 50), mode, intvl,
-              lower = 0.5, upper=50, f.lower=fval[1], f.upper=fval[2])
-  param = vector(mode="numeric", length=2)
-  ## pc ~ Beta(a,b) where param[1]=a, param[2]=b
-  param[1] = z$root
-  param[2] = ((param[1] - 1)/mode) - (param[1] - 2) 
-  
-  istop = pbeta(lim2, param[1], param[2], lower.tail=TRUE) - pbeta(lim1, param[1], param[2], lower.tail=TRUE)
-  if(istop < (lim2 - lim1)){
-    stop("Error identifying CYC prior distribution: Stop because we cannot guarantee the accuracy of the numerical integration")
-  }
-  
-  param
+  qbeta(0.25, shape1 = a, shape2 = b, lower.tail = TRUE) 
 }
 
 
-#' identify parameters of a prior normal distribution for theta~N(mu, sigma2)
+#' Identify parameters of a prior normal distribution for theta~N(mu, sigma2)
 #'
 #' @param pi1 P(pE > pC) as identified by Day 1 Elicitation Q3
 #' @param gamma P(pE - pC > -c2) as identified by 1 - Q4

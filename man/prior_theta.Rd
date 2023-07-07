@@ -2,7 +2,7 @@
 % Please edit documentation in R/prior_funcs.R
 \name{prior_theta}
 \alias{prior_theta}
-\title{identify parameters of a prior normal distribution for theta~N(mu, sigma2)}
+\title{Identify parameters of a prior normal distribution for theta~N(mu, sigma2)}
 \usage{
 prior_theta(pi1, gamma, a, b, c2)
 }
@@ -19,5 +19,5 @@ prior_theta(pi1, gamma, a, b, c2)
 vector with param\link{1} = mu (prior mean of theta), param\link{2} = sigma2 (prior variance of theta).
 }
 \description{
-identify parameters of a prior normal distribution for theta~N(mu, sigma2)
+Identify parameters of a prior normal distribution for theta~N(mu, sigma2)
 }
