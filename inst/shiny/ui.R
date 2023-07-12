@@ -13,31 +13,36 @@ shinyUI(pageWithSidebar(
 		br(),
 						
 		sliderInput(inputId = "pc_q1",
-				label = "Q1: What do you think the 6-month remission rate for children with PAN treated with control arm in combination with steroids is? ",
+				label = "Q1: What do you think the 12-month response rate (clinically inactive disease off steroids) will be for the methotrexate group?",
 				min = 0, max = 1, value = 0.7, step=0.05),
 		br(),
 		br(),		
 		sliderInput(inputId = "pc_q2",
-				label = "Q2: Provide a proportion such that you are 75% sure that the true 6-month remission rate on control arm/steroids exceeds this value",
+				label = "Q2: What is the 12-month response rate (clinically inactive disease off steroids) for the methotrexate group that you are at least 75% sure that will be achieved?",
 				min = 0, max=1, value = 0.5, step=0.05),
 		br(),
 		br(),
 		br(),
 		br(),
 		
-		helpText("Because of the unpleasant side-effects of control arm, Experimental might be considered the preferable treatment even if it is associated with a somewhat lower 6-month remission rate: "),
+		helpText("Based on the case reports we have presented, we hypothesise that baricitinib is superior to methotrexate for the treatment of JDM."),
 		
 		br(),
 		br(),
 		sliderInput(inputId = "theta_q1",
-				label = "Q3: What is the chance that the 6-month remission rate on Experimental/steroids is higher than that on control arm/steroids?",
-				min = 0, max=1, value = 0.3, step=0.05),
+				label = "Q3: What is the chance that the response rate in the baricitinib arm is higher than that in methotrexate group?",
+				min = 0, max = 1, value = 0.3, step=0.05),
 		br(),
 		br(),
 
 		sliderInput(inputId = "theta_q2",
-				label = "Q4: What is the chance that the 6-month remission rate on control arm/steroids exceeds that on Experimental/steroids by more than 10%?",
-				min = 0, max=1, value = 0.3, step=0.05),
+		            ##TODO: what is the %?
+				label = "Q4: What is the chance that the response rate on baricitinib exceeds that on methotrexate by more than %?",
+				# label = "Q4: What is the improvement you will be 75% confident it will achieved?",
+				# this is the AUC on the left
+				# should we use the point value instead?
+				# how to modify the code?
+				min = 0, max = 1, value = 0.3, step=0.05),
 		br(),
 		br(),	
 
@@ -93,9 +98,9 @@ shinyUI(pageWithSidebar(
 	
 	mainPanel(
 		tabsetPanel(
-			tabPanel(title = "Density: CYC Remission Rate", plotOutput(outputId = "pc_density", height="700px")),
-			tabPanel(title = "Density: MMF Remission Rate", plotOutput(outputId = "pe_density", height="700px")),
-			tabPanel(title = "Density: CYC & MMF Remission", plotOutput(outputId = "pepc_density", height="700px")),
+			tabPanel(title = "Density: Control Arm Remission Rate", plotOutput(outputId = "pc_density", height="700px")),
+			tabPanel(title = "Density: Experimental Arm Remission Rate", plotOutput(outputId = "pe_density", height="700px")),
+			tabPanel(title = "Density: Control Arm & Experimental Arm Remission", plotOutput(outputId = "pepc_density", height="700px")),
 			tabPanel(title = "Density: Log-odds Ratio", plotOutput(outputId = "theta_density", height="700px")),
 			tabPanel(title = "Summary", htmlOutput("summary"),
 			         tags$head(tags$style("#summary{color: black;
