@@ -41,7 +41,7 @@ post_pc <- function(a,b, mu, sigma2, sc, fc, se, fe){
   gride = append(gride, c(midp2, 0.99999))
   le = length(gride)
   if(floor(le/2.0) == (le/2.0)){
-    stop("Mistake calculating mesh for CYC remission rate in post_pc.R: mesh contains even number of elements when odd number are expected.")
+    stop("Mistake calculating mesh for control arm remission rate in post_pc.R: mesh contains even number of elements when odd number are expected.")
   }
   we  = vector(mode="numeric", length=le)
   we[1] = (gride[3]-gride[1])/6.0
@@ -87,7 +87,7 @@ post_pc <- function(a,b, mu, sigma2, sc, fc, se, fe){
   }
   istop = sum(wc1*int1)
   if(istop < (lim2-lim1)){
-    stop("Error calculating posterior distribution of CYC remission rate: Cannot guarantee accuracy of numerical integration routines when integrating U shaped function")
+    stop("Error calculating posterior distribution of control arm remission rate: Cannot guarantee accuracy of numerical integration routines when integrating U shaped function")
   }else{
     ## calculate the posterior mean and variance of pc
     expect = sum(wc*gridc*int)

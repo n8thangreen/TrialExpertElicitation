@@ -13,10 +13,10 @@ prior_beta <- function(mode, percentile25) {
   
   if (no_root_in_range) {
     stop("\nGiven answers to elicitation questions Q1 and Q2, ",
-         "we cannot determine a Beta prior distribution for CYC/steroid remission rate.\n",
+         "we cannot determine a Beta prior distribution for control arm/steroid remission rate.\n",
          "Please revise either the answer to elicitation Q1 or Q2.\n",
          "Error in answers to elication questions Q1 and Q2: ",
-         "cannot determine Beta prior distribution for CYC/steroid remission rate.")
+         "cannot determine Beta prior distribution for control arm/steroid remission rate.")
   }
   
   centred_beta_percentile <-
@@ -42,7 +42,7 @@ check_accuracy_of_uniroot <- function(a, b) {
     pbeta(q_high, a, b, lower.tail = TRUE) - pbeta(q_low, a, b, lower.tail = TRUE)
   
   if (diff_pbeta < (q_high - q_low)){
-    stop("Error identifying CYC prior distribution: ",
+    stop("Error identifying control arm prior distribution: ",
          "Stop because we cannot guarantee the accuracy of the numerical integration")
   }
 }

@@ -67,10 +67,10 @@ priorcall <- function(q1, q2, q3, q4, expert = "", out_dir = "plots"){
   
   outputfile <- system.file(paste0(out_dir, "/", expert, "-priorplot.pdf"), package = "TrialExpertElicitation", mustWork = TRUE)
   
-  title1 <- paste0(expert, "'s prior density of CYC remission rate")
+  title1 <- paste0(expert, "'s prior density of control arm remission rate")
   title2 <- paste0(expert, "'s prior density of MMF remission rate")
   title3 <- paste0(expert, "'s prior density of log-odds ratio")
-  title4 <- as.character("Prior density of CYC & MMF remission rate")
+  title4 <- as.character("Prior density of control arm & MMF remission rate")
   
   pdf(outputfile)
   
@@ -130,10 +130,10 @@ postSumry <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
   }
   
   if(posterior40 & !identical(as.integer(n_mmf + n_cyc), as.integer(40))){
-    stop("Total number randomized to MMF and CYC does not sum to 40")
+    stop("Total number randomized to MMF and control arm does not sum to 40")
   }
   if(!posterior40 & !identical(as.integer(n_mmf + n_cyc), as.integer(20))){
-    stop("Total number randomized to MMF and CYC does not sum to 20")
+    stop("Total number randomized to MMF and control arm does not sum to 20")
   }
   
   pc_distn = post_pc(priorParm[1], priorParm[2], priorParm[9], priorParm[10], cyc_succ, n_cyc-cyc_succ, mmf_succ, n_mmf-mmf_succ)	
