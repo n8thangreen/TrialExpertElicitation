@@ -154,7 +154,7 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, c2){
       gride = as.double(append(seq(upp, u1, by = 0.001), append(c(midp1), 0.99999) ))
       le = length(gride)
       if(floor(le/2.0) == (le/2.0)){
-        stop("mesh for MMF remission rate contains even number of elements when odd number are expected.")	
+        stop("mesh for Experimental remission rate contains even number of elements when odd number are expected.")	
       }
       we  = vector(mode="numeric", length=le)
       we[1] = (gride[3]-gride[1])/6.0
@@ -261,7 +261,7 @@ prior_e <- function(a, b, mu, sigma2){
   int2 = int[which(gride >= lim1 & gride <= lim2)] 	
   istop = sum(we2*int2)
   if(istop < (lim2 - lim1)){
-    stop("Prior density MMF remission rate is U (or L) shaped function of pE. Can't guarantee accuracy of numerical integration routines")
+    stop("Prior density Experimental remission rate is U (or L) shaped function of pE. Can't guarantee accuracy of numerical integration routines")
   }else{
     ## calculate the prior mean and variance of pe
     expect = sum(we*gride*int)

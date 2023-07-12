@@ -155,7 +155,7 @@ shinyServer(function(input, output){
       leg1 = c(bquote("Posterior" ~ n[C] ==  .(input$n_cyc) ~ S[C]  == .(input$cyc_succ) ~ n[M] == .(ns - input$n_cyc) ~ S[M] ==  .(input$mmf_succ)), "Prior")
       
       postPlot = plot(x$gride, x$postd, type="l", lty=2, lwd=3, col="dark green",
-                      main="Prior and posterior densities of 6-month remission rate on MMF",
+                      main="Prior and posterior densities of 6-month remission rate on Experimental",
                       xlab = "MMF 6-month remission rate", ylab="Density",
                       xlim =c(0,1), ylim = range(c(x$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
       lines(y$gride, y$dens, lty=1, lwd=3, col="green")
@@ -171,8 +171,8 @@ shinyServer(function(input, output){
       u3 = distPlot(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
       
       postPlot = plot(u1$gride, u1$postd, type="l", lty=2, lwd=3, col="dark green",
-                      main="Prior and posterior densities of 6-month remission rate on MMF",
-                      xlab = "MMF 6-month remission rate", ylab="Density",
+                      main="Prior and posterior densities of 6-month remission rate on Experimental",
+                      xlab = "Experimental 6-month remission rate", ylab="Density",
                       xlim =c(0,1), ylim = range(c(u1$postd, u2$postd, u3$postd, y$dens)),
                       cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
       lines(u2$gride, u2$postd, lty=3, lwd=3, col="dark green")
@@ -190,7 +190,7 @@ shinyServer(function(input, output){
       ## Only want to plot the prior density in this scenario
       priorPlot = plot(x$gride, x$dens, type="l", lty=1, lwd=3, col="green",
                        main = "Prior density of 6-month remission rate on MMF",
-                       xlab = "MMF 6-month remission rate", ylab="Density",
+                       xlab = "Experimental 6-month remission rate", ylab="Density",
                        xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
     }
   })
@@ -201,7 +201,7 @@ shinyServer(function(input, output){
       y = pC_postDens()
       x = pE_postDens()
       postPlot = plot(y$gridc, y$postd, type="l", lty=2, lwd=3, col="dark red",
-                      main="Posterior densities of 6-month remission rates on MMF and control arm",
+                      main="Posterior densities of 6-month remission rates on Experimental and control arm",
                       xlab = "6-month remission rate", ylab="Density",
                       xlim =c(0,1), ylim = range(c(y$postd, x$postd)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
       lines(x$gride, x$postd, lty=2, lwd=3, col="dark green")
@@ -227,7 +227,7 @@ shinyServer(function(input, output){
       leg6 = bquote("MMF:" ~ S[C]  == .(dtacase[8]) ~ S[M] ==  .(dtacase[9]))
       
       postPlot = plot(u1pc$gridc, u1pc$postd, type="l", lty=2, lwd=3, col="dark red",
-                      main="Posterior densities of 6-month remission rates on MMF and control arm",
+                      main="Posterior densities of 6-month remission rates on Experimental and control arm",
                       xlab = "6-month remission rate", ylab="Density",
                       xlim =c(0,1), ylim = range(c(u1pc$postd, u2pc$postd, u3pc$postd, u1pe$postd, u2pe$postd, u3pe$postd)),
                       cex.lab = 1.5, cex.axis=1.5, cex.main = 2)  
@@ -245,7 +245,7 @@ shinyServer(function(input, output){
       x = pE_priorDens()
       ## Only want to plot the prior density in this scenario
       priorPlot = plot(y$gridc, y$dens, type="l", lty=1, lwd=3, col="red",
-                       main = "Prior density of 6-month remission rates on MMF and control arm",
+                       main = "Prior density of 6-month remission rates on Experimental and control arm",
                        xlab = "6-month remission rate", ylab="Density",
                        xlim =c(0,1), ylim = range(c(y$dens, x$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
       lines(x$gride, x$dens, lty=1, lwd=3, col="green")
@@ -389,19 +389,19 @@ shinyServer(function(input, output){
         glue::glue("Posterior distributions update the priors implied by the opinions:<br/> Q1 = {input$pc_q1}, Q2 = {input$pc_q2}, Q3 = {input$theta_q1}, Q4 = {input$theta_q2}."),
          glue::glue("<br/><br/>Posterior distributions incorporate the following data:"),
       glue::glue("<ul><li>{input$n_cyc} patients randomised to control arm of whom {input$cyc_succ} were in remission within six months</li>"),
-      glue::glue("<li>{ns - input$n_cyc} patients randomised to MMF of whom {input$mmf_succ} were in remission within six months</li></ul>"),
+      glue::glue("<li>{ns - input$n_cyc} patients randomised to Experimental of whom {input$mmf_succ} were in remission within six months</li></ul>"),
       glue::glue("<br/><br/>Summary of the posterior distribution of the 6-month remission rate on control arm/steroids:"),
       glue::glue("<ul><li>90% credibility interval for control arm remission rate is ({round(x[4], 2)}, {round(x[5], 2)})</li>"),
       glue::glue("<li>Your distribution has mode {round(x[2], 2)} and mean {round(x[1], 2)} and standard deviation {round(x[3], 2)}</li></ul>"),
-      glue::glue("<br/><br/>Summary of the posterior distribution of the 6-month remission rate on MMF/steroids:"),
-      glue::glue("<ul><li>90% credibility interval for MMF remission rate is ({round(x[9], 2)}, {round(x[10], 2)})</li>"),
+      glue::glue("<br/><br/>Summary of the posterior distribution of the 6-month remission rate on Experimental/steroids:"),
+      glue::glue("<ul><li>90% credibility interval for Experimental remission rate is ({round(x[9], 2)}, {round(x[10], 2)})</li>"),
       glue::glue("<li>Your distribution has mode {round(x[7], 2)} and mean {round(x[6], 2)} and standard deviation {round(x[8], 2)}</li></ul>"),
       glue::glue("<br/><br/>Summary of the posterior distribution of the log-odds ratio:"),
       glue::glue("<ul><li>90% credibility interval for the log-odds ratio is ({round(x[14], 2)}, {round(x[15], 2)})</li>"),
       glue::glue("<li>Your distribution for the log-odds ratio has mode {round(x[12], 2)} and mean {round(x[11], 2)} and standard deviation {round(x[13], 2)}</li>"),
-      glue::glue("<li>Posterior probability that the 6-month remission rate on MMF exceeds that on control arm is {round(x[16], 2)}</li>"),
-      glue::glue("<li>Posterior probability that the 6-month remission rate on MMF is at worst 10% less than that on CYC is {round(x[17], 2)}</li>"),
-      glue::glue("<li>Posterior probability that the 6-month remission rate on control arm exceeds that on MMF by more than 10% is {round(1 - x[17], 2)}</li></ul>"),
+      glue::glue("<li>Posterior probability that the 6-month remission rate on Experimental exceeds that on control arm is {round(x[16], 2)}</li>"),
+      glue::glue("<li>Posterior probability that the 6-month remission rate on Experimental is at worst 10% less than that on control arm is {round(x[17], 2)}</li>"),
+      glue::glue("<li>Posterior probability that the 6-month remission rate on control arm exceeds that on Experimental by more than 10% is {round(1 - x[17], 2)}</li></ul>"),
       sep = '')
       
       HTML(summary_text)
@@ -424,16 +424,16 @@ shinyServer(function(input, output){
         glue::glue("<li>Your distribution is Beta with parameters {round(x[1], 2)} and {round(x[2], 2)}</li>"),
         glue::glue("<li>with mode {round(pc_mode, 3)} and mean {round(pc_mean, 2)} and standard deviation {round(sqrt(pc_var), 2)}</li>"),
         glue::glue("<li>This information is equivalent to {round(x[3], 0)} observations on control arm</li></ul>"),
-        "<br/><br/>Summary of the prior distribution of MMF/steroid 6-month remission rate:",
-        glue::glue("<ul><li>90% credibility interval for MMF remission rate is ({round(x[7], 2)}, {round(x[8], 2)})</li>"),
+        "<br/><br/>Summary of the prior distribution of Experimental/steroid 6-month remission rate:",
+        glue::glue("<ul><li>90% credibility interval for Experimental remission rate is ({round(x[7], 2)}, {round(x[8], 2)})</li>"),
         glue::glue("<li>Your distribution has mode {round(x[5], 2)} and mean {round(x[4], 2)} and standard deviation {round(x[6], 2)}</li>"),
-        glue::glue("<li>Proportion which we are 75% confident the true 6-month remission rate on MMF exceeds is {round(x[14], 2)}</li></ul>"),
+        glue::glue("<li>Proportion which we are 75% confident the true 6-month remission rate on Experimental exceeds is {round(x[14], 2)}</li></ul>"),
         "<br/><br/>Summary of the prior distribution of log-odds ratio:",
         glue::glue("<ul><li>90% credibility interval for log-odds ratio is ({round(tquantile0_05, 2)}, {round(tquantile0_95, 2)})</li>"),
         glue::glue("<li>Your distribution is Gaussian with mode {round(x[9], 2)} and mean {round(x[9], 2)} and standard deviation {round(sqrt(x[10]), 2)}</li>"),
-        glue::glue("<li>This information is equivalent to what would be generated by a RCT comparing control arm with MMF recruiting {round(0.5*x[13], 0)} patients per treatment arm</li>"),
-        glue::glue("<li>Prior probability that the 6-month remission rate on MMF exceeds that on control arm is {round(x[11], 2)}</li>"),
-        glue::glue("<li>Prior probability that the 6-month remission rate on MMF is at worst 10% less than that on control arm is {round(1 - x[12], 2)}</li>"),
+        glue::glue("<li>This information is equivalent to what would be generated by a RCT comparing control arm with Experimental recruiting {round(0.5*x[13], 0)} patients per treatment arm</li>"),
+        glue::glue("<li>Prior probability that the 6-month remission rate on Experimental exceeds that on control arm is {round(x[11], 2)}</li>"),
+        glue::glue("<li>Prior probability that the 6-month remission rate on Experimental is at worst 10% less than that on control arm is {round(1 - x[12], 2)}</li>"),
         glue::glue("<li>Prior probability that the 6-month remission rate on control arm exceeds that on MMF by more than 10% is {round(x[12], 2)}</li></ul>"),
         sep = '')
       

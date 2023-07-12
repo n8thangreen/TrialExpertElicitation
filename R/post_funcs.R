@@ -197,7 +197,7 @@ post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
   }
   istop = sum(we1*int1)
   if(istop < (lim2 - lim1)){
-    stop("Error calculating posterior distribution of MMF remission rate: posterior density pMMF is U (or L) shaped function")
+    stop("Error calculating posterior distribution of Experimental remission rate: posterior density p(Experimental) is U (or L) shaped function")
   }else{
     
     ## Run this part of the code to evaluate mean and variance of pE

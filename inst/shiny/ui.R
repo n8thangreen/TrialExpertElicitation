@@ -25,18 +25,18 @@ shinyUI(pageWithSidebar(
 		br(),
 		br(),
 		
-		helpText("Because of the unpleasant side-effects of control arm, MMF might be considered the preferable treatment even if it is associated with a somewhat lower 6-month remission rate: "),
+		helpText("Because of the unpleasant side-effects of control arm, Experimental might be considered the preferable treatment even if it is associated with a somewhat lower 6-month remission rate: "),
 		
 		br(),
 		br(),
 		sliderInput(inputId = "theta_q1",
-				label = "Q3: What is the chance that the 6-month remission rate on MMF/steroids is higher than that on control arm/steroids?",
+				label = "Q3: What is the chance that the 6-month remission rate on Experimental/steroids is higher than that on control arm/steroids?",
 				min = 0, max=1, value = 0.3, step=0.05),
 		br(),
 		br(),
 
 		sliderInput(inputId = "theta_q2",
-				label = "Q4: What is the chance that the 6-month remission rate on control arm/steroids exceeds that on MMF/steroids by more than 10%?",
+				label = "Q4: What is the chance that the 6-month remission rate on control arm/steroids exceeds that on Experimental/steroids by more than 10%?",
 				min = 0, max=1, value = 0.3, step=0.05),
 		br(),
 		br(),	

@@ -24,7 +24,7 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
   gridc = append(gridc, c(midp2, 0.99999))
   lc = length(gridc)
   if(floor(lc/2.0) == (lc/2.0)){
-    stop("Error calculating quantiles of MMF distribution: integration mesh contains even number of elements when odd number are expected.")
+    stop("Error calculating quantiles of Experimental distribution: integration mesh contains even number of elements when odd number are expected.")
   }
   wc  = vector(mode="numeric", length=lc)
   wc[1] = (gridc[3]-gridc[1])/6.0
@@ -48,7 +48,7 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
   
   le = length(gride)
   if(floor(le/2) == (le/2.0)){
-    stop("Error calculating quantiles of MMF distribution: integration mesh contains even number of elements when odd number are expected.")
+    stop("Error calculating quantiles of Experimental distribution: integration mesh contains even number of elements when odd number are expected.")
   }
   ## Calculate Simpson's integration weights
   we  = vector(mode="numeric", length=le)
