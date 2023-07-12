@@ -12,4 +12,5 @@ RoxygenNote: 7.2.3.9000
 Imports: 
     pkgload,
     shiny,
+    shinyalert
 Depends: R (>= 3.5.0)

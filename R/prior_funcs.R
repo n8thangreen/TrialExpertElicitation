@@ -61,7 +61,7 @@ beta_percentile25 <- function(a, mode) {
   b <- (a - 1)/mode - (a - 2)
   
   if (b <= 0) {
-    shinyalert("Q1 and Q2 values together aren't allowed", "Try different probabilities", type = "error")
+    shinyalert::shinyalert("Q1 and Q2 values together aren't allowed", "Try different probabilities", type = "error")
     stop("Beta distribution b parameter is less than zero. Try different a or mode.")
   }
   
