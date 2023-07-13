@@ -32,28 +32,30 @@ prior_summaries <- function(q1, q2, q3, q4,
   tparam = prior_theta(q3, 1-q4, bparam[1], bparam[2], c2)
   
   ## Calculating summaries of prior distributions for pC, pE and theta
-  x = vector(mode="numeric", length=14)
   pri_e = prior_e(bparam[1], bparam[2], tparam[1], tparam[2])
   
+  x <- NULL
+  
   ## Summaries of pC prior distribution
-  x[1] = bparam[1]
-  x[2] = bparam[2]
-  x[3] = ess_pc(bparam[1], bparam[2])
+  x <- c(x, mean_beta = bparam[1])
+  x <- c(x, var_beta = bparam[2])
+  x <- c(x, ess_beta = ess_pc(bparam[1], bparam[2]))
   
   ## Summaries of pE prior distribution
-  x[4] = pri_e$expect
-  x[5] = pri_e$mode1
-  x[6] = pri_e$sd1
-  x[7] = pri_e$ci_low
-  x[8] = pri_e$ci_upp
-  x[14] = pri_e$percent25
+  x <- c(x, expect = pri_e$expect)
+  x <- c(x, mode1 = pri_e$mode1)
+  x <- c(x, sd1 = pri_e$sd1)
+  x <- c(x, ci_low = pri_e$ci_low)
+  x <- c(x, ci_upp = pri_e$ci_upp)
   
   ## Summaries of theta prior distribution	
-  x[9] = tparam[1]
-  x[10] = tparam[2]
-  x[11] = pnorm(0, mean = tparam[1], sd = sqrt(tparam[2]), lower.tail = FALSE)
-  x[12] = q4
-  x[13] = ess_theta(1, tparam[1], tparam[2], bparam[1], bparam[2])
+  x <- c(x, mean_theta = tparam[1])
+  x <- c(x, var_theta = tparam[2])
+  x <- c(x, cdf_theta = pnorm(0, mean = tparam[1], sd = sqrt(tparam[2]), lower.tail = FALSE))
+  x <- c(x, q4 = q4)
+  x <- c(x, ess_theta = ess_theta(1, tparam[1], tparam[2], bparam[1], bparam[2]))
+  
+  x <- c(x, pri_e = pri_e$percent25)
   
   ## generate a plot of the prior densities and output to one pdf file
   z = vector(mode="numeric", length =20)
@@ -198,7 +200,9 @@ distPlot <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm, parm
       gridc = seq(0.01, 0.99, by=0.01)
       gridc = append(c(0.00001, 0.001), gridc)
       gridc = append(gridc, c(0.999, 0.99999))
+      
       dens = dbeta(gridc, shape1=priorParm[1], shape2=priorParm[2], ncp=0, log=FALSE)
+      
       return(data.frame(gridc, dens))
     }else if(parmInd=="pE"){
       gride = seq(0.01, 0.99, by=0.01)
@@ -212,9 +216,10 @@ distPlot <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm, parm
       gridc = append(c(0.00001, midp1), gridc)
       gridc = append(gridc, c(midp2, 0.99999))
       lc = length(gridc)
-      wc  = vector(mode="numeric", length=lc)
+      wc = vector(mode="numeric", length=lc)
       wc[1] = (gridc[3]-gridc[1])/6.0
       wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+      
       for(i in seq(2, (lc-1), by=2)){
         wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
       }
@@ -222,9 +227,10 @@ distPlot <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm, parm
         wc[i] = (gridc[i+2] - gridc[i-2])/6.0
       }
       
-      dens1 =  vector(mode="numeric", length=lc)
+      dens1 = vector(mode="numeric", length=lc)
       dens2 = vector(mode="numeric", length=lc)
-      dens =  vector(mode="numeric", length=le)
+      dens = vector(mode="numeric", length=le)
+      
       for(i in 1:le){
         dens1 = (gridc^(priorParm[1]-1))*((1-gridc)^(priorParm[2]-1))/(gride[i]*(1-gride[i]))
         dens2 = (-0.5/priorParm[10])*((log(gride[i]*(1-gridc)/(gridc*(1-gride[i]))) - priorParm[9])^2)

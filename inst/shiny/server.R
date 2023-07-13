@@ -62,7 +62,14 @@ shinyServer(function(input, output){
     z = priorParam()
     x = postParam()
     n <- as.numeric(input$hypo_data_size)
-    distPlot(n - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, x, z, as.character("pC"), FALSE)
+    distPlot(n_mmf = n - input$n_cyc,
+             mmf_succ = input$mmf_succ,
+             n_cyc = input$n_cyc,
+             cyc_succ = input$cyc_succ,
+             postParm = x,
+             priorParm = z,
+             parmInd = as.character("pC"),
+             postind = FALSE)
   })
   
   pE_priorDens <- reactive({

@@ -88,7 +88,7 @@ ess_theta <- function(R, mu, sigma2, a, b){
 #' @param a,b parameters of the prior distribution of \deqn{pC~Beta(a,b)}
 #'
 #' @return Effective sample size of prior for \deqn{\log[pC/(1-pc)]}
-#'   (expressed in terms of effective observations on CYC)
+#'   (expressed in terms of effective observations on control arm)
 #' @export
 #'
 ess_pc <- function(a, b){
