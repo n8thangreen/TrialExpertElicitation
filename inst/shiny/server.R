@@ -130,9 +130,9 @@ shinyServer(function(input, output){
       lines(u3$gridc, u3$postd, lty=4, lwd=3, col="dark red")
       lines(y$gridc, y$dens, lty=1, lwd=3, col="red")
       
-      leg1 = paste("CYC Succ = ", dtacase[2], "; MMF Succ = ", dtacase[3], sep="")
-      leg2 = paste("CYC Succ = ", dtacase[5], "; MMF Succ = ", dtacase[6], sep="")
-      leg3 = paste("CYC Succ = ", dtacase[8], "; MMF Succ = ", dtacase[9], sep="")
+      leg1 = paste("Control arm Succ = ", dtacase[2], "; Experimental arm Succ = ", dtacase[3], sep="")
+      leg2 = paste("Control arm Succ = ", dtacase[5], "; Experimental arm Succ = ", dtacase[6], sep="")
+      leg3 = paste("Control arm Succ = ", dtacase[8], "; Experimental arm Succ = ", dtacase[9], sep="")
       
       legend("topleft", c(leg1,leg2, leg3,"Prior"),
              col = c("dark red","dark red","dark red","red"), lty = c(2,3,4,1), lwd = c(3,3,3,3), cex=1.2, bty="n")
@@ -142,7 +142,7 @@ shinyServer(function(input, output){
       ## Only want to plot the prior density in this scenario
       plot(x$gridc, x$dens, type="l", lty=1, lwd=3, col="red",
            main = "Prior density of 6-month remission rate on control arm/steroids",
-           xlab = "CYC 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
+           xlab = "Control arm 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
     }
   })
   
@@ -156,7 +156,7 @@ shinyServer(function(input, output){
       
       postPlot = plot(x$gride, x$postd, type="l", lty=2, lwd=3, col="dark green",
                       main="Prior and posterior densities of 6-month remission rate on Experimental",
-                      xlab = "MMF 6-month remission rate", ylab="Density",
+                      xlab = "Experimental arm 6-month remission rate", ylab="Density",
                       xlim =c(0,1), ylim = range(c(x$postd, y$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
       lines(y$gride, y$dens, lty=1, lwd=3, col="green")
       legend("topleft", as.expression(leg1), col = c("dark green","green"), lty = c(2,1), lwd = c(3,3), cex=1.2, bty="n")	
@@ -179,9 +179,9 @@ shinyServer(function(input, output){
       lines(u3$gride, u3$postd, lty=4, lwd=3, col="dark green")
       lines(y$gride, y$dens, lty=1, lwd=3, col="green")
       
-      leg1 = paste("CYC Succ = ", dtacase[2], "; MMF Succ = ", dtacase[3], sep="")
-      leg2 = paste("CYC Succ = ", dtacase[5], "; MMF Succ = ", dtacase[6], sep="")
-      leg3 = paste("CYC Succ = ", dtacase[8], "; MMF Succ = ", dtacase[9], sep="")
+      leg1 = paste("Control arm Succ = ", dtacase[2], "; Experimental arm Succ = ", dtacase[3], sep="")
+      leg2 = paste("Control arm Succ = ", dtacase[5], "; Experimental arm Succ = ", dtacase[6], sep="")
+      leg3 = paste("Control arm Succ = ", dtacase[8], "; Experimental arm Succ = ", dtacase[9], sep="")
       
       legend("topleft", c(leg1, leg2, leg3, "Prior"),
              col = c("dark green","dark green","dark green","green"), lty = c(2,3,4,1), lwd = c(3,3,3,3), cex=1.2, bty="n")
@@ -189,7 +189,7 @@ shinyServer(function(input, output){
       x = pE_priorDens()
       ## Only want to plot the prior density in this scenario
       priorPlot = plot(x$gride, x$dens, type="l", lty=1, lwd=3, col="green",
-                       main = "Prior density of 6-month remission rate on MMF",
+                       main = "Prior density of 6-month remission rate on Experimental arm",
                        xlab = "Experimental 6-month remission rate", ylab="Density",
                        xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
     }
@@ -205,7 +205,7 @@ shinyServer(function(input, output){
                       xlab = "6-month remission rate", ylab="Density",
                       xlim =c(0,1), ylim = range(c(y$postd, x$postd)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2) 
       lines(x$gride, x$postd, lty=2, lwd=3, col="dark green")
-      legend("topleft", c("CYC/steroids", "MMF/steroids"), col = c("dark red","dark green"), lty = c(2,2), lwd = c(3,3), cex=1.2, bty="n")	
+      legend("topleft", c("Control arm/steroids", "Experimental arm/steroids"), col = c("dark red","dark green"), lty = c(2,2), lwd = c(3,3), cex=1.2, bty="n")	
     }else if((posterior40() | posterior20()) & input$postsum){
       z = priorParam()
       w = postSumary()
@@ -219,12 +219,12 @@ shinyServer(function(input, output){
       u2pc = distPlot(ns - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
       u3pc = distPlot(ns - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
       
-      leg1 = bquote("CYC:" ~ n[C] == .(dtacase[1]) ~ S[C]  == .(dtacase[2]) ~ n[M] == .(ns - dtacase[1]) ~ S[M] ==  .(dtacase[3]))
-      leg2 = bquote("CYC:" ~ n[C] == .(dtacase[4]) ~ S[C]  == .(dtacase[5]) ~ n[M] == .(ns - dtacase[4]) ~ S[M] ==  .(dtacase[6]))
-      leg3 = bquote("CYC:" ~ n[C] == .(dtacase[7]) ~ S[C]  == .(dtacase[8]) ~ n[M] == .(ns - dtacase[7]) ~ S[M] ==  .(dtacase[9]))
-      leg4 = bquote("MMF:" ~ S[C]  == .(dtacase[2]) ~ S[M] ==  .(dtacase[3]))
-      leg5 = bquote("MMF:" ~ S[C]  == .(dtacase[5]) ~ S[M] ==  .(dtacase[6]))
-      leg6 = bquote("MMF:" ~ S[C]  == .(dtacase[8]) ~ S[M] ==  .(dtacase[9]))
+      leg1 = bquote("Control arm:" ~ n[C] == .(dtacase[1]) ~ S[C]  == .(dtacase[2]) ~ n[M] == .(ns - dtacase[1]) ~ S[M] ==  .(dtacase[3]))
+      leg2 = bquote("Control arm:" ~ n[C] == .(dtacase[4]) ~ S[C]  == .(dtacase[5]) ~ n[M] == .(ns - dtacase[4]) ~ S[M] ==  .(dtacase[6]))
+      leg3 = bquote("Control arm:" ~ n[C] == .(dtacase[7]) ~ S[C]  == .(dtacase[8]) ~ n[M] == .(ns - dtacase[7]) ~ S[M] ==  .(dtacase[9]))
+      leg4 = bquote("Experimental arm:" ~ S[C]  == .(dtacase[2]) ~ S[M] ==  .(dtacase[3]))
+      leg5 = bquote("Experimental arm:" ~ S[C]  == .(dtacase[5]) ~ S[M] ==  .(dtacase[6]))
+      leg6 = bquote("Experimental arm:" ~ S[C]  == .(dtacase[8]) ~ S[M] ==  .(dtacase[9]))
       
       postPlot = plot(u1pc$gridc, u1pc$postd, type="l", lty=2, lwd=3, col="dark red",
                       main="Posterior densities of 6-month remission rates on Experimental and control arm",
@@ -249,7 +249,7 @@ shinyServer(function(input, output){
                        xlab = "6-month remission rate", ylab="Density",
                        xlim =c(0,1), ylim = range(c(y$dens, x$dens)), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
       lines(x$gride, x$dens, lty=1, lwd=3, col="green")
-      legend("topleft", c("CYC/steroids", "MMF/steroids"), col = c("red","green"), lty = c(1,1), lwd = c(3,3), cex=1.2, bty="n")	
+      legend("topleft", c("Control arm/steroids", "Experimental arm/steroids"), col = c("red","green"), lty = c(1,1), lwd = c(3,3), cex=1.2, bty="n")	
     }
   })
   
@@ -265,7 +265,7 @@ shinyServer(function(input, output){
     pe_lim4 = pc_to_pe_transformation(input$pc_q1, 1)
     pe_lim5 = pc_to_pe_transformation(input$pc_q1, 2)
     
-    label1 <- paste("6-month remission rate on MMF assuming that on control arm is ", round(input$pc_q1, 2), sep="")
+    label1 <- paste("6-month remission rate on Experimental arm assuming that on control arm is ", round(input$pc_q1, 2), sep="")
     
     if((posterior40() | posterior20()) & !input$postsum){
       y = theta_priorDens()
@@ -317,9 +317,9 @@ shinyServer(function(input, output){
       lines(u3$gridt, u3$postd, lty=4, lwd=3, col="dark blue")
       lines(y$gridt, y$dens, lty=1, lwd=3, col="blue")
       
-      leg1 = paste("CYC Succ = ", dtacase[2], "; MMF Succ = ", dtacase[3], sep="")
-      leg2 = paste("CYC Succ = ", dtacase[5], "; MMF Succ = ", dtacase[6], sep="")
-      leg3 = paste("CYC Succ = ", dtacase[8], "; MMF Succ = ", dtacase[9], sep="")
+      leg1 = paste("Control arm Succ = ", dtacase[2], "; Experimental arm Succ = ", dtacase[3], sep="")
+      leg2 = paste("Control arm Succ = ", dtacase[5], "; Experimental arm Succ = ", dtacase[6], sep="")
+      leg3 = paste("Control arm Succ = ", dtacase[8], "; Experimental arm Succ = ", dtacase[9], sep="")
       
       legend("topright", c(leg1, leg2, leg3, "Prior"),
              col = c("dark blue","dark blue","dark blue","blue"), lty = c(2,3,4,1), lwd = c(3,3,3,3), cex=1.2, bty="n")	
@@ -434,7 +434,7 @@ shinyServer(function(input, output){
         glue::glue("<li>This information is equivalent to what would be generated by a RCT comparing control arm with Experimental recruiting {round(0.5*x[13], 0)} patients per treatment arm</li>"),
         glue::glue("<li>Prior probability that the 6-month remission rate on Experimental exceeds that on control arm is {round(x[11], 2)}</li>"),
         glue::glue("<li>Prior probability that the 6-month remission rate on Experimental is at worst 10% less than that on control arm is {round(1 - x[12], 2)}</li>"),
-        glue::glue("<li>Prior probability that the 6-month remission rate on control arm exceeds that on MMF by more than 10% is {round(x[12], 2)}</li></ul>"),
+        glue::glue("<li>Prior probability that the 6-month remission rate on control arm exceeds that on Experimental arm by more than 10% is {round(x[12], 2)}</li></ul>"),
         sep = '')
       
       HTML(summary_text)

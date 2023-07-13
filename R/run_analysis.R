@@ -68,7 +68,7 @@ priorcall <- function(q1, q2, q3, q4, expert = "", out_dir = "plots"){
   outputfile <- system.file(paste0(out_dir, "/", expert, "-priorplot.pdf"), package = "TrialExpertElicitation", mustWork = TRUE)
   
   title1 <- paste0(expert, "'s prior density of control arm remission rate")
-  title2 <- paste0(expert, "'s prior density of MMF remission rate")
+  title2 <- paste0(expert, "'s prior density of Experimental arm remission rate")
   title3 <- paste0(expert, "'s prior density of log-odds ratio")
   title4 <- as.character("Prior density of control arm & Experimental remission rate")
   
@@ -76,8 +76,8 @@ priorcall <- function(q1, q2, q3, q4, expert = "", out_dir = "plots"){
   
   par(mfrow = c(2,2), pty="s")
   
-  plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title1, xlab = "CYC 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1) 
-  plot(y2$gride, y2$dens, type="l", lty=1, lwd=3, col="green", main = title2, xlab = "MMF 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
+  plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title1, xlab = "Control arm 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1) 
+  plot(y2$gride, y2$dens, type="l", lty=1, lwd=3, col="green", main = title2, xlab = "Experimental arm 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
   plot(y3$gridt, y3$dens, type="l", lty=1, lwd=3, col="blue", main = title3, xlab = "log-odds ratio", ylab="Density", xlim =c(-2, 2), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
   plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title4, xlab = "6-month remission rate", ylab="Density", ylim = range(c(y1$dens, y2$dens)), xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
   lines(y2$gride, y2$dens, type="l", lty=2, lwd=3, col="green")
@@ -126,7 +126,7 @@ postSumry <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
   
   ## Catching possible input errors for mmf_succ, n_cyc and cyc_succ
   if(mmf_succ >= n_mmf){
-    stop("Data on Experimental: number of successes exceeds number randomised to MMF")
+    stop("Data on Experimental arm: number of successes exceeds number randomised to Experimental arm")
   }
   
   if(posterior40 & !identical(as.integer(n_mmf + n_cyc), as.integer(40))){

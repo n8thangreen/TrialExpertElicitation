@@ -46,7 +46,7 @@ shinyUI(pageWithSidebar(
 		br(),
 		br(),	
 
-		radioButtons(inputId="hypo_data_size", label="Update MYPAN prior distributions with a hypothetical dataset of patient size ", 
+		radioButtons(inputId="hypo_data_size", label="Update prior distributions with a hypothetical dataset of patient size ", 
 		             choices=c(20, 40), selected = character(0)),
 
 	## Output two tabs: one to plot the density of the (prior/posterior) distribution
@@ -56,32 +56,32 @@ shinyUI(pageWithSidebar(
   
   ## Display this only if data are available to update the prior distribution						
 	conditionalPanel(condition = "input.posterior40 == true & input.posterior20 == false",
-			numericInput(inputId = "n_cyc40", label = "Number randomized to CYC (out of 40 patients)", value=20, min = 1, max= 40,  step=1),
+			numericInput(inputId = "n_cyc40", label = "Number randomized to Control arm (out of 40 patients)", value=20, min = 1, max= 40,  step=1),
 			br(),
-			numericInput(inputId = "cyc_succ40", label = "Number of successes on CYC:", value=14, min = 0, max = 40, step =1),
+			numericInput(inputId = "cyc_succ40", label = "Number of successes on Control arm:", value=14, min = 0, max = 40, step =1),
 			br(),
 			br(),
-			helpText("For the remaining patients randomized to MMF: "),
-			numericInput(inputId = "mmf_succ40", label = "Number of successes on MMF:", value=14, min = 0, step=1)
+			helpText("For the remaining patients randomized to Experimental arm: "),
+			numericInput(inputId = "mmf_succ40", label = "Number of successes on Experimental arm:", value=14, min = 0, step=1)
 	),
 	
 	conditionalPanel(condition = "input.posterior20 == true & input.posterior40 == false",
-			numericInput(inputId = "n_cyc20", label = "Number randomized to CYC (out of 20 patients)", value=10, min = 1, max= 20,  step=1),
+			numericInput(inputId = "n_cyc20", label = "Number randomized to Control arm (out of 20 patients)", value=10, min = 1, max= 20,  step=1),
 			br(),
-			numericInput(inputId = "cyc_succ20", label = "Number of successes on CYC:", value=7, min = 0, max = 40, step =1),
+			numericInput(inputId = "cyc_succ20", label = "Number of successes on Control arm:", value=7, min = 0, max = 40, step =1),
 			br(),
 			br(),
-			helpText("For the remaining patients randomized to MMF: "),
-			numericInput(inputId = "mmf_succ20", label = "Number of successes on MMF:", value=7, min = 0, step=1)
+			helpText("For the remaining patients randomized to Experimental arm: "),
+			numericInput(inputId = "mmf_succ20", label = "Number of successes on Experimental arm:", value=7, min = 0, step=1)
 	),
 	
 	conditionalPanel(condition = "input.hypo_data_size == 20 | input.hypo_data_size == 40",
-	                 numericInput(inputId = "n_cyc", label = "Number randomized to CYC", value=10, min = 1, max= 20,  step=1),
+	                 numericInput(inputId = "n_cyc", label = "Number randomized to Control arm", value=10, min = 1, max= 20,  step=1),
 	                 br(),
-	                 numericInput(inputId = "cyc_succ", label = "Number of successes on CYC:", value=7, min = 0, max = 40, step =1),
+	                 numericInput(inputId = "cyc_succ", label = "Number of successes on Control arm:", value=7, min = 0, max = 40, step =1),
 	                 br(),
-	                 helpText("For the remaining patients randomized to MMF: "),
-	                 numericInput(inputId = "mmf_succ", label = "Number of successes on MMF:", value=7, min = 0, step=1)
+	                 helpText("For the remaining patients randomized to Experimental arm: "),
+	                 numericInput(inputId = "mmf_succ", label = "Number of successes on Experimental arm:", value=7, min = 0, step=1)
 	),
 	
 	# read in (hypothetical) trial data
