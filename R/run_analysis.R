@@ -1,32 +1,28 @@
-## Function to calculate summaries of the prior distributions of pC, pE and theta
-## Function inputs: q1, ..., q4 = expert's answers to the Day 1 elicitation questions. 
-##					expert =  a character string giving the expert's initials
 
-## 					q1 is the answer to Day 1 elicitation question (i) mode(pc)
-## 					q2 is the answer to Day 1 elicitation question (ii) eliciting q s.t. P(pC > q) = 0.75
-## 					q3 is the answer to Day 1 elicitation question (iii) elicting P(theta >0)
-## 					q4 is the answer to Day 1 elicitation question (iv) eliciting P(pE - pC < -c2)
-
-## Function outputs: a vector summarising properties of the prior distributions of pC, pE and theta
-## x[1], x[2] parameters of beta prior distribution for pC, x[3] = ESS of log(pC/(1-pC)) given elicited prior for pC
-## x[4] = E(pE), x[5] = mode(pE), x[6] = SD(pE), (x[7], x[8]) = 90% credibility interval, x[14] = quantile such that P(pE <= x[14]) = 0.25
-## x[9] = E(theta), x[10] = var(theta), x[11] = P(pE > pC), x[12] = P(pE < pC - 0.1), x[13] = ESS of theta
-
-## The function also outputs a file saved as "expert-priorplot.pdf" in the current working directory containing plots of the prior densities
-## and a file "expert-D1answer.txt" storing the expert's answers to the elicitation questions.  
-
-#' priorcall
+#' Calculate summaries of the prior distributions of pC, pE and theta
 #'
-#' @param q1 
-#' @param q2 
-#' @param q3 
-#' @param q4 
-#' @param expert 
+#' q1 is the answer to Day 1 elicitation question (i) mode(pc)
+#' q2 is the answer to Day 1 elicitation question (ii) eliciting q s.t. P(pC > q) = 0.75
+#' q3 is the answer to Day 1 elicitation question (iii) elicting P(theta >0)
+#' q4 is the answer to Day 1 elicitation question (iv) eliciting P(pE - pC < -c2)
+#'
+#' @param q1,q2,q3,q4 Expert's answers to the Day 1 elicitation questions. 
+#' @param expert Character string giving the expert's initials
+#' @param out_dir Output folder
 #'
 #' @return
+#' A vector summarising properties of the prior distributions of pC, pE and theta
+#' x[1], x[2] parameters of beta prior distribution for pC, x[3] = ESS of log(pC/(1-pC)) given elicited prior for pC
+#' x[4] = E(pE), x[5] = mode(pE), x[6] = SD(pE), (x[7], x[8]) = 90% credibility interval, x[14] = quantile such that P(pE <= x[14]) = 0.25
+#' x[9] = E(theta), x[10] = var(theta), x[11] = P(pE > pC), x[12] = P(pE < pC - 0.1), x[13] = ESS of theta
+#'
+#' Also outputs a file saved as "expert-priorplot.pdf" in the current working directory containing plots of the prior densities
+#' and a file "expert-D1answer.txt" storing the expert's answers to the elicitation questions.  
 #' @export
 #'
-priorcall <- function(q1, q2, q3, q4, expert = "", out_dir = "plots"){
+prior_summaries <- function(q1, q2, q3, q4,
+                            expert = "",
+                            out_dir = "plots"){
   
   c2 <- 0.1 	# non-inferiority margin cited in Day 1 elicitation question (iv)
   
@@ -95,7 +91,7 @@ priorcall <- function(q1, q2, q3, q4, expert = "", out_dir = "plots"){
   x
 }
 
-## Function to calculate summaries of the posterior distributions of pC, pE and theta
+## Calculate summaries of the posterior distributions of pC, pE and theta
 ## Function inputs: 	n_mmf, mmf_succ = (nE, SE): number of patients randomised to MMF and number of observed successes on MMF
 ##						n_cyc, cyc_succ = (nC, SC): number of patients randomised to CYC and number of observed success on CYC
 ##						priorParm = vector outputted by priorcall() containing summaries of prior distributions
@@ -119,7 +115,7 @@ priorcall <- function(q1, q2, q3, q4, expert = "", out_dir = "plots"){
 #' @return
 #' @export
 #'
-postSumry <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
+posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
   
   c2 = as.double(0.10) 		## non-inferiority margin for the trial
   x = vector(mode="numeric", length =20)
@@ -173,8 +169,8 @@ postSumry <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
 ## 						mmf_succ = number of successes on E (SE)
 ## 						n_cyc = number randomised to C (nC)
 ## 						cyc_succ = number of successes on C (SC)
-## 						postParm = vector returned by postSumry() summarising posterior distributions of pC, pE, theta
-## 						priorParm = vector of outputs returned by priorcall() summarising elicited prior distributions
+## 						postParm = vector returned by posterior_summaries() summarising posterior distributions of pC, pE, theta
+## 						priorParm = vector of outputs returned by prior_summaries() summarising elicited prior distributions
 ## 						parmInd = character string containing the parameter whose density we wish to plot 
 ## 						postind = integer determining whether we wish to plot the prior or posterior density of the stated parameter.
 ## Function outputs: a dataframe containing a grid of values of the parameter of interest and the marginal density evaluated at those values.

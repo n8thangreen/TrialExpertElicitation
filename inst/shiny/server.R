@@ -25,25 +25,24 @@ shinyServer(function(input, output){
       q2 <- input$pc_q2
     }
     
-    ## prior returns a vector containing the summaries of the posterior distributions of pC, pE and theta
-    priorcall(q1, q2, input$theta_q1, input$theta_q2, input$expert)	
-    # TrialExpertElicitation::priorcall(input$pc_q1, input$pc_q2, input$theta_q1, input$theta_q2, input$expert)	
+    prior_summaries(q1, q2, input$theta_q1, input$theta_q2, input$expert)	
   })
   
   postParam <- reactive({
     if (!posterior40() && !posterior20())
       return(NULL)
     
-    postSumry(as.numeric(input$hypo_data_size) - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, priorParam(), posterior40())
+    posterior_summaries(as.numeric(input$hypo_data_size) - input$n_cyc, input$mmf_succ,
+                        input$n_cyc, input$cyc_succ, priorParam(), posterior40())
   })
   
   postSumary <- reactive({
     if((posterior40() | posterior20()) & input$postsum){
       n <- as.numeric(input$hypo_data_size)
       dtacase <- scan(glue::glue("data/data_scenario{n}.txt"))
-      scen1 = postSumry(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], priorParam(), posterior40())	
-      scen2 = postSumry(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], priorParam(), posterior40())
-      scen3 = postSumry(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], priorParam(), posterior40())
+      scen1 = posterior_summaries(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], priorParam(), posterior40())	
+      scen2 = posterior_summaries(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], priorParam(), posterior40())
+      scen3 = posterior_summaries(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], priorParam(), posterior40())
       
       return(data.frame(scen1, scen2, scen3))
     }else{
