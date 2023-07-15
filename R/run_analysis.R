@@ -58,7 +58,7 @@ prior_summaries <- function(q1, q2, q3, q4,
   x <- c(x, pri_e = pri_e$percent25)
   
   ## generate a plot of the prior densities and output to one pdf file
-  z = vector(mode="numeric", length =20)
+  z = vector(mode="numeric", length = 20)
   y1 = distPlot(0,0,0,0, z, x, as.character("pC"), 1)
   y2 = distPlot(0,0,0,0, z, x, as.character("pE"), 1)
   y3 = distPlot(0,0,0,0, z, x, as.character("theta"), 1)
@@ -119,8 +119,8 @@ prior_summaries <- function(q1, q2, q3, q4,
 #'
 posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
   
-  c2 = as.double(0.10) 		## non-inferiority margin for the trial
-  x = vector(mode="numeric", length =20)
+  c2 <- 0.1 		# non-inferiority margin for the trial
+  x <- NULL
   
   ## Catching possible input errors for mmf_succ, n_cyc and cyc_succ
   if(mmf_succ >= n_mmf){
@@ -138,30 +138,34 @@ posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, pos
   pe_distn = post_pe(priorParm[1], priorParm[2], priorParm[9], priorParm[10], cyc_succ, n_cyc-cyc_succ, mmf_succ, n_mmf-mmf_succ)
   theta_distn = post_theta(priorParm[1], priorParm[2], cyc_succ, mmf_succ, n_cyc-cyc_succ, n_mmf-mmf_succ, priorParm[9], priorParm[10], c2)
   
-  x[1] = pc_distn$expect
-  x[2] = pc_distn$mode1
-  x[3] = pc_distn$sd1
-  x[4] = pc_distn$ci_low
-  x[5] = pc_distn$ci_upp
-  x[18] = pc_distn$norm
+  x <- c(x, pc_expect = pc_distn$expect)
+  x <- c(x, pc_mode1 = pc_distn$mode1)
+  x <- c(x, pc_sd1 = pc_distn$sd1)
+  x <- c(x, pc_ci_low = pc_distn$ci_low)
+  x <- c(x, pc_ci_upp = pc_distn$ci_upp)
   
   ## Summaries of the posterior distribution of pE
-  x[6] = pe_distn$expect
-  x[7] = pe_distn$mode1
-  x[8] = pe_distn$sd1
-  x[9] = pe_distn$ci_low
-  x[10] = pe_distn$ci_upp
-  x[19] = pe_distn$norm
+  x <- c(x, pe_expect = pe_distn$expect)
+  x <- c(x, pe_mode1 = pe_distn$mode1)
+  x <- c(x, pe_sd1 = pe_distn$sd1)
+  x <- c(x, pe_ci_low = pe_distn$ci_low)
+  x <- c(x, pe_ci_upp = pe_distn$ci_upp)
   
   ## Summaries of the posterior distribution of theta
-  x[11] = theta_distn$expect
-  x[12] = theta_distn$mode1
-  x[13] = theta_distn$sd1
-  x[14] = theta_distn$ci_low
-  x[15] = theta_distn$ci_upp
-  x[16] = calc_pi(mmf_succ, priorParm[9], priorParm[10], x[11], (x[13])^2, priorParm[1], priorParm[2], n_mmf, cyc_succ, n_cyc-cyc_succ)
-  x[17] = calc_gamma(mmf_succ, n_mmf - mmf_succ, cyc_succ, n_cyc-cyc_succ, priorParm[1], priorParm[2], priorParm[9], priorParm[10], x[19], c2)
-  x[20] = theta_distn$norm
+  x <- c(x, theta_expect = theta_distn$expect)
+  x <- c(x, theta_mode1 = theta_distn$mode1)
+  x <- c(x, theta_sd1 = theta_distn$sd1)
+  x <- c(x, theta_ci_low = theta_distn$ci_low)
+  x <- c(x, theta_ci_upp = theta_distn$ci_upp)
+  
+  xcalc_pi <- calc_pi(mmf_succ, priorParm[9], priorParm[10], x$theta_expect, x$theta_sd1^2, priorParm[1], priorParm[2], n_mmf, cyc_succ, n_cyc-cyc_succ)
+  xcalc_gamma = calc_gamma(mmf_succ, n_mmf - mmf_succ, cyc_succ, n_cyc-cyc_succ, priorParm[1], priorParm[2], priorParm[9], priorParm[10], pe_distn$norm, c2)
+  x <- c(x, xcalc_pi = xcalc_pi) 
+  x <- c(x, xcalc_gamma = xcalc_gamma) 
+  
+  x <- c(x, pc_norm = pc_distn$norm)
+  x <- c(x, pe_norm = pe_distn$norm)
+  x <- c(x, theta_norm = theta_distn$norm)
   
   x
 }
