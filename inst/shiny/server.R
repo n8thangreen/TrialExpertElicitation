@@ -53,9 +53,8 @@ shinyServer(function(input, output){
   ## generating data to plot the prior and posterior densities of pC, pE and theta. 
   pC_priorDens <- reactive({
     ## Return the data to plot the prior and posterior densities of theta.
-    z = priorParam()
     x = vector(mode="numeric", length = 20)
-    dist_plot_data(0,0,0,0, x, z, "pC", TRUE)
+    dist_plot_data(0,0,0,0, x, priorParam(), "pC", TRUE)
   })
   
   pC_postDens <- reactive({
@@ -73,9 +72,8 @@ shinyServer(function(input, output){
   })
   
   pE_priorDens <- reactive({
-    z = priorParam()
     x = vector(mode="numeric", length =20)
-    dist_plot_data(0,0,0,0, x, z, "pE", TRUE)
+    dist_plot_data(0,0,0,0, x, priorParam(), "pE", TRUE)
   })
   
   pE_postDens <- reactive({
@@ -86,10 +84,8 @@ shinyServer(function(input, output){
   })
   
   theta_priorDens <- reactive({
-    z = priorParam()
     x = vector(mode="numeric", length =20)
-    
-    dist_plot_data(0,0,0,0,x, z, "theta", TRUE)
+    dist_plot_data(0,0,0,0,x, priorParam(), "theta", TRUE)
   })
   
   theta_postDens <- reactive({

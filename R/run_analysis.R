@@ -29,17 +29,17 @@ prior_summaries <- function(q1, q2, q3, q4,
   # Numerical searches to find the parameters of the prior distributions
   # for pC and theta assuming our statistical model holds 
   bparam = prior_beta(q1, q2)
-  tparam = prior_theta(q3, 1-q4, bparam[1], bparam[2], c2)
+  tparam = prior_theta(q3, 1-q4, bparam['a'], bparam['b'], c2)
   
   ## Calculating summaries of prior distributions for pC, pE and theta
-  pri_e = prior_e(bparam[1], bparam[2], tparam[1], tparam[2])
+  pri_e = prior_e(bparam['a'], bparam['b'], tparam['mu'], tparam['sigma2'])
   
   x <- NULL
   
   ## Summaries of pC prior distribution
-  x <- c(x, mean_beta = bparam[1])
-  x <- c(x, var_beta = bparam[2])
-  x <- c(x, ess_beta = ess_pc(bparam[1], bparam[2]))
+  x <- c(x, a_beta = bparam['a'])
+  x <- c(x, b_beta = bparam['b'])
+  x <- c(x, ess_beta = ess_pc(bparam['a'], bparam['b']))
   
   ## Summaries of pE prior distribution
   x <- c(x, expect = pri_e$expect)
@@ -49,11 +49,11 @@ prior_summaries <- function(q1, q2, q3, q4,
   x <- c(x, ci_upp = pri_e$ci_upp)
   
   ## Summaries of theta prior distribution	
-  x <- c(x, mean_theta = tparam[1])
-  x <- c(x, var_theta = tparam[2])
-  x <- c(x, cdf_theta = pnorm(0, mean = tparam[1], sd = sqrt(tparam[2]), lower.tail = FALSE))
+  x <- c(x, mean_theta = tparam['mu'])
+  x <- c(x, var_theta = tparam['sigma2'])
+  x <- c(x, cdf_theta = pnorm(0, mean = tparam['mu'], sd = sqrt(tparam['sigma2']), lower.tail = FALSE))
   x <- c(x, q4 = q4)
-  x <- c(x, ess_theta = ess_theta(1, tparam[1], tparam[2], bparam[1], bparam[2]))
+  x <- c(x, ess_theta = ess_theta(1, tparam['mu'], tparam['sigma2'], bparam['a'], bparam['b']))
   
   x <- c(x, pri_e = pri_e$percent25)
   

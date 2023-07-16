@@ -29,7 +29,8 @@ prior_beta <- function(mode, percentile25) {
   
   check_accuracy_of_uniroot(a_root, b_root) 
   
-  c(a_root, b_root)
+  c(a = a_root,
+    b = b_root)
 }
 
 #
@@ -82,8 +83,8 @@ beta_percentile25 <- function(a, mode) {
 prior_theta <- function(pi1, gamma, a, b, c2){
   mu_sigma = qnorm(pi1, mean=0, sd=1, lower.tail=TRUE)
   fval = vector(mode="numeric", length=2)
-  l1 = as.double(0.01)
-  u1 = as.double(5)
+  l1 = 0.01
+  u1 = 5
   
   fval[1] =  calc_thetavar(l1, mu_sigma, a, b, gamma, c2)
   fval[2] =  calc_thetavar(u1, mu_sigma, a, b, gamma, c2)
@@ -98,11 +99,13 @@ prior_theta <- function(pi1, gamma, a, b, c2){
   z = uniroot(calc_thetavar, interval=c(l1, u1), mu_sigma, a, b, gamma, c2,
               lower = l1, upper=u1, f.lower=fval[1], f.upper=fval[2])
   param = vector(mode="numeric", length=2)
-  ## theta ~ normal(mu, sigma^2), where param[1] = mu, param[2] = sigma^2
-  param[1] = mu_sigma/z$root
-  param[2] = (1/z$root)^2
   
-  param
+  ## theta ~ normal(mu, sigma^2)
+  mu <- mu_sigma/z$root
+  sigma2 <- (1/z$root)^2
+  
+  c(mu = mu,
+    sigma2 = sigma2)
 }
 
 
@@ -132,6 +135,7 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, c2){
   wc  = vector(mode="numeric", length=lc)
   wc[1] = (gridc[3]-gridc[1])/6.0
   wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  
   for(i in seq(2, lc-1, by=2)){
     wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
   }
@@ -140,8 +144,9 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, c2){
   }
   
   int = vector(mode = "numeric", length = lc)
-  int1 = as.double(0)
-  for(i in 1:lc){
+  int1 = 0
+  
+  for(i in seq_len(lc)){
     ## for each mesh point for pc, integrate joint density over the interval [max{0, pc - c2}, 1]
     upp = max(0, gridc[i] - c2)
     if(upp <= 0){
@@ -174,14 +179,14 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, c2){
       dens = dens*exp(dens1)
       int[i] = sum(we*dens)
     }
-    
   }
   int1 = sum(wc*int)*sigmainv/(beta(a,b)*sqrt(2*pi))
+  
   return(int1 - gamma)
 }
 
 
-#' evaluate the marginal prior distribution of pE.
+#' Evaluate the marginal prior distribution of pE
 #'
 #' @param a,b parameters of prior distribution of pC 
 #' @param mu,sigma2 parameters of prior distribution of theta 
@@ -203,6 +208,7 @@ prior_e <- function(a, b, mu, sigma2){
   we  = vector(mode="numeric", length=le)
   we[1] = (gride[3]-gride[1])/6.0
   we[le] = (gride[le] - gride[le-2])/6.0
+  
   for(i in seq(2, (le-1), by=2)){
     we[i] = 4*(gride[i+1] - gride[i-1])/6.0
   }
@@ -220,6 +226,7 @@ prior_e <- function(a, b, mu, sigma2){
   wc  = vector(mode="numeric", length=lc)
   wc[1] = (gridc[3]-gridc[1])/6.0
   wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  
   for(i in seq(2, (lc-1), by=2)){
     wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
   }
@@ -227,9 +234,10 @@ prior_e <- function(a, b, mu, sigma2){
     wc[i] = (gridc[i+2] - gridc[i-2])/6.0
   }
   
-  dens =  vector(mode="numeric", length=lc)
+  dens = vector(mode="numeric", length=lc)
   dens1 = vector(mode="numeric", length=lc)
-  int =  vector(mode="numeric", length=le)
+  int = vector(mode="numeric", length=le)
+  
   for(i in 1:le){
     dens = (gridc^(a-1))*((1-gridc)^(b-1))/(gride[i]*(1-gride[i]))
     dens1 = (-0.5/sigma2)*((log(gride[i]*(1-gridc)/(gridc*(1-gride[i]))) - mu)^2)
@@ -243,8 +251,8 @@ prior_e <- function(a, b, mu, sigma2){
   ## If probability in this interval is less than would be the case under a flat density, we conclude
   ## the density could be U or L shaped. 
   
-  lim1 = as.double(0.001)
-  lim2 = as.double(0.999)
+  lim1 = 0.001
+  lim2 = 0.999
   
   ## Create a grid for pE covering only the interval (lim1, lim2)
   gride2 = seq(0.001, 0.999, by=0.001)
@@ -252,6 +260,7 @@ prior_e <- function(a, b, mu, sigma2){
   we2  = vector(mode="numeric", length=le2)
   we2[1] = (gride2[3]-gride2[1])/6.0
   we2[le2] = (gride2[le2] - gride2[le2-2])/6.0
+  
   for(i in seq(2, (le2-1), by=2)){
     we2[i] = 4*(gride2[i+1] - gride2[i-1])/6.0
   }
@@ -260,6 +269,7 @@ prior_e <- function(a, b, mu, sigma2){
   }
   int2 = int[which(gride >= lim1 & gride <= lim2)] 	
   istop = sum(we2*int2)
+  
   if(istop < (lim2 - lim1)){
     stop("Prior density Experimental remission rate is U (or L) shaped function of pE. Can't guarantee accuracy of numerical integration routines")
   }else{
@@ -296,7 +306,7 @@ prior_e <- function(a, b, mu, sigma2){
 }
 
 
-#' calculate variance of prior distribution of log[pc/(1-pc)]
+#' Calculate variance of prior distribution of log[pc/(1-pc)]
 #'
 #' @param a,b parameters of prior distribution of pC.
 #'
@@ -306,7 +316,7 @@ prior_e <- function(a, b, mu, sigma2){
 logoddspc <- function(a,b){
   ## set up a grid for theta1 = log[pc/(1-pc)]
   r = as.integer(64)
-  mesh = as.integer(6*r -1)
+  mesh = as.integer(6*r - 1)
   mesh1 = as.integer(2*mesh-1)
   grid1 = vector(mode="numeric", length= mesh)
   gridt = vector(mode="numeric", length= mesh1)
@@ -321,7 +331,7 @@ logoddspc <- function(a,b){
     }else if((i >= r) & (i<= 5*r)){
       grid1[i] = mu + sqrt(3.0)*(-3 + 3*(i-r)/(2*r))
     }else{
-      grid1[i] = mu + sqrt(3.0)*(3+ 4*log(r/(6*r -i)))
+      grid1[i] = mu + sqrt(3.0)*(3 + 4*log(r/(6*r - i)))
     }
   }   
   ## calculating mesh mid-points 
@@ -335,6 +345,7 @@ logoddspc <- function(a,b){
   wtheta  = vector(mode="numeric", length=mesh1)
   wtheta[1] = (gridt[3]-gridt[1])/6.0
   wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6.0
+  
   for(i in seq(2, (mesh1-1), by=2)){
     wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6.0
   }
