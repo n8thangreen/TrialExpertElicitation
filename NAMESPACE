@@ -3,7 +3,7 @@
 export(calc_gamma)
 export(calc_pi)
 export(calc_thetavar)
-export(distPlot)
+export(dist_plot_data)
 export(ess_pc)
 export(ess_theta)
 export(logoddspc)

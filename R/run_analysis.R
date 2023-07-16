@@ -59,9 +59,9 @@ prior_summaries <- function(q1, q2, q3, q4,
   
   ## generate a plot of the prior densities and output to one pdf file
   z = vector(mode="numeric", length = 20)
-  y1 = distPlot(0,0,0,0, z, x, as.character("pC"), 1)
-  y2 = distPlot(0,0,0,0, z, x, as.character("pE"), 1)
-  y3 = distPlot(0,0,0,0, z, x, as.character("theta"), 1)
+  y1 = dist_plot_data(0,0,0,0, z, x, "pC", 1)
+  y2 = dist_plot_data(0,0,0,0, z, x, "pE", 1)
+  y3 = dist_plot_data(0,0,0,0, z, x, "theta", 1)
   
   outputfile <- system.file(paste0(out_dir, "/", expert, "-priorplot.pdf"), package = "TrialExpertElicitation", mustWork = TRUE)
   
@@ -195,7 +195,7 @@ posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, pos
 #' @return
 #' @export
 #'
-distPlot <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm, parmInd, postind){
+dist_plot_data <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm, parmInd, postind){
   
   if(postind){
     ## Wish to generate prior density for the stated parameter

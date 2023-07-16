@@ -55,14 +55,14 @@ shinyServer(function(input, output){
     ## Return the data to plot the prior and posterior densities of theta.
     z = priorParam()
     x = vector(mode="numeric", length = 20)
-    distPlot(0,0,0,0, x, z, as.character("pC"), TRUE)
+    dist_plot_data(0,0,0,0, x, z, "pC", TRUE)
   })
   
   pC_postDens <- reactive({
     z = priorParam()
     x = postParam()
     n <- as.numeric(input$hypo_data_size)
-    distPlot(n_mmf = n - input$n_cyc,
+    dist_plot_data(n_mmf = n - input$n_cyc,
              mmf_succ = input$mmf_succ,
              n_cyc = input$n_cyc,
              cyc_succ = input$cyc_succ,
@@ -75,27 +75,28 @@ shinyServer(function(input, output){
   pE_priorDens <- reactive({
     z = priorParam()
     x = vector(mode="numeric", length =20)
-    distPlot(0,0,0,0, x, z, as.character("pE"), TRUE)
+    dist_plot_data(0,0,0,0, x, z, "pE", TRUE)
   })
+  
   pE_postDens <- reactive({
     z = priorParam()
     x = postParam()
     n <- as.numeric(input$hypo_data_size)
-    distPlot(n - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, x, z, as.character("pE"), FALSE)
+    dist_plot_data(n - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, x, z, "pE", FALSE)
   })
   
   theta_priorDens <- reactive({
     z = priorParam()
     x = vector(mode="numeric", length =20)
     
-    distPlot(0,0,0,0,x, z, as.character("theta"), TRUE)
+    dist_plot_data(0,0,0,0,x, z, "theta", TRUE)
   })
   
   theta_postDens <- reactive({
     z = priorParam()
     x = postParam() 
     n <- as.numeric(input$hypo_data_size)
-    distPlot(n - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, x, z, as.character("theta"), FALSE)
+    dist_plot_data(n - input$n_cyc, input$mmf_succ, input$n_cyc, input$cyc_succ, x, z, "theta", FALSE)
   })
   
   ###########
@@ -124,9 +125,9 @@ shinyServer(function(input, output){
       w = postSumary()
       n <- as.numeric(input$hypo_data_size)
       dtacase = scan(glue::glue("data/data_scenario{n}.txt"))
-      u1 = distPlot(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
-      u2 = distPlot(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
-      u3 = distPlot(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
+      u1 = dist_plot_data(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, "pC", FALSE)
+      u2 = dist_plot_data(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, "pC", FALSE)
+      u3 = dist_plot_data(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, "pC", FALSE)
       
       postPlot = plot(u1$gridc, u1$postd, type="l", lty=2, lwd=3, col="dark red",
                       main="Prior and posterior densities of 6-month remission rate on control arm/steroids",
@@ -148,7 +149,7 @@ shinyServer(function(input, output){
       ## Only want to plot the prior density in this scenario
       plot(x$gridc, x$dens, type="l", lty=1, lwd=3, col="red",
            main = "Prior density of 6-month remission rate on control arm/steroids",
-           xlab = "Control arm 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
+           xlab = "Control arm 6-month remission rate", ylab="Density", xlim=c(0,1), cex.lab = 1.5, cex.axis=1.5, cex.main = 2)	
     }
   })
   
@@ -172,9 +173,9 @@ shinyServer(function(input, output){
       w = postSumary()
       n <- as.numeric(input$hypo_data_size)
       dtacase = scan(glue::glue("data/data_scenario{n}.txt"))
-      u1 = distPlot(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
-      u2 = distPlot(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
-      u3 = distPlot(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
+      u1 = dist_plot_data(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, "pE", FALSE)
+      u2 = dist_plot_data(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, "pE", FALSE)
+      u3 = dist_plot_data(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, "pE", FALSE)
       
       postPlot = plot(u1$gride, u1$postd, type="l", lty=2, lwd=3, col="dark green",
                       main="Prior and posterior densities of 6-month remission rate on Experimental",
@@ -217,13 +218,13 @@ shinyServer(function(input, output){
       w = postSumary()
       ns <- as.numeric(input$hypo_data_size)
       dtacase = scan(glue::glue("data/data_scenario{ns}.txt"))
-      u1pe = distPlot(ns - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pE"), FALSE)
-      u2pe = distPlot(ns - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pE"), FALSE)
-      u3pe = distPlot(ns - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pE"), FALSE)
+      u1pe = dist_plot_data(ns - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, "pE", FALSE)
+      u2pe = dist_plot_data(ns - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, "pE", FALSE)
+      u3pe = dist_plot_data(ns - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, "pE", FALSE)
       
-      u1pc = distPlot(ns - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("pC"), FALSE)
-      u2pc = distPlot(ns - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("pC"), FALSE)
-      u3pc = distPlot(ns - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("pC"), FALSE)
+      u1pc = dist_plot_data(ns - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, "pC", FALSE)
+      u2pc = dist_plot_data(ns - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, "pC", FALSE)
+      u3pc = dist_plot_data(ns - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, "pC", FALSE)
       
       leg1 = bquote("Control arm:" ~ n[C] == .(dtacase[1]) ~ S[C]  == .(dtacase[2]) ~ n[M] == .(ns - dtacase[1]) ~ S[M] ==  .(dtacase[3]))
       leg2 = bquote("Control arm:" ~ n[C] == .(dtacase[4]) ~ S[C]  == .(dtacase[5]) ~ n[M] == .(ns - dtacase[4]) ~ S[M] ==  .(dtacase[6]))
@@ -310,9 +311,9 @@ shinyServer(function(input, output){
       
       ns <- as.numeric(input$hypo_data_size)
       dtacase = scan(glue::glue("data/data_scenario{n}.txt"))
-      u1 = distPlot(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, as.character("theta"), FALSE)
-      u2 = distPlot(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, as.character("theta"), FALSE)
-      u3 = distPlot(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, as.character("theta"), FALSE)
+      u1 = dist_plot_data(n - dtacase[1], dtacase[3], dtacase[1], dtacase[2], w$scen1, z, "theta", FALSE)
+      u2 = dist_plot_data(n - dtacase[4], dtacase[6], dtacase[4], dtacase[5], w$scen2, z, "theta", FALSE)
+      u3 = dist_plot_data(n - dtacase[7], dtacase[9], dtacase[7], dtacase[8], w$scen3, z, "theta", FALSE)
       
       par(pty="m", plt=c(0.1, 1, 0, 1), omd=c(0.1,1.0,0,0.9))
       par(mfrow = c(2, 1))
