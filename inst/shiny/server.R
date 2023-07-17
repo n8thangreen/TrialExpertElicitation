@@ -25,7 +25,7 @@ shinyServer(function(input, output){
       q2 <- input$pc_q2
     }
     
-    prior_summaries(q1, q2, input$theta_q1, input$theta_q2, input$expert)	
+    prior_summaries(q1, q2, input$theta_q1/100, input$theta_q2/100, input$expert)	
   })
   
   postParam <- reactive({
@@ -389,7 +389,7 @@ shinyServer(function(input, output){
       ns <- as.numeric(input$hypo_data_size)
       
       summary_text <- paste(
-        glue::glue("Posterior distributions update the priors implied by the opinions:<br/> Q1 = {input$pc_q1}, Q2 = {input$pc_q2}, Q3 = {input$theta_q1}, Q4 = {input$theta_q2}."),
+        glue::glue("Posterior distributions update the priors implied by the opinions:<br/> Q1 = {input$pc_q1}, Q2 = {input$pc_q2}, Q3 = {input$theta_q1}%, Q4 = {input$theta_q2}%."),
          glue::glue("<br/><br/>Posterior distributions incorporate the following data:"),
       glue::glue("<ul><li>{input$n_cyc} patients randomised to control arm of whom {input$cyc_succ} were in remission within six months</li>"),
       glue::glue("<li>{ns - input$n_cyc} patients randomised to Experimental of whom {input$mmf_succ} were in remission within six months</li></ul>"),
@@ -421,7 +421,7 @@ shinyServer(function(input, output){
       tquantile0_95 = qnorm(0.95, mean=x[9], sd = sqrt(x[10]), lower.tail=TRUE)
       
       summary_text <- paste(
-        glue::glue("Prior distributions are determined by the opinions: <br/> Q1 = {input$pc_q1} <br/> Q2 = {input$pc_q2} <br/> Q3 = {input$theta_q1} <br/> Q4 = {input$theta_q2}"),
+        glue::glue("Prior distributions are determined by the opinions: <br/> Q1 = {input$pc_q1} <br/> Q2 = {input$pc_q2} <br/> Q3 = {input$theta_q1}% <br/> Q4 = {input$theta_q2}%"),
         "<br/><br/>Summary of the prior distribution of the 6-month remission rate on control arm/steroids:",
         glue::glue("<ul><li>90% credibility interval for control arm remission rate is ({round(pcquantile0_05, 2)}, {round(pcquantile0_95, 2)})"),
         glue::glue("<li>Your distribution is Beta with parameters {round(x[1], 2)} and {round(x[2], 2)}</li>"),

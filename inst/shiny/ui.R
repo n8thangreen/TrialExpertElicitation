@@ -31,7 +31,7 @@ shinyUI(pageWithSidebar(
 		br(),
 		sliderInput(inputId = "theta_q1",
 				label = "Q3: What is the chance that the response rate in the baricitinib arm is higher than that in methotrexate group?",
-				min = 0, max = 1, value = 0.3, step=0.05),
+				min = 0, max = 100, value = 30, step=5),
 		br(),
 		br(),
 
@@ -42,7 +42,7 @@ shinyUI(pageWithSidebar(
 				# this is the AUC on the left
 				# should we use the point value instead?
 				# how to modify the code?
-				min = 0, max = 1, value = 0.3, step=0.05),
+				min = 0, max = 100, value = 30, step=5),
 		br(),
 		br(),	
 
