@@ -20,6 +20,9 @@ shinyServer(function(input, output){
     if (no_root_in_range) {
       q1 <- 0.7
       q2 <- 0.5
+    
+      updateSliderInput(inputId = 'pc_q1', value = q1)
+      updateSliderInput(inputId = 'pc_q2', value = q2)
     } else {
       q1 <- input$pc_q1
       q2 <- input$pc_q2

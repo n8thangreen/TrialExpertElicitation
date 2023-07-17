@@ -282,21 +282,21 @@ prior_e <- function(a, b, mu, sigma2){
     
     ## Call a search routine to find the 5th and 95th percentiles of the distribution 
     fval = vector(mode="numeric", length=2)
-    fval[1] =  prob_pE(0.005, 0.05, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
-    fval[2] =  prob_pE(0.9, 0.05, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
+    fval[1] = prob_pE(0.005, 0.05, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
+    fval[2] = prob_pE(0.9, 0.05, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
     z = uniroot(prob_pE, interval=c(0.005, 0.9), 0.05, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0,
                 lower = 0.005, upper=0.9, f.lower=fval[1], f.upper=fval[2])
     ci_low = z$root
     
-    fval[1] =  prob_pE(0.1, 0.95, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
-    fval[2] =  prob_pE(0.995, 0.95, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
+    fval[1] = prob_pE(0.1, 0.95, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
+    fval[2] = prob_pE(0.995, 0.95, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
     z = uniroot(prob_pE, interval=c(0.1, 0.995), 0.95, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0,
                 lower = 0.1, upper=0.995, f.lower=fval[1], f.upper=fval[2])
     ci_upp = z$root
     
     ## Call a search routine to find the 25th percentile of the distribution
-    fval[1] =  prob_pE(0.005, 0.25, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
-    fval[2] =  prob_pE(0.9, 0.25, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
+    fval[1] = prob_pE(0.005, 0.25, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
+    fval[2] = prob_pE(0.9, 0.25, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0)
     z = uniroot(prob_pE, interval=c(0.005, 0.9), 0.25, 1, a, b, mu, sigma2, 1, 1, 1, 1, 0,
                 lower = 0.005, upper=0.9, f.lower=fval[1], f.upper=fval[2])
     percent25 = z$root
