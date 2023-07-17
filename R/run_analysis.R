@@ -74,11 +74,16 @@ prior_summaries <- function(q1, q2, q3, q4,
   
   par(mfrow = c(2,2), pty="s")
   
-  plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title1, xlab = "Control arm 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1) 
-  plot(y2$gride, y2$dens, type="l", lty=1, lwd=3, col="green", main = title2, xlab = "Experimental arm 6-month remission rate", ylab="Density", xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
-  plot(y3$gridt, y3$dens, type="l", lty=1, lwd=3, col="blue", main = title3, xlab = "log-odds ratio", ylab="Density", xlim =c(-2, 2), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
-  plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title4, xlab = "6-month remission rate", ylab="Density", ylim = range(c(y1$dens, y2$dens)), xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
+  plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title1, xlab = "Control arm 6-month remission rate", ylab="Density",
+       xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1) 
+  plot(y2$gride, y2$dens, type="l", lty=1, lwd=3, col="green", main = title2, xlab = "Experimental arm 6-month remission rate", ylab="Density",
+       xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
+  plot(y3$gridt, y3$dens, type="l", lty=1, lwd=3, col="blue", main = title3, xlab = "log-odds ratio", ylab="Density",
+       xlim =c(-2, 2), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
+  plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title4, xlab = "6-month remission rate", ylab="Density",
+       ylim = range(c(y1$dens, y2$dens)), xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
   lines(y2$gride, y2$dens, type="l", lty=2, lwd=3, col="green")
+  
   dev.off()
   
   ## Write answers to elicitation questions to file 
@@ -160,6 +165,7 @@ posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, pos
   
   xcalc_pi <- calc_pi(mmf_succ, priorParm[9], priorParm[10], x$theta_expect, x$theta_sd1^2, priorParm[1], priorParm[2], n_mmf, cyc_succ, n_cyc-cyc_succ)
   xcalc_gamma = calc_gamma(mmf_succ, n_mmf - mmf_succ, cyc_succ, n_cyc-cyc_succ, priorParm[1], priorParm[2], priorParm[9], priorParm[10], pe_distn$norm, c2)
+  
   x <- c(x, xcalc_pi = xcalc_pi) 
   x <- c(x, xcalc_gamma = xcalc_gamma) 
   
