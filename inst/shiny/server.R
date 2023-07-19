@@ -10,23 +10,39 @@ shinyServer(function(input, output){
     length(input$hypo_data_size) > 0 && input$hypo_data_size == 40
   })
   
+  output$valid_range_q1 <- #reactive({
+    renderText({
+      paste("Min:", input$pc_q2 + 0.05, ";",
+            "Max:", 0.95)
+    })
+  # })
+  
+  output$valid_range_q2 <- #reactive({
+    renderText({
+      paste("Min:", round(beta_percentile25(a = 0.5, input$pc_q1),2), ";",
+            "Max:", round(beta_percentile25(a = 50, input$pc_q1),2))
+      })
+  # })
+  
   ## Need to determine parameters of the prior distribution
   ## Reactive expression to generate the requested distribution. This is called
   ## whenever the inputs change. The renderers defined below then all use the value 
   ## computed from this expression
   priorParam <- reactive({
-    no_root_in_range <- !check_interval_valid_for_a(input$pc_q1, input$pc_q2)
-    
-    if (no_root_in_range) {
-      q1 <- 0.7
-      q2 <- 0.5
-    
-      updateSliderInput(inputId = 'pc_q1', value = q1)
-      updateSliderInput(inputId = 'pc_q2', value = q2)
-    } else {
+
+    ##TODO: reset sliders if values not valid
+    # no_root_in_range <- !check_interval_valid_for_a(input$pc_q1, input$pc_q2)
+    # 
+    # if (no_root_in_range) {
+    #   q1 <- 0.7
+    #   q2 <- 0.5
+    # 
+    #   updateSliderInput(inputId = 'pc_q1', value = q1)
+    #   updateSliderInput(inputId = 'pc_q2', value = q2)
+    # } else {
       q1 <- input$pc_q1
       q2 <- input$pc_q2
-    }
+    # }
     
     prior_summaries(q1, q2, input$theta_q1/100, input$theta_q2/100, input$expert)	
   })

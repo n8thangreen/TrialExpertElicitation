@@ -12,6 +12,7 @@ prior_beta <- function(mode, percentile25) {
   no_root_in_range <- !check_interval_valid_for_a(mode, percentile25)
   
   if (no_root_in_range) {
+    shinyalert::shinyalert("This combination of Q1 and Q2 does not permit the construction of a prior distribution", "Try different values", type = "error")
     stop("\nGiven answers to elicitation questions Q1 and Q2, ",
          "we cannot determine a Beta prior distribution for control arm/steroid remission rate.\n",
          "Please revise either the answer to elicitation Q1 or Q2.\n",
@@ -43,6 +44,7 @@ check_accuracy_of_uniroot <- function(a, b) {
     pbeta(q_high, a, b, lower.tail = TRUE) - pbeta(q_low, a, b, lower.tail = TRUE)
   
   if (diff_pbeta < (q_high - q_low)){
+    shinyalert::shinyalert("This combination of Q1 and Q2 does not permit the construction of a prior distribution", "Try different values", type = "error")
     stop("Error identifying control arm prior distribution: ",
          "Stop because we cannot guarantee the accuracy of the numerical integration")
   }
@@ -62,7 +64,7 @@ beta_percentile25 <- function(a, mode) {
   b <- (a - 1)/mode - (a - 2)
   
   if (b <= 0) {
-    shinyalert::shinyalert("Q1 and Q2 values together aren't allowed", "Try different probabilities", type = "error")
+    shinyalert::shinyalert("This combination of Q1 and Q2 does not permit the construction of a prior distribution", "Try different values", type = "error")
     stop("Beta distribution b parameter is less than zero. Try different a or mode.")
   }
   
@@ -92,6 +94,7 @@ prior_theta <- function(pi1, gamma, a, b, c2){
   if(identical(sign(fval[1]), sign(fval[2]))){
     cat("Given Beta prior for pC and answers to elicitation questions Q3 and Q4, we cannot determine a Normal prior distribution for the log-odds ratio. \n")
     cat("Please revise either the answer to elicitation Q3 or Q4. \n")
+    shinyalert::shinyalert("This combination of Q3 and Q4 does not permit the construction of a prior distribution", "Try different values", type = "error")
     stop("Given Beta prior for pC and answers to elicitation questions Q3 and Q4, cannot determine Normal prior distribution for log-odds ratio")
   }
   
@@ -271,6 +274,7 @@ prior_e <- function(a, b, mu, sigma2){
   istop = sum(we2*int2)
   
   if(istop < (lim2 - lim1)){
+    shinyalert::shinyalert("This combination of Q1 and Q2 does not permit the construction of a prior distribution", "Try different values", type = "error")
     stop("Prior density Experimental remission rate is U (or L) shaped function of pE. Can't guarantee accuracy of numerical integration routines")
   }else{
     ## calculate the prior mean and variance of pe
