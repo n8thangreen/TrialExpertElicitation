@@ -15,7 +15,7 @@ prob_pE(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior)
 
 \item{a, b, mu, sigma2}{parameters of priors pC~Beta(a,b), theta~N(mu, sigma2)}
 
-\item{sc, fc, s, fe}{number of successes and failures on treatments CYC and MMF}
+\item{sc, fc, s, fe}{number of successes and failures on treatments control arm and experimental arm}
 
 \item{posterior}{indicator (posterior =1 implies inferences concern posterior distribution)}
 }

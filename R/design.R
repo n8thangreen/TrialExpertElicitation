@@ -1,11 +1,11 @@
 
 #' Calculate pi
 #' 
-#' @param se  number of successes observed on MMF in the dataset
+#' @param se  number of successes observed on experimental arm in the dataset
 #' @param mu,sigma2 parameters of prior distribution of theta
 #' @param pmean,pvar posterior mean and variance of theta.
 #' @param a,b parameters of prior distribution of pC
-#' @param ne,sc,fc number randomised to MMF; number of successes and failures on CYC.
+#' @param ne,sc,fc number randomised to experimental arm; number of successes and failures on CYC.
 #'
 #' @return \deqn{P{pE > pC|data}}
 #' @export
@@ -133,7 +133,7 @@ calc_pi <- function(se, mu, sigma2, pmean, pvar, a, b, ne, sc, fc) {
 #' Calculate gamma
 #' 
 #' @param se,fe number of successes and failures on CYC
-#' @param sc,fc number of successes and failures on MMF
+#' @param sc,fc number of successes and failures on experimental arm
 #' @param a,b parameters of prior distribution of pC
 #' @param mu,sigma2 parameters of prior distribution of theta
 #' @param norm normalising constant of joint posterior distribution of (pC, pE)

@@ -5,7 +5,7 @@
 #' 
 #' @param a,b parameters of prior distribution of pC
 #' @param mu,sigma2 parameters of prior distribution of theta
-#' @param sc,fc,se,fe number of successes and failures observed on CYC and MMF, respectively 
+#' @param sc,fc,se,fe number of successes and failures observed on CYC and experimental arm, respectively 
 #'
 #' @return dataframe containing posterior expectation, SD, mode,
 #'   limits of the 90% credibility interval of pC and the normalisation
@@ -227,7 +227,7 @@ post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
 #' plot the posterior distribution of theta
 #'
 #' @param a,b parameters of prior distribution of pC
-#' @param sc,se,fc,fe number of successes and failures observed on CYC and MMF
+#' @param sc,se,fc,fe number of successes and failures observed on CYC and experimental arm
 #' @param mu,sigma2 parameters of prior distribution of theta
 #' @param c2 non-inferiority margin for the trial
 #'
@@ -329,7 +329,7 @@ post_theta <- function(a,b, sc, se, fc, fe, mu, sigma2, c2){
 #' produce a course estimate of posterior variance of theta
 #'
 #' @param a,b parameters of prior distribution of pC
-#' @param sc,se,fc,fe number of successes and failures observed on CYC and MMF
+#' @param sc,se,fc,fe number of successes and failures observed on CYC and experimental arm
 #' @param mu,sigma2 parameters of prior distribution of theta
 #'
 #' @return estimate of variance of the posterior distribution of theta.

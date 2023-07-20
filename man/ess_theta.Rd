@@ -7,7 +7,7 @@
 ess_theta(R, mu, sigma2, a, b)
 }
 \arguments{
-\item{R}{number of subjects randomised to MMF for every one on control
+\item{R}{number of subjects randomised to experimental arm for every one on control
 (E:C allocation ratio R:1) in a hypothetical study}
 
 \item{mu, sigma2}{mean and variance of the prior distribution of \deqn{\theta~N(mu, sigma2)}}
@@ -16,7 +16,7 @@ ess_theta(R, mu, sigma2, a, b)
 }
 \value{
 prior effective sample size of theta prior (expressed in terms of the effective
-total number of observations accrued across MMF and CYC)
+total number of observations accrued across experimental arm and CYC)
 }
 \description{
 Compute the effective sample size of the prior distribution of theta.

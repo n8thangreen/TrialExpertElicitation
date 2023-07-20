@@ -7,7 +7,7 @@
 calc_pi(se, mu, sigma2, pmean, pvar, a, b, ne, sc, fc)
 }
 \arguments{
-\item{se}{number of successes observed on MMF in the dataset}
+\item{se}{number of successes observed on experimental arm in the dataset}
 
 \item{mu, sigma2}{parameters of prior distribution of theta}
 
@@ -15,7 +15,7 @@ calc_pi(se, mu, sigma2, pmean, pvar, a, b, ne, sc, fc)
 
 \item{a, b}{parameters of prior distribution of pC}
 
-\item{ne, sc, fc}{number randomised to MMF; number of successes and failures on CYC.}
+\item{ne, sc, fc}{number randomised to experimental arm; number of successes and failures on CYC.}
 }
 \value{
 \deqn{P{pE > pC|data}}

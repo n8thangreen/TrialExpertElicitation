@@ -99,7 +99,7 @@ prior_summaries <- function(q1, q2, q3, q4,
 }
 
 ## Calculate summaries of the posterior distributions of pC, pE and theta
-## Function inputs: 	n_mmf, mmf_succ = (nE, SE): number of patients randomised to MMF and number of observed successes on MMF
+## Function inputs: 	n_mmf, mmf_succ = (nE, SE): number of patients randomised to MMF and number of observed successes on experimental arm
 ##						n_cyc, cyc_succ = (nC, SC): number of patients randomised to CYC and number of observed success on CYC
 ##						priorParm = vector outputted by priorcall() containing summaries of prior distributions
 ##						posterior40 = logical variable indicating whether wish to calculate posterior distribution assuming nE+nC = 40

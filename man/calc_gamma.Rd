@@ -9,7 +9,7 @@ calc_gamma(se, fe, sc, fc, a, b, mu, sigma2, norm, c2)
 \arguments{
 \item{se, fe}{number of successes and failures on CYC}
 
-\item{sc, fc}{number of successes and failures on MMF}
+\item{sc, fc}{number of successes and failures on experimental arm}
 
 \item{a, b}{parameters of prior distribution of pC}
 

@@ -9,7 +9,7 @@ post_theta(a, b, sc, se, fc, fe, mu, sigma2, c2)
 \arguments{
 \item{a, b}{parameters of prior distribution of pC}
 
-\item{sc, se, fc, fe}{number of successes and failures observed on CYC and MMF}
+\item{sc, se, fc, fe}{number of successes and failures observed on CYC and experimental arm}
 
 \item{mu, sigma2}{parameters of prior distribution of theta}
 

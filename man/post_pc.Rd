@@ -11,7 +11,7 @@ post_pc(a, b, mu, sigma2, sc, fc, se, fe)
 
 \item{mu, sigma2}{parameters of prior distribution of theta}
 
-\item{sc, fc, se, fe}{number of successes and failures observed on CYC and MMF, respectively}
+\item{sc, fc, se, fe}{number of successes and failures observed on CYC and experimental arm, respectively}
 }
 \value{
 dataframe containing posterior expectation, SD, mode,

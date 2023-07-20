@@ -13,7 +13,7 @@ prob_theta(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2, postexp, postsd)
 
 \item{norm}{normalisation constant of joint posterior distribution of (pC, theta)}
 
-\item{se, sc, fe, fc}{number of successes and failures on treatments CYC and MMF}
+\item{se, sc, fe, fc}{number of successes and failures on treatments CYC and experimental arm}
 
 \item{a, b}{parameters of priors pC~Beta(a,b)}
 

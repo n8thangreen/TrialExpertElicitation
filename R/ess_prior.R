@@ -3,13 +3,13 @@
 #'
 #' Compute the effective sample size of the prior distribution of theta.
 #'
-#' @param R number of subjects randomised to MMF for every one on control
+#' @param R number of subjects randomised to experimental arm for every one on control
 #'   (E:C allocation ratio R:1) in a hypothetical study
 #' @param mu,sigma2 mean and variance of the prior distribution of \deqn{\theta~N(mu, sigma2)}
 #' @param a,b parameters of the prior distribution of \deqn{pC~Beta(a,b)}
 #'
 #' @return  prior effective sample size of theta prior (expressed in terms of the effective
-#'   total number of observations accrued across MMF and CYC)
+#'   total number of observations accrued across experimental arm and CYC)
 #' @export
 #'
 ess_theta <- function(R, mu, sigma2, a, b){

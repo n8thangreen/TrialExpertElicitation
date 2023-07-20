@@ -8,7 +8,7 @@
 #' @param prob Probability
 #' @param norm normalising constant of joint posterior distribution of (pE, pC) given data
 #' @param a,b,mu,sigma2 parameters of priors pC~Beta(a,b), theta~N(mu, sigma2) 
-#' @param sc,fc,s,fe number of successes and failures on treatments CYC and MMF 
+#' @param sc,fc,s,fe number of successes and failures on treatments control arm and experimental arm 
 #' @param posterior indicator (posterior =1 implies inferences concern posterior distribution)
 #'
 #' @return \deqn{P{pE <= q} - prob}.
@@ -101,7 +101,7 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
 #' @param q hypothesized 100*prob percentile of the distribution.	iu
 #' @param prob indicator (posterior =1 implies inferences concern posterior distribution)
 #' @param norm normalisation constant of joint posterior distribution of (pC, pE)
-#' @param se,sc,fe,fc number of successes and failures on treatments CYC and MMF
+#' @param se,sc,fe,fc number of successes and failures on treatments CYC and experimental arm
 #' @param a,b parameters of priors pC~Beta(a,b)
 #' @param mu,sigma2 parameters of priors theta~N(mu, sigma2)
 #'
@@ -174,7 +174,7 @@ prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
 #' @param q hypothesized 100*prob percentile of the distribution.	
 #' @param prob 
 #' @param norm normalisation constant of joint posterior distribution of (pC, theta)
-#' @param se,sc,fe,fc number of successes and failures on treatments CYC and MMF
+#' @param se,sc,fe,fc number of successes and failures on treatments CYC and experimental arm
 #' @param a,b parameters of priors pC~Beta(a,b)
 #' @param mu,sigma2 parameters of priors theta~N(mu, sigma2)
 #' @param postexp,postsd expectation and standard deviation of posterior distribution of theta. 
