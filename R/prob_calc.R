@@ -27,13 +27,13 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
     stop("Error calculating quantiles of Experimental distribution: integration mesh contains even number of elements when odd number are expected.")
   }
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   ## Set up a grid to integrate over [0, q] with midpoints
@@ -42,7 +42,7 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
   if(x1 == ((q-0.001)/0.004)){
     gride = seq(0.001, q, by = 0.002)
   }else{
-    midpt = (uppbd + q)/2.0
+    midpt = (uppbd + q)/2
     gride = append(seq(0.001, uppbd, by=0.002), c(midpt, q))	
   }
   
@@ -52,16 +52,16 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
   }
   ## Calculate Simpson's integration weights
   we  = vector(mode="numeric", length=le)
-  we[1] = (gride[3]-gride[1])/6.0
-  we[le] = (gride[le] - gride[le-2])/6.0
+  we[1] = (gride[3]-gride[1])/6
+  we[le] = (gride[le] - gride[le-2])/6
   if(le-1 >= 2){
     for(i in seq(2, (le-1), by=2)){
-      we[i] = 4*(gride[i+1] - gride[i-1])/6.0
+      we[i] = 4*(gride[i+1] - gride[i-1])/6
     }
   }
   if(le-2 >= 3){
     for(i in seq(3, (le-2), by=2)){
-      we[i] = (gride[i+2] - gride[i-2])/6.0
+      we[i] = (gride[i+2] - gride[i-2])/6
     }
   }
   
@@ -118,13 +118,13 @@ prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
   le = length(gride)
   
   we  = vector(mode="numeric", length=le)
-  we[1] = (gride[3]-gride[1])/6.0
-  we[le] = (gride[le] - gride[le-2])/6.0
+  we[1] = (gride[3]-gride[1])/6
+  we[le] = (gride[le] - gride[le-2])/6
   for(i in seq(2, (le-1), by=2)){
-    we[i] = 4*(gride[i+1] - gride[i-1])/6.0
+    we[i] = 4*(gride[i+1] - gride[i-1])/6
   }
   for(i in seq(3, (le-2), by=2)){
-    we[i] = (gride[i+2] - gride[i-2])/6.0
+    we[i] = (gride[i+2] - gride[i-2])/6
   }
   dens =  vector(mode="numeric", length=le)
   dens1 = vector(mode="numeric", length=le)
@@ -136,22 +136,22 @@ prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
   if(x1 == ((q-0.001)/0.004)){
     gridc = seq(0.001, q, by = 0.002)
   }else{
-    midpt = (uppbd + q)/2.0
+    midpt = (uppbd + q)/2
     gridc = append(seq(0.001, uppbd, by=0.002), c(midpt, q))	
   }
   lc = length(gridc)
   ## Calculate Simpson's integration weights
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   if(lc-1 >= 2){
     for(i in seq(2, (lc-1), by=2)){
-      wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+      wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
     }
   }
   if(lc -2 >= 3){
     for(i in seq(3, (lc-2), by=2)){
-      wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+      wc[i] = (gridc[i+2] - gridc[i-2])/6
     }
   }
   
@@ -192,13 +192,13 @@ prob_theta <- function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2, postexp,
   lc = length(gridc)
   
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   r = as.integer(16)
@@ -237,21 +237,21 @@ prob_theta <- function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2, postexp,
     gridt[2*i-1] = grid1[i]	
   }
   for(i in seq(2, mesh1-1, by=2)){
-    gridt[i] = (gridt[i+1] + gridt[i-1])/2.0
+    gridt[i] = (gridt[i+1] + gridt[i-1])/2
   }
   
   ## calculating Simpson's integration weights
   wtheta  = vector(mode="numeric", length=mesh1)
-  wtheta[1] = (gridt[3]-gridt[1])/6.0
-  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6.0
+  wtheta[1] = (gridt[3]-gridt[1])/6
+  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6
   if(mesh1 -1 >= 2){
     for(i in seq(2, (mesh1-1), by=2)){
-      wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6.0
+      wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6
     }
   }
   if(mesh1-2 >= 3){
     for(i in seq(3, (mesh1-2), by=2)){
-      wtheta[i] = (gridt[i+2] - gridt[i-2])/6.0
+      wtheta[i] = (gridt[i+2] - gridt[i-2])/6
     }
   } 
   

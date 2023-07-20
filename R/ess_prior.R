@@ -25,14 +25,14 @@ ess_theta <- function(R, mu, sigma2, a, b){
     stop("Stop: mistake calculating mesh for prior ESSs: mesh contains even number of elements when odd number are expected.")
   }
   we  = vector(mode="numeric", length=le)
-  we[1] = (gride[3]-gride[1])/6.0
-  we[le] = (gride[le] - gride[le-2])/6.0
+  we[1] = (gride[3]-gride[1])/6
+  we[le] = (gride[le] - gride[le-2])/6
   
   for(i in seq(2, (le-1), by=2)){
-    we[i] = 4*(gride[i+1] - gride[i-1])/6.0
+    we[i] = 4*(gride[i+1] - gride[i-1])/6
   }
   for(i in seq(3, (le-2), by=2)){
-    we[i] = (gride[i+2] - gride[i-2])/6.0
+    we[i] = (gride[i+2] - gride[i-2])/6
   }
   
   ## Set up a mesh for integrating over pC
@@ -46,13 +46,13 @@ ess_theta <- function(R, mu, sigma2, a, b){
     stop("Stop: mistake calculating mesh for prior ESSs: mesh contains even number of elements when odd number are expected.")
   }
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   int = vector(mode="numeric", length = lc)
@@ -117,17 +117,17 @@ ess_pc <- function(a, b){
     gridt[2*i-1] = grid1[i]	
   }
   for(i in seq(2, mesh1-1, by=2)){
-    gridt[i] = (gridt[i+1] + gridt[i-1])/2.0
+    gridt[i] = (gridt[i+1] + gridt[i-1])/2
   }    
   ## calculating Simpson's integration weights
   wtheta  = vector(mode="numeric", length=mesh1)
-  wtheta[1] = (gridt[3]-gridt[1])/6.0
-  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6.0
+  wtheta[1] = (gridt[3]-gridt[1])/6
+  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6
   for(i in seq(2, (mesh1-1), by=2)){
-    wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6.0
+    wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6
   }
   for(i in seq(3, (mesh1-2), by=2)){
-    wtheta[i] = (gridt[i+2] - gridt[i-2])/6.0
+    wtheta[i] = (gridt[i+2] - gridt[i-2])/6
   }
   ## Integrating Fisher's expected information for log[pC/(1-pC)] (divided by neff) across
   ## prior density of log[pC/(1-pC)] (which we assume is approximately normally distributed)

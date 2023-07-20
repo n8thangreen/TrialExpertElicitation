@@ -227,14 +227,14 @@ dist_plot_data <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm
       gridc = append(gridc, c(midp2, 0.99999))
       lc = length(gridc)
       wc = vector(mode="numeric", length=lc)
-      wc[1] = (gridc[3]-gridc[1])/6.0
-      wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+      wc[1] = (gridc[3]-gridc[1])/6
+      wc[lc] = (gridc[lc] - gridc[lc-2])/6
       
       for(i in seq(2, (lc-1), by=2)){
-        wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+        wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
       }
       for(i in seq(3, (lc-2), by=2)){
-        wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+        wc[i] = (gridc[i+2] - gridc[i-2])/6
       }
       
       dens1 = vector(mode="numeric", length=lc)
@@ -306,13 +306,13 @@ pc_dens <- function(gridc, fe, se, fc, sc, priorParm, norm){
   gride = append(gride, c(midp2, 0.99999))
   le = length(gride)
   we  = vector(mode="numeric", length=le)
-  we[1] = (gride[3]-gride[1])/6.0
-  we[le] = (gride[le] - gride[le-2])/6.0
+  we[1] = (gride[3]-gride[1])/6
+  we[le] = (gride[le] - gride[le-2])/6
   for(i in seq(2,(le-1), by=2)){
-    we[i] = 4*(gride[i+1] - gride[i-1])/6.0
+    we[i] = 4*(gride[i+1] - gride[i-1])/6
   }
   for(i in seq(3, (le-2), by=2)){
-    we[i] = (gride[i+2] - gride[i-2])/6.0
+    we[i] = (gride[i+2] - gride[i-2])/6
   }
   
   dens =  vector(mode="numeric", length=le)
@@ -357,13 +357,13 @@ pe_dens <- function(gride, fe, se, fc, sc, priorParm, norm){
   lc = length(gridc)
   
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   
@@ -401,13 +401,13 @@ theta_dens <- function(gridt, fe, se, fc, sc, priorParm, norm){
   gridc = append(gridc, c(midp2, 0.99999))
   lc = length(gridc)
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   dens = vector(mode = "numeric", length=lc)

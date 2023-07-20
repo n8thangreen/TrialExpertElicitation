@@ -86,17 +86,16 @@ prior_theta <- function(pi1, gamma, a, b, margin){
   mu_sigma = qnorm(pi1, mean=0, sd=1, lower.tail=TRUE)
   fval = vector(mode="numeric", length=2)
   
-  low = 0.01
-  upp = 5
+  low <- 0.01
+  upp <- 5
   
   fval[1] = calc_thetavar(sigmainv = low, mu_sigma, a, b, gamma, margin)
   fval[2] = calc_thetavar(sigmainv = upp, mu_sigma, a, b, gamma, margin)
   
   if(identical(sign(fval[1]), sign(fval[2]))){
-    cat("Given Beta prior for pC and answers to elicitation questions Q3 and Q4, we cannot determine a Normal prior distribution for the log-odds ratio. \n")
-    cat("Please revise either the answer to elicitation Q3 or Q4. \n")
     shinyalert::shinyalert("This combination of Q3 and Q4 does not permit the construction of a prior distribution", "Try different values", type = "error")
-    stop("Given Beta prior for pC and answers to elicitation questions Q3 and Q4, cannot determine Normal prior distribution for log-odds ratio")
+    stop("Given Beta prior for pC and answers to elicitation questions Q3 and Q4, cannot determine a Normal prior distribution for log-odds ratio",
+         "Please revise either the answer to elicitation Q3 or Q4.")
   }
   
   ## Search variable here is 1/sigma, which is 1 over the prior sd of theta.
@@ -137,14 +136,14 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, margin){
   lc = length(gridc)
   
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3] - gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   
   for(i in seq(2, lc-1, by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, lc-2, by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   int = vector(mode = "numeric", length = lc)
@@ -153,30 +152,36 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, margin){
   for(i in seq_len(lc)){
     ## for each mesh point for pc, integrate joint density over the interval [max{0, pc - margin}, 1]
     upp = max(0, gridc[i] - margin)
+    
     if(upp <= 0){
       int[i] = dbeta(gridc[i], shape1=a, shape2=b, ncp=0, log=FALSE)
     }else{		
       ## create a mesh for pE over the interval [upp, 1] (which always has >= 3 points)
       m = floor((0.999 - upp)/0.002)
       u1 = upp + m*0.002
-      midp1 = (u1 + 0.99999)/2.0 	
-      gride = as.double(append(seq(upp, u1, by = 0.001), append(c(midp1), 0.99999) ))
+      midp1 = (u1 + 0.99999)/2
+      gride = as.double(append(seq(upp, u1, by = 0.001),
+                               append(c(midp1), 0.99999) ))
       le = length(gride)
+    
       if(floor(le/2.0) == (le/2.0)){
         stop("mesh for Experimental remission rate contains even number of elements when odd number are expected.")	
       }
-      we  = vector(mode="numeric", length=le)
-      we[1] = (gride[3]-gride[1])/6.0
-      we[le] = (gride[le] - gride[le-2])/6.0
+      
+      we = vector(mode="numeric", length=le)
+      we[1] = (gride[3] - gride[1])/6
+      we[le] = (gride[le] - gride[le-2])/6
+      
       for(j in seq(2, le-1, by=2)){
-        we[j] = 4*(gride[j+1] - gride[j-1])/6.0
+        we[j] = 4*(gride[j+1] - gride[j-1])/6
       }
-      for(j in seq(3, (le-2), by=2)){
-        we[j] = (gride[j+2] - gride[j-2])/6.0
+      
+      for(j in seq(3, le-2, by=2)){
+        we[j] = (gride[j+2] - gride[j-2])/6
       }
       
       ## Evaluating joint density for (pc, pe) at vector of values of pE for each given gridc[i]
-      dens =  vector(mode="numeric", length=le)
+      dens = vector(mode="numeric", length=le)
       dens1 = vector(mode="numeric", length=le)   
       dens = (gridc[i]^(a-1))*((1-gridc[i])^(b-1))/(gride*(1-gride))
       dens1 = -0.5*(( sigmainv*log(gride*(1-gridc[i])/(gridc[i]*(1-gride))) - mu_sigma)^2)
@@ -184,6 +189,7 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, margin){
       int[i] = sum(we*dens)
     }
   }
+  
   int1 = sum(wc*int)*sigmainv/(beta(a,b)*sqrt(2*pi))
   
   return(int1 - gamma)
@@ -209,33 +215,33 @@ prior_e <- function(a, b, mu, sigma2){
   gride = append(c(0.00001, midp1), gride)
   gride = append(gride, c(midp2, 0.99999))
   le = length(gride)
-  we  = vector(mode="numeric", length=le)
-  we[1] = (gride[3]-gride[1])/6.0
-  we[le] = (gride[le] - gride[le-2])/6.0
+  we = vector(mode="numeric", length=le)
+  we[1] = (gride[3] - gride[1])/6
+  we[le] = (gride[le] - gride[le-2])/6
   
-  for(i in seq(2, (le-1), by=2)){
-    we[i] = 4*(gride[i+1] - gride[i-1])/6.0
+  for(i in seq(2, le-1, by=2)){
+    we[i] = 4*(gride[i+1] - gride[i-1])/6
   }
-  for(i in seq(3, (le-2), by=2)){
-    we[i] = (gride[i+2] - gride[i-2])/6.0
+  for(i in seq(3, le-2, by=2)){
+    we[i] = (gride[i+2] - gride[i-2])/6
   }
   
-  ## Use a fine mesh to integrate the joint prior density (pE, pC) over pC.
+  ## Use a fine mesh to integrate the joint prior density (pE, pC) over pC
   gridc = seq(0.001, 0.999, by=0.001)
   midp1 = (0.00001 + 0.001)*0.5
   midp2 = (0.99999 + 0.999)*0.5
   gridc = append(c(0.00001, midp1), gridc)
   gridc = append(gridc, c(midp2, 0.99999))
   lc = length(gridc)
-  wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc = vector(mode="numeric", length=lc)
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   
-  for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+  for(i in seq(2, lc-1, by=2)){
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
-  for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+  for(i in seq(3, lc-2, by=2)){
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   dens = vector(mode="numeric", length=lc)
@@ -261,15 +267,15 @@ prior_e <- function(a, b, mu, sigma2){
   ## Create a grid for pE covering only the interval (lim1, lim2)
   gride2 = seq(0.001, 0.999, by=0.001)
   le2 = length(gride2)
-  we2  = vector(mode="numeric", length=le2)
-  we2[1] = (gride2[3]-gride2[1])/6.0
-  we2[le2] = (gride2[le2] - gride2[le2-2])/6.0
+  we2 = vector(mode="numeric", length=le2)
+  we2[1] = (gride2[3]-gride2[1])/6
+  we2[le2] = (gride2[le2] - gride2[le2-2])/6
   
-  for(i in seq(2, (le2-1), by=2)){
-    we2[i] = 4*(gride2[i+1] - gride2[i-1])/6.0
+  for(i in seq(2, le2-1, by=2)){
+    we2[i] = 4*(gride2[i+1] - gride2[i-1])/6
   }
-  for(i in seq(3, (le2-2), by=2)){
-    we2[i] = (gride2[i+2] - gride2[i-2])/6.0
+  for(i in seq(3, le2-2, by=2)){
+    we2[i] = (gride2[i+2] - gride2[i-2])/6
   }
   int2 = int[which(gride >= lim1 & gride <= lim2)] 	
   istop = sum(we2*int2)
@@ -344,18 +350,18 @@ logoddspc <- function(a,b){
     gridt[2*i-1] = grid1[i]	
   }
   for(i in seq(2, mesh1-1, by=2)){
-    gridt[i] = (gridt[i+1] + gridt[i-1])/2.0
+    gridt[i] = (gridt[i+1] + gridt[i-1])/2
   }    
   ## calculating Simpson's integration weights
   wtheta  = vector(mode="numeric", length=mesh1)
-  wtheta[1] = (gridt[3]-gridt[1])/6.0
-  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6.0
+  wtheta[1] = (gridt[3]-gridt[1])/6
+  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6
   
   for(i in seq(2, (mesh1-1), by=2)){
-    wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6.0
+    wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6
   }
   for(i in seq(3, (mesh1-2), by=2)){
-    wtheta[i] = (gridt[i+2] - gridt[i-2])/6.0
+    wtheta[i] = (gridt[i+2] - gridt[i-2])/6
   }
   
   dens = vector(mode="numeric", length = mesh1)

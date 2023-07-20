@@ -24,13 +24,13 @@ post_pc <- function(a,b, mu, sigma2, sc, fc, se, fe){
   lc = length(gridc)
   
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   ## Need to integrate out pe from the posterior joint distribution
@@ -44,13 +44,13 @@ post_pc <- function(a,b, mu, sigma2, sc, fc, se, fe){
     stop("Mistake calculating mesh for control arm remission rate in post_pc.R: mesh contains even number of elements when odd number are expected.")
   }
   we  = vector(mode="numeric", length=le)
-  we[1] = (gride[3]-gride[1])/6.0
-  we[le] = (gride[le] - gride[le-2])/6.0
+  we[1] = (gride[3]-gride[1])/6
+  we[le] = (gride[le] - gride[le-2])/6
   for(i in seq(2,(le-1), by=2)){
-    we[i] = 4*(gride[i+1] - gride[i-1])/6.0
+    we[i] = 4*(gride[i+1] - gride[i-1])/6
   }
   for(i in seq(3, (le-2), by=2)){
-    we[i] = (gride[i+2] - gride[i-2])/6.0
+    we[i] = (gride[i+2] - gride[i-2])/6
   }
   
   dens =  vector(mode="numeric", length=le)
@@ -77,13 +77,13 @@ post_pc <- function(a,b, mu, sigma2, sc, fc, se, fe){
   lc1 = length(gridc1)
   
   wc1  = vector(mode="numeric", length=lc1)
-  wc1[1] = (gridc1[3]-gridc1[1])/6.0
-  wc1[lc1] = (gridc1[lc1] - gridc1[lc1-2])/6.0
+  wc1[1] = (gridc1[3]-gridc1[1])/6
+  wc1[lc1] = (gridc1[lc1] - gridc1[lc1-2])/6
   for(i in seq(2, (lc1-1), by=2)){
-    wc1[i] = 4*(gridc1[i+1] - gridc1[i-1])/6.0
+    wc1[i] = 4*(gridc1[i+1] - gridc1[i-1])/6
   }
   for(i in seq(3, (lc1-2), by=2)){
-    wc1[i] = (gridc1[i+2] - gridc1[i-2])/6.0
+    wc1[i] = (gridc1[i+2] - gridc1[i-2])/6
   }
   istop = sum(wc1*int1)
   if(istop < (lim2-lim1)){
@@ -135,13 +135,13 @@ post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
   le = length(gride)
   
   we  = vector(mode="numeric", length=le)
-  we[1] = (gride[3]-gride[1])/6.0
-  we[le] = (gride[le] - gride[le-2])/6.0
+  we[1] = (gride[3]-gride[1])/6
+  we[le] = (gride[le] - gride[le-2])/6
   for(i in seq(2, (le-1), by=2)){
-    we[i] = 4*(gride[i+1] - gride[i-1])/6.0
+    we[i] = 4*(gride[i+1] - gride[i-1])/6
   }
   for(i in seq(3, (le-2), by=2)){
-    we[i] = (gride[i+2] - gride[i-2])/6.0
+    we[i] = (gride[i+2] - gride[i-2])/6
   }
   
   gridc = seq(0.0001, 0.9999, by=0.0001)
@@ -153,13 +153,13 @@ post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
   
   lc = length(gridc)
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   ## Need to integrate out pc from the posterior joint distribution of (pE, pC)
@@ -187,13 +187,13 @@ post_pe <- function(a,b, mu, sigma2, sc, fc, se, fe){
   le1 = length(gride1)
   
   we1  = vector(mode="numeric", length=le1)
-  we1[1] = (gride1[3]-gride1[1])/6.0
-  we1[le1] = (gride1[le1] - gride1[le1-2])/6.0
+  we1[1] = (gride1[3]-gride1[1])/6
+  we1[le1] = (gride1[le1] - gride1[le1-2])/6
   for(i in seq(2, (le1-1), by=2)){
-    we1[i] = 4*(gride1[i+1] - gride1[i-1])/6.0
+    we1[i] = 4*(gride1[i+1] - gride1[i-1])/6
   }
   for(i in seq(3, (le1-2), by=2)){
-    we1[i] = (gride1[i+2] - gride1[i-2])/6.0
+    we1[i] = (gride1[i+2] - gride1[i-2])/6
   }
   istop = sum(we1*int1)
   if(istop < (lim2 - lim1)){
@@ -246,13 +246,13 @@ post_theta <- function(a,b, sc, se, fc, fe, mu, sigma2, c2){
   lc = length(gridc)
   
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   ## Assume posterior distribution of theta is approximately normal
@@ -277,17 +277,17 @@ post_theta <- function(a,b, sc, se, fc, fe, mu, sigma2, c2){
     gridt[2*i-1] = grid1[i]	
   }
   for(i in seq(2, mesh1-1, by=2)){
-    gridt[i] = (gridt[i+1] + gridt[i-1])/2.0
+    gridt[i] = (gridt[i+1] + gridt[i-1])/2
   }    
   ## calculating Simpson's integration weights
   wtheta  = vector(mode="numeric", length=mesh1)
-  wtheta[1] = (gridt[3]-gridt[1])/6.0
-  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6.0
+  wtheta[1] = (gridt[3]-gridt[1])/6
+  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6
   for(i in seq(2, (mesh1-1), by=2)){
-    wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6.0
+    wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6
   }
   for(i in seq(3, (mesh1-2), by=2)){
-    wtheta[i] = (gridt[i+2] - gridt[i-2])/6.0
+    wtheta[i] = (gridt[i+2] - gridt[i-2])/6
   }   
   dens = vector(mode = "numeric", length=lc)
   dens1 = vector(mode = "numeric", length=lc)
@@ -347,13 +347,13 @@ thetavar <- function(a,b, sc, se, fc, fe, mu, sigma2){
     stop("Error in thetavar.R: integration mesh contains even number of elements when odd number are expected")
   }
   wc  = vector(mode="numeric", length=lc)
-  wc[1] = (gridc[3]-gridc[1])/6.0
-  wc[lc] = (gridc[lc] - gridc[lc-2])/6.0
+  wc[1] = (gridc[3]-gridc[1])/6
+  wc[lc] = (gridc[lc] - gridc[lc-2])/6
   for(i in seq(2, (lc-1), by=2)){
-    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6.0
+    wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
   for(i in seq(3, (lc-2), by=2)){
-    wc[i] = (gridc[i+2] - gridc[i-2])/6.0
+    wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
   r = as.integer(16)
@@ -375,17 +375,17 @@ thetavar <- function(a,b, sc, se, fc, fe, mu, sigma2){
     gridt[2*i-1] = grid1[i]	
   }
   for(i in seq(2, mesh1-1, by=2)){
-    gridt[i] = (gridt[i+1] + gridt[i-1])/2.0
+    gridt[i] = (gridt[i+1] + gridt[i-1])/2
   }    
   ## calculating Simpson's integration weights
   wtheta  = vector(mode="numeric", length=mesh1)
-  wtheta[1] = (gridt[3]-gridt[1])/6.0
-  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6.0
+  wtheta[1] = (gridt[3]-gridt[1])/6
+  wtheta[mesh1] = (gridt[mesh1] - gridt[mesh1-2])/6
   for(i in seq(2, (mesh1-1), by=2)){
-    wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6.0
+    wtheta[i] = 4*(gridt[i+1] - gridt[i-1])/6
   }
   for(i in seq(3, (mesh1-2), by=2)){
-    wtheta[i] = (gridt[i+2] - gridt[i-2])/6.0
+    wtheta[i] = (gridt[i+2] - gridt[i-2])/6
   }   
   dens = vector(mode = "numeric", length=lc)
   dens1 = vector(mode = "numeric", length=lc)
