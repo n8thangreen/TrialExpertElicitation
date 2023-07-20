@@ -16,21 +16,24 @@ dist_plot_data(
 )
 }
 \arguments{
-\item{n_mmf}{}
+\item{n_mmf}{number of patients randomised to E (nE)}
 
-\item{mmf_succ}{}
+\item{mmf_succ}{number of successes on E (SE)}
 
-\item{n_cyc}{}
+\item{n_cyc}{number randomised to C (nC)}
 
-\item{cyc_succ}{}
+\item{cyc_succ}{number of successes on C (SC)}
 
-\item{postParm}{}
+\item{postParm}{vector returned by posterior_summaries() summarising posterior distributions of pC, pE, theta}
 
-\item{priorParm}{}
+\item{priorParm}{vector of outputs returned by prior_summaries() summarising elicited prior distributions}
 
-\item{parmInd}{}
+\item{parmInd}{character string containing the parameter whose density we wish to plot}
 
-\item{postind}{}
+\item{postind}{integer determining whether we wish to plot the prior or posterior density of the stated parameter.}
+}
+\value{
+a dataframe containing a grid of values of the parameter of interest and the marginal density evaluated at those values.
 }
 \description{
 Prior and posterior densities of pC, pE and theta ready for plotting

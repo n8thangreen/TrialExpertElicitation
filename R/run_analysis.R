@@ -177,34 +177,24 @@ posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, pos
 }
 
 
-## Function inputs: 	n_mmf = number of patients randomised to E (nE)
-## 						mmf_succ = number of successes on E (SE)
-## 						n_cyc = number randomised to C (nC)
-## 						cyc_succ = number of successes on C (SC)
-## 						postParm = vector returned by posterior_summaries() summarising posterior distributions of pC, pE, theta
-## 						priorParm = vector of outputs returned by prior_summaries() summarising elicited prior distributions
-## 						parmInd = character string containing the parameter whose density we wish to plot 
-## 						postind = integer determining whether we wish to plot the prior or posterior density of the stated parameter.
-## Function outputs: a dataframe containing a grid of values of the parameter of interest and the marginal density evaluated at those values.
-
 #' Prior and posterior densities of pC, pE and theta ready for plotting
 #'
-#' @param n_mmf 
-#' @param mmf_succ 
-#' @param n_cyc 
-#' @param cyc_succ 
-#' @param postParm 
-#' @param priorParm 
-#' @param parmInd 
-#' @param postind 
+#' @param n_mmf number of patients randomised to E (nE)
+#' @param mmf_succ  number of successes on E (SE)
+#' @param n_cyc number randomised to C (nC)
+#' @param cyc_succ number of successes on C (SC)
+#' @param postParm vector returned by posterior_summaries() summarising posterior distributions of pC, pE, theta
+#' @param priorParm vector of outputs returned by prior_summaries() summarising elicited prior distributions
+#' @param parmInd character string containing the parameter whose density we wish to plot 
+#' @param postind integer determining whether we wish to plot the prior or posterior density of the stated parameter.
 #'
-#' @return
+#' @return a dataframe containing a grid of values of the parameter of interest and the marginal density evaluated at those values.
 #' @export
 #'
 dist_plot_data <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm, parmInd, postind){
   
   if(postind){
-    ## Wish to generate prior density for the stated parameter
+    ## generate prior density for the stated parameter
     if(parmInd == "pC"){
       ## We only need evaluate the prior density of pC
       gridc = seq(0.01, 0.99, by=0.01)
@@ -277,23 +267,14 @@ dist_plot_data <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm
 }
 
 
-## Function inputs: 	gridc = vector of values of pC
-##						fe, se, fc, sc = number of successes and failures on MMF and CYC
-##						priorParm = output of priorcall() summarising elicited prior distributions
-##						norm = normalising constant of joint posterior distribution g(pC, pE|data)
-## Function output: posterior density of pC eveluated at gridc	
-
 #' Posterior density of pC
 #'
-#' @param gridc 
-#' @param fe 
-#' @param se 
-#' @param fc 
-#' @param sc 
-#' @param priorParm 
-#' @param norm 
+#' @param gridc vector of values of pC
+#' @param fe,se,fc,sc number of successes and failures on MMF and CYC
+#' @param priorParm output of priorcall() summarising elicited prior distributions
+#' @param norm normalising constant of joint posterior distribution g(pC, pE|data)
 #'
-#' @return
+#' @return posterior density of pC eveluated at gridc	
 #' @export
 #'
 pc_dens <- function(gridc, fe, se, fc, sc, priorParm, norm){
@@ -331,19 +312,14 @@ pc_dens <- function(gridc, fe, se, fc, sc, priorParm, norm){
 }
 
 
-## Function inputs: 	gride = vector of values of pE
-##						priorParm = output of priorcall() summarising elicited prior distributions
-##						norm = normalising constant of joint posterior distribution g(pC, pE|data)
-## Function output: posterior density of pE eveluated at gride	
-
 #' Posterior density of pE
 #'
-#' @param gride 
+#' @param gride vector of values of pE
 #' @param fe,se,fc,sc number of successes and failures on MMF and CYC
-#' @param priorParm 
-#' @param norm 
+#' @param priorParm output of priorcall() summarising elicited prior distributions
+#' @param norm normalising constant of joint posterior distribution g(pC, pE|data)
 #'
-#' @return
+#' @return posterior density of pE eveluated at gride	
 #' @export
 #'
 pe_dens <- function(gride, fe, se, fc, sc, priorParm, norm){

@@ -7,19 +7,16 @@
 pc_dens(gridc, fe, se, fc, sc, priorParm, norm)
 }
 \arguments{
-\item{gridc}{}
+\item{gridc}{vector of values of pC}
 
-\item{fe}{}
+\item{fe, se, fc, sc}{number of successes and failures on MMF and CYC}
 
-\item{se}{}
+\item{priorParm}{output of priorcall() summarising elicited prior distributions}
 
-\item{fc}{}
-
-\item{sc}{}
-
-\item{priorParm}{}
-
-\item{norm}{}
+\item{norm}{normalising constant of joint posterior distribution g(pC, pE|data)}
+}
+\value{
+posterior density of pC eveluated at gridc
 }
 \description{
 Posterior density of pC
