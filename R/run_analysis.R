@@ -4,7 +4,7 @@
 #' q1 is the answer to Day 1 elicitation question (i) mode(pc)
 #' q2 is the answer to Day 1 elicitation question (ii) eliciting q s.t. P(pC > q) = 0.75
 #' q3 is the answer to Day 1 elicitation question (iii) elicting P(theta >0)
-#' q4 is the answer to Day 1 elicitation question (iv) eliciting P(pE - pC < -c2)
+#' q4 is the answer to Day 1 elicitation question (iv) eliciting P(pE - pC < -margin)
 #'
 #' @param q1,q2,q3,q4 Expert's answers to the Day 1 elicitation questions. 
 #' @param expert Character string giving the expert's initials
@@ -24,12 +24,12 @@ prior_summaries <- function(q1, q2, q3, q4,
                             expert = "",
                             out_dir = "plots"){
   
-  c2 <- 0.1 	# non-inferiority margin cited in Day 1 elicitation question (iv)
+  margin <- 0.1 	# non-inferiority margin cited in Day 1 elicitation question (iv)
   
   # Numerical searches to find the parameters of the prior distributions
   # for pC and theta assuming our statistical model holds 
   bparam = prior_beta(q1, q2)
-  tparam = prior_theta(q3, 1-q4, bparam['a'], bparam['b'], c2)
+  tparam = prior_theta(q3, 1-q4, bparam['a'], bparam['b'], margin)
   
   ## Calculating summaries of prior distributions for pC, pE and theta
   pri_e = prior_e(bparam['a'], bparam['b'], tparam['mu'], tparam['sigma2'])
@@ -108,7 +108,7 @@ prior_summaries <- function(q1, q2, q3, q4,
 ##	x[1] = E(pC|data), x[2] = mode(pC|data), x[3] = SD(pC|data), (x[4], x[5]) = 90% posterior credibility interval for pC, x[18] = normalising constant of g(pC, pE|data)
 ##	x[6] = E(pE|data), x[7] = mode(pE|data), x[8] = SD(pE|data), (x[9], x[10]) = 90% posterior credibility interval for pE, x[19] = normalising constant of g(pC, pE|data)
 ##	x[11] = E(theta|data), x[12] = mode(theta|data), x[13] = SD(theta|data), (x[14], x[15]) = 90% posterior credibility interval for theta, 
-## 	x[16] = P{pE > pC|data}, x[17] = P{pE - pC > -c2|data},  x[20] = normalising constant of joint posterior distribution f(theta, pC|data)
+## 	x[16] = P{pE > pC|data}, x[17] = P{pE - pC > -margin|data},  x[20] = normalising constant of joint posterior distribution f(theta, pC|data)
 
 #' Summaries of posterior distributions given hypothetical dataset
 #'
@@ -124,7 +124,7 @@ prior_summaries <- function(q1, q2, q3, q4,
 #'
 posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, posterior40){
   
-  c2 <- 0.1 		# non-inferiority margin for the trial
+  margin <- 0.1 		# non-inferiority margin for the trial
   x <- NULL
   
   ## Catching possible input errors for mmf_succ, n_cyc and cyc_succ
@@ -141,7 +141,7 @@ posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, pos
   
   pc_distn = post_pc(priorParm[1], priorParm[2], priorParm[9], priorParm[10], cyc_succ, n_cyc-cyc_succ, mmf_succ, n_mmf-mmf_succ)	
   pe_distn = post_pe(priorParm[1], priorParm[2], priorParm[9], priorParm[10], cyc_succ, n_cyc-cyc_succ, mmf_succ, n_mmf-mmf_succ)
-  theta_distn = post_theta(priorParm[1], priorParm[2], cyc_succ, mmf_succ, n_cyc-cyc_succ, n_mmf-mmf_succ, priorParm[9], priorParm[10], c2)
+  theta_distn = post_theta(priorParm[1], priorParm[2], cyc_succ, mmf_succ, n_cyc-cyc_succ, n_mmf-mmf_succ, priorParm[9], priorParm[10], margin)
   
   x <- c(x, pc_expect = pc_distn$expect)
   x <- c(x, pc_mode1 = pc_distn$mode1)
@@ -164,7 +164,7 @@ posterior_summaries <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, priorParm, pos
   x <- c(x, theta_ci_upp = theta_distn$ci_upp)
   
   xcalc_pi <- calc_pi(mmf_succ, priorParm[9], priorParm[10], x$theta_expect, x$theta_sd1^2, priorParm[1], priorParm[2], n_mmf, cyc_succ, n_cyc-cyc_succ)
-  xcalc_gamma = calc_gamma(mmf_succ, n_mmf - mmf_succ, cyc_succ, n_cyc-cyc_succ, priorParm[1], priorParm[2], priorParm[9], priorParm[10], pe_distn$norm, c2)
+  xcalc_gamma = calc_gamma(mmf_succ, n_mmf - mmf_succ, cyc_succ, n_cyc-cyc_succ, priorParm[1], priorParm[2], priorParm[9], priorParm[10], pe_distn$norm, margin)
   
   x <- c(x, xcalc_pi = xcalc_pi) 
   x <- c(x, xcalc_gamma = xcalc_gamma) 

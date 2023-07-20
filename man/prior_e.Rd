@@ -2,7 +2,7 @@
 % Please edit documentation in R/prior_funcs.R
 \name{prior_e}
 \alias{prior_e}
-\title{evaluate the marginal prior distribution of pE.}
+\title{Evaluate the marginal prior distribution of pE}
 \usage{
 prior_e(a, b, mu, sigma2)
 }
@@ -13,8 +13,8 @@ prior_e(a, b, mu, sigma2)
 }
 \value{
 dataframe containing prior expectation, mode, sd,
-limits of 90\% credibility interval and 25th percentile.
+limits of 90\% credibility interval and 25th percentile
 }
 \description{
-evaluate the marginal prior distribution of pE.
+Evaluate the marginal prior distribution of pE
 }

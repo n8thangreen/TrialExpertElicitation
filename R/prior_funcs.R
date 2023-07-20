@@ -75,21 +75,22 @@ beta_percentile25 <- function(a, mode) {
 #' Identify parameters of a prior normal distribution for theta~N(mu, sigma2)
 #'
 #' @param pi1 P(pE > pC) as identified by Day 1 Elicitation Q3
-#' @param gamma P(pE - pC > -c2) as identified by 1 - Q4
+#' @param gamma P(pE - pC > -margin) as identified by 1 - Q4
 #' @param a,b parameters of prior distribution for pC
-#' @param c2 non-inferiority margin for the trial.
+#' @param margin non-inferiority margin for the trial
 #'
 #' @return vector with param[1] = mu (prior mean of theta), param[2] = sigma2 (prior variance of theta).
 #' @export
 #'
-prior_theta <- function(pi1, gamma, a, b, c2){
+prior_theta <- function(pi1, gamma, a, b, margin){
   mu_sigma = qnorm(pi1, mean=0, sd=1, lower.tail=TRUE)
   fval = vector(mode="numeric", length=2)
-  l1 = 0.01
-  u1 = 5
   
-  fval[1] =  calc_thetavar(l1, mu_sigma, a, b, gamma, c2)
-  fval[2] =  calc_thetavar(u1, mu_sigma, a, b, gamma, c2)
+  low = 0.01
+  upp = 5
+  
+  fval[1] = calc_thetavar(sigmainv = low, mu_sigma, a, b, gamma, margin)
+  fval[2] = calc_thetavar(sigmainv = upp, mu_sigma, a, b, gamma, margin)
   
   if(identical(sign(fval[1]), sign(fval[2]))){
     cat("Given Beta prior for pC and answers to elicitation questions Q3 and Q4, we cannot determine a Normal prior distribution for the log-odds ratio. \n")
@@ -99,8 +100,8 @@ prior_theta <- function(pi1, gamma, a, b, c2){
   }
   
   ## Search variable here is 1/sigma, which is 1 over the prior sd of theta.
-  z = uniroot(calc_thetavar, interval=c(l1, u1), mu_sigma, a, b, gamma, c2,
-              lower = l1, upper=u1, f.lower=fval[1], f.upper=fval[2])
+  z = uniroot(calc_thetavar, interval=c(low, upp), mu_sigma, a, b, gamma, margin,
+              lower = low, upper=upp, f.lower=fval[1], f.upper=fval[2])
   param = vector(mode="numeric", length=2)
   
   ## theta ~ normal(mu, sigma^2)
@@ -112,22 +113,22 @@ prior_theta <- function(pi1, gamma, a, b, c2){
 }
 
 
-#' search for value of 1/sigma such that P{pE - pC > -c2} = gamma as elicited by 1 - Q4
+#' Search for value of 1/sigma such that P{pE - pC > -margin} = gamma as elicited by 1 - Q4
 #'
 #' Using Simpsons integration to integrate over the joint prior distribution of (pE, pC).
 #' 
 #' @param sigmainv 1/sigma where sigma is the hypothesized prior sd of theta
 #' @param mu_sigma mu/sigma, ratio of the prior mean and sd of theta
 #' @param a,b parameters of prior distribution of pC 
-#' @param gamma value of P{pE - pC > -c2} elicited form the expert (=1-q4)
-#' @param c2 non-inferiority margin for the trial
+#' @param gamma value of P{pE - pC > -margin} elicited form the expert (=1-q4)
+#' @param margin non-inferiority margin for the trial
 #'
-#' @return P(pE - pC > -c2; 1/sigma) - gamma.
+#' @return P(pE - pC > -margin; 1/sigma) - gamma.
 #' @export
 #'
-calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, c2){
+calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, margin){
   
-  ## Set up grid of equally spaced points over [0,1] for pC and over [max{0, pc - c2}, 1] for pE
+  ## Set up grid of equally spaced points over [0,1] for pC and over [max{0, pc - margin}, 1] for pE
   gridc = seq(0.001, 0.999, by=0.001)
   midp1 = (0.00001 + 0.001)*0.5
   midp2 = (0.99999 + 0.999)*0.5
@@ -150,8 +151,8 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, c2){
   int1 = 0
   
   for(i in seq_len(lc)){
-    ## for each mesh point for pc, integrate joint density over the interval [max{0, pc - c2}, 1]
-    upp = max(0, gridc[i] - c2)
+    ## for each mesh point for pc, integrate joint density over the interval [max{0, pc - margin}, 1]
+    upp = max(0, gridc[i] - margin)
     if(upp <= 0){
       int[i] = dbeta(gridc[i], shape1=a, shape2=b, ncp=0, log=FALSE)
     }else{		
@@ -195,7 +196,7 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, c2){
 #' @param mu,sigma2 parameters of prior distribution of theta 
 #'
 #' @return dataframe containing prior expectation, mode, sd,
-#'    limits of 90% credibility interval and 25th percentile.
+#'    limits of 90% credibility interval and 25th percentile
 #' @export
 #'
 prior_e <- function(a, b, mu, sigma2){
@@ -312,7 +313,7 @@ prior_e <- function(a, b, mu, sigma2){
 
 #' Calculate variance of prior distribution of log[pc/(1-pc)]
 #'
-#' @param a,b parameters of prior distribution of pC.
+#' @param a,b parameters of prior distribution of pC
 #'
 #' @return prior variance of log[pC/(1-pC)] (used for evaluating prior ESS of log-odds)
 #' @export

@@ -11,7 +11,7 @@ ess_pc(a, b)
 }
 \value{
 Effective sample size of prior for \deqn{\log[pC/(1-pc)]}
-(expressed in terms of effective observations on CYC)
+(expressed in terms of effective observations on control arm)
 }
 \description{
 Calculate prior effective sample size of \deqn{log[pc/(1-pC)]}.

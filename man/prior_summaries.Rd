@@ -26,5 +26,5 @@ and a file "expert-D1answer.txt" storing the expert's answers to the elicitation
 q1 is the answer to Day 1 elicitation question (i) mode(pc)
 q2 is the answer to Day 1 elicitation question (ii) eliciting q s.t. P(pC > q) = 0.75
 q3 is the answer to Day 1 elicitation question (iii) elicting P(theta >0)
-q4 is the answer to Day 1 elicitation question (iv) eliciting P(pE - pC < -c2)
+q4 is the answer to Day 1 elicitation question (iv) eliciting P(pE - pC < -margin)
 }

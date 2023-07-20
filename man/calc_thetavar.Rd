@@ -2,9 +2,9 @@
 % Please edit documentation in R/prior_funcs.R
 \name{calc_thetavar}
 \alias{calc_thetavar}
-\title{search for value of 1/sigma such that P{pE - pC > -c2} = gamma as elicited by 1 - Q4}
+\title{Search for value of 1/sigma such that P{pE - pC > -margin} = gamma as elicited by 1 - Q4}
 \usage{
-calc_thetavar(sigmainv, mu_sigma, a, b, gamma, c2)
+calc_thetavar(sigmainv, mu_sigma, a, b, gamma, margin)
 }
 \arguments{
 \item{sigmainv}{1/sigma where sigma is the hypothesized prior sd of theta}
@@ -13,12 +13,12 @@ calc_thetavar(sigmainv, mu_sigma, a, b, gamma, c2)
 
 \item{a, b}{parameters of prior distribution of pC}
 
-\item{gamma}{value of P{pE - pC > -c2} elicited form the expert (=1-q4)}
+\item{gamma}{value of P{pE - pC > -margin} elicited form the expert (=1-q4)}
 
-\item{c2}{non-inferiority margin for the trial}
+\item{margin}{non-inferiority margin for the trial}
 }
 \value{
-P(pE - pC > -c2; 1/sigma) - gamma.
+P(pE - pC > -margin; 1/sigma) - gamma.
 }
 \description{
 Using Simpsons integration to integrate over the joint prior distribution of (pE, pC).
