@@ -39,7 +39,7 @@ shinyUI(pageWithSidebar(
 
 		sliderInput(inputId = "theta_q2",
 		            ##TODO: what is the %?
-				label = "Q4: What is the chance that the response rate on baricitinib exceeds that on methotrexate by more than %?",
+				label = "Q4: What is the chance that the response rate on baricitinib exceeds that on methotrexate by more than 10%?",
 				# label = "Q4: What is the improvement you will be 75% confident it will achieved?",
 				# this is the AUC on the left
 				# should we use the point value instead?
@@ -48,7 +48,7 @@ shinyUI(pageWithSidebar(
 		br(),
 		br(),	
 
-		radioButtons(inputId="hypo_data_size", label="Update prior distributions with a hypothetical dataset of patient size ", 
+		radioButtons(inputId="hypo_data_size", label = "Update prior distributions with a hypothetical dataset of patient size", 
 		             choices=c(20, 40), selected = character(0)),
 
 	## Output two tabs: one to plot the density of the (prior/posterior) distribution

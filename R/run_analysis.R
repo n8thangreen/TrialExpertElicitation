@@ -3,10 +3,10 @@
 #'
 #' q1 is the answer to Day 1 elicitation question (i) mode(pc)
 #' q2 is the answer to Day 1 elicitation question (ii) eliciting q s.t. P(pC > q) = 0.75
-#' q3 is the answer to Day 1 elicitation question (iii) elicting P(theta >0)
+#' q3 is the answer to Day 1 elicitation question (iii) eliciting P(theta > 0)
 #' q4 is the answer to Day 1 elicitation question (iv) eliciting P(pE - pC < -margin)
 #'
-#' @param q1,q2,q3,q4 Expert's answers to the Day 1 elicitation questions. 
+#' @param q1,q2,q3,q4 Expert's answers to the Day 1 elicitation questions
 #' @param expert Character string giving the expert's initials
 #' @param out_dir Output folder
 #'
@@ -28,11 +28,11 @@ prior_summaries <- function(q1, q2, q3, q4,
   
   # Numerical searches to find the parameters of the prior distributions
   # for pC and theta assuming our statistical model holds 
-  bparam = prior_beta(q1, q2)
-  tparam = prior_theta(q3, 1-q4, bparam['a'], bparam['b'], margin)
+  bparam <- prior_beta(q1, q2)
+  tparam <- prior_theta(q3, 1-q4, bparam['a'], bparam['b'], margin)
   
-  ## Calculating summaries of prior distributions for pC, pE and theta
-  pri_e = prior_e(bparam['a'], bparam['b'], tparam['mu'], tparam['sigma2'])
+  # Calculating summaries of prior distributions for pC, pE and theta
+  pri_e <- prior_e(bparam['a'], bparam['b'], tparam['mu'], tparam['sigma2'])
   
   x <- NULL
   
@@ -57,7 +57,30 @@ prior_summaries <- function(q1, q2, q3, q4,
   
   x <- c(x, pri_e = pri_e$percent25)
   
-  ## generate a plot of the prior densities and output to one pdf file
+  plot_prior_densities(x, expert, out_dir, save_to_file = TRUE) 
+  
+  elicitation_answers_to_file(q1, q2, q3, q4, out_dir, expert) 
+  
+  x
+}
+
+#
+elicitation_answers_to_file <- function(q1, q2, q3, q4, out_dir, expert) {
+  
+  outputfile <- system.file(paste0(out_dir, "/", expert, "-D1answer.txt"), package = "TrialExpertElicitation", mustWork = TRUE)
+  
+  cat(expert, "'s answers to Day 1 prior elicitation questions were: \n", file = outputfile, append=FALSE)
+  cat(q1, file = outputfile, sep="\n", append=TRUE)
+  cat(q2, file = outputfile, sep="\n", append=TRUE)
+  cat(q3, file = outputfile, sep="\n", append=TRUE)
+  cat(q4, file = outputfile, sep="\n", append=TRUE)
+}
+
+#
+plot_prior_densities <- function(x, expert = "",
+                                 out_dir = "plots",
+                                 save_to_file = TRUE) {
+  
   z = vector(mode="numeric", length = 20)
   y1 = dist_plot_data(0,0,0,0, z, x, "pC", 1)
   y2 = dist_plot_data(0,0,0,0, z, x, "pE", 1)
@@ -70,7 +93,10 @@ prior_summaries <- function(q1, q2, q3, q4,
   title3 <- paste0(expert, "'s prior density of log-odds ratio")
   title4 <- as.character("Prior density of control arm & Experimental remission rate")
   
-  pdf(outputfile)
+  if (save_to_file) {
+    on.exit(dev.off())
+    pdf(outputfile)
+  }  
   
   par(mfrow = c(2,2), pty="s")
   
@@ -83,41 +109,22 @@ prior_summaries <- function(q1, q2, q3, q4,
   plot(y1$gridc, y1$dens, type="l", lty=1, lwd=3, col="red", main = title4, xlab = "6-month remission rate", ylab="Density",
        ylim = range(c(y1$dens, y2$dens)), xlim =c(0,1), cex.lab = 1.1, cex.axis=1.1, cex.main = 1)
   lines(y2$gride, y2$dens, type="l", lty=2, lwd=3, col="green")
-  
-  dev.off()
-  
-  ## Write answers to elicitation questions to file 
-  outputfile <- system.file(paste0(out_dir, "/", expert, "-D1answer.txt"), package = "TrialExpertElicitation", mustWork = TRUE)
-  
-  cat(expert, "'s answers to Day 1 prior elicitation questions were: \n", file = outputfile, append=FALSE)
-  cat(q1, file = outputfile, sep="\n", append=TRUE)
-  cat(q2, file = outputfile, sep="\n", append=TRUE)
-  cat(q3, file = outputfile, sep="\n", append=TRUE)
-  cat(q4, file = outputfile, sep="\n", append=TRUE)
-  
-  x
 }
 
-## Calculate summaries of the posterior distributions of pC, pE and theta
-## Function inputs: 	n_mmf, mmf_succ = (nE, SE): number of patients randomised to MMF and number of observed successes on experimental arm
-##						n_cyc, cyc_succ = (nC, SC): number of patients randomised to CYC and number of observed success on CYC
-##						priorParm = vector outputted by priorcall() containing summaries of prior distributions
-##						posterior40 = logical variable indicating whether wish to calculate posterior distribution assuming nE+nC = 40
-##										(if false assume wish to calculate posterior distribution assuming nE + nC = 20)
 
-##	x[1] = E(pC|data), x[2] = mode(pC|data), x[3] = SD(pC|data), (x[4], x[5]) = 90% posterior credibility interval for pC, x[18] = normalising constant of g(pC, pE|data)
-##	x[6] = E(pE|data), x[7] = mode(pE|data), x[8] = SD(pE|data), (x[9], x[10]) = 90% posterior credibility interval for pE, x[19] = normalising constant of g(pC, pE|data)
-##	x[11] = E(theta|data), x[12] = mode(theta|data), x[13] = SD(theta|data), (x[14], x[15]) = 90% posterior credibility interval for theta, 
-## 	x[16] = P{pE > pC|data}, x[17] = P{pE - pC > -margin|data},  x[20] = normalising constant of joint posterior distribution f(theta, pC|data)
 
-#' Summaries of posterior distributions given hypothetical dataset
+#' Summaries of posterior distributions of pC, pE and theta given hypothetical dataset
+#' 
+#' x[1] = E(pC|data), x[2] = mode(pC|data), x[3] = SD(pC|data), (x[4], x[5]) = 90% posterior credibility interval for pC, x[18] = normalising constant of g(pC, pE|data)
+#' x[6] = E(pE|data), x[7] = mode(pE|data), x[8] = SD(pE|data), (x[9], x[10]) = 90% posterior credibility interval for pE, x[19] = normalising constant of g(pC, pE|data)
+#' x[11] = E(theta|data), x[12] = mode(theta|data), x[13] = SD(theta|data), (x[14], x[15]) = 90% posterior credibility interval for theta, 
+#' x[16] = P{pE > pC|data}, x[17] = P{pE - pC > -margin|data},  x[20] = normalising constant of joint posterior distribution f(theta, pC|data)
 #'
-#' @param n_mmf 
-#' @param mmf_succ 
-#' @param n_cyc 
-#' @param cyc_succ 
-#' @param priorParm 
-#' @param posterior40 is posterior 40 selected? Logical
+#' @param n_mmf,mmf_succ (nE, SE): number of patients randomised to MMF and number of observed successes on experimental arm
+#' @param n_cyc,cyc_succ (nC, SC): number of patients randomised to CYC and number of observed success on CYC
+#' @param priorParm vector outputted by priorcall() containing summaries of prior distributions
+#' @param posterior40 logical variable indicating whether wish to calculate posterior distribution assuming nE+nC = 40
+#'										(if false assume wish to calculate posterior distribution assuming nE + nC = 20)
 #'
 #' @return
 #' @export

@@ -7,7 +7,7 @@
 prior_summaries(q1, q2, q3, q4, expert = "", out_dir = "plots")
 }
 \arguments{
-\item{q1, q2, q3, q4}{Expert's answers to the Day 1 elicitation questions.}
+\item{q1, q2, q3, q4}{Expert's answers to the Day 1 elicitation questions}
 
 \item{expert}{Character string giving the expert's initials}
 
@@ -25,6 +25,6 @@ and a file "expert-D1answer.txt" storing the expert's answers to the elicitation
 \description{
 q1 is the answer to Day 1 elicitation question (i) mode(pc)
 q2 is the answer to Day 1 elicitation question (ii) eliciting q s.t. P(pC > q) = 0.75
-q3 is the answer to Day 1 elicitation question (iii) elicting P(theta >0)
+q3 is the answer to Day 1 elicitation question (iii) eliciting P(theta > 0)
 q4 is the answer to Day 1 elicitation question (iv) eliciting P(pE - pC < -margin)
 }
