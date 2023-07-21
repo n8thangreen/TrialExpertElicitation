@@ -2,7 +2,7 @@
 % Please edit documentation in R/prob_calc.R
 \name{prob_pC}
 \alias{prob_pC}
-\title{prob_pC}
+\title{Probability pC}
 \usage{
 prob_pC(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2)
 }
@@ -23,5 +23,5 @@ prob_pC(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2)
 P{pC <= q|data} - prob.
 }
 \description{
-prob_pC
+Probability pC
 }

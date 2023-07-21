@@ -281,7 +281,7 @@ dist_plot_data <- function(n_mmf, mmf_succ, n_cyc, cyc_succ, postParm, priorParm
 #' @param priorParm output of priorcall() summarising elicited prior distributions
 #' @param norm normalising constant of joint posterior distribution g(pC, pE|data)
 #'
-#' @return posterior density of pC eveluated at gridc	
+#' @return posterior density of pC evaluated at gridc	
 #' @export
 #'
 pc_dens <- function(gridc, fe, se, fc, sc, priorParm, norm){
@@ -296,6 +296,7 @@ pc_dens <- function(gridc, fe, se, fc, sc, priorParm, norm){
   we  = vector(mode="numeric", length=le)
   we[1] = (gride[3]-gride[1])/6
   we[le] = (gride[le] - gride[le-2])/6
+  
   for(i in seq(2,(le-1), by=2)){
     we[i] = 4*(gride[i+1] - gride[i-1])/6
   }
@@ -306,6 +307,7 @@ pc_dens <- function(gridc, fe, se, fc, sc, priorParm, norm){
   dens =  vector(mode="numeric", length=le)
   dens1 = vector(mode="numeric", length=le)
   postd =  vector(mode="numeric", length=lc)
+  
   ## integrating out pe from joint posterior distribution of (pe, pc)
   for(i in 1:lc){
     dens =  (gride^(se-1))*((1-gride)^(fe-1))
@@ -342,6 +344,7 @@ pe_dens <- function(gride, fe, se, fc, sc, priorParm, norm){
   wc  = vector(mode="numeric", length=lc)
   wc[1] = (gridc[3]-gridc[1])/6
   wc[lc] = (gridc[lc] - gridc[lc-2])/6
+  
   for(i in seq(2, (lc-1), by=2)){
     wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
@@ -349,10 +352,10 @@ pe_dens <- function(gride, fe, se, fc, sc, priorParm, norm){
     wc[i] = (gridc[i+2] - gridc[i-2])/6
   }
   
-  
   pdens =  vector(mode="numeric", length=lc)
   pdens1 = vector(mode="numeric", length=lc)
   postd =  vector(mode="numeric", length=le)
+  
   for(i in 1:le){
     pdens = (gridc^(sc + priorParm[1] -1))*((1-gridc)^(fc + priorParm[2] - 1))
     pdens1 = (-0.5/priorParm[10])*((log(gride[i]*(1-gridc)/(gridc*(1-gride[i]))) - priorParm[9])^2)
@@ -386,6 +389,7 @@ theta_dens <- function(gridt, fe, se, fc, sc, priorParm, norm){
   wc  = vector(mode="numeric", length=lc)
   wc[1] = (gridc[3]-gridc[1])/6
   wc[lc] = (gridc[lc] - gridc[lc-2])/6
+  
   for(i in seq(2, (lc-1), by=2)){
     wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
@@ -396,6 +400,7 @@ theta_dens <- function(gridt, fe, se, fc, sc, priorParm, norm){
   dens = vector(mode = "numeric", length=lc)
   dens1 = vector(mode = "numeric", length=lc)
   postd =  vector(mode = "numeric", length=lt)
+  
   for(i in 1:lt){
     dens1 = (gridc^(sc-fe+priorParm[1]))*((1-gridc)^(fc+priorParm[2]-2+fe))
     v = (1 + exp(-gridt[i])*(1-gridc)/gridc)*((1 + exp(gridt[i])*gridc/(1-gridc))^(1/(se+fe-1)))

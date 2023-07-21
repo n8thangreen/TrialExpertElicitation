@@ -16,7 +16,7 @@ pc_dens(gridc, fe, se, fc, sc, priorParm, norm)
 \item{norm}{normalising constant of joint posterior distribution g(pC, pE|data)}
 }
 \value{
-posterior density of pC eveluated at gridc
+posterior density of pC evaluated at gridc
 }
 \description{
 Posterior density of pC

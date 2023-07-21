@@ -2,14 +2,14 @@
 % Please edit documentation in R/prob_calc.R
 \name{prob_theta}
 \alias{prob_theta}
-\title{prob_theta}
+\title{Probability of theta}
 \usage{
 prob_theta(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2, postexp, postsd)
 }
 \arguments{
 \item{q}{hypothesized 100*prob percentile of the distribution.}
 
-\item{prob}{}
+\item{prob}{Probability}
 
 \item{norm}{normalisation constant of joint posterior distribution of (pC, theta)}
 
@@ -25,5 +25,5 @@ prob_theta(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2, postexp, postsd)
 P{theta <= q|data} - prob.
 }
 \description{
-prob_theta
+Probability of theta
 }

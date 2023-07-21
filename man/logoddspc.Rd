@@ -7,7 +7,7 @@
 logoddspc(a, b)
 }
 \arguments{
-\item{a, b}{parameters of prior distribution of pC}
+\item{a, b}{Parameters of prior distribution of pC}
 }
 \value{
 prior variance of log\link{pC/(1-pC)} (used for evaluating prior ESS of log-odds)

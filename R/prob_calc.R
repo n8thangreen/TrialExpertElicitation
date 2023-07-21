@@ -23,12 +23,14 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
   gridc = append(c(0.00001, midp1), gridc)
   gridc = append(gridc, c(midp2, 0.99999))
   lc = length(gridc)
+  
   if(floor(lc/2.0) == (lc/2.0)){
     stop("Error calculating quantiles of Experimental distribution: integration mesh contains even number of elements when odd number are expected.")
   }
   wc  = vector(mode="numeric", length=lc)
   wc[1] = (gridc[3]-gridc[1])/6
   wc[lc] = (gridc[lc] - gridc[lc-2])/6
+  
   for(i in seq(2, (lc-1), by=2)){
     wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }
@@ -96,7 +98,7 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
 }
 
 
-#' prob_pC
+#' Probability pC
 #'
 #' @param q hypothesized 100*prob percentile of the distribution.	iu
 #' @param prob indicator (posterior =1 implies inferences concern posterior distribution)
@@ -108,7 +110,7 @@ prob_pE <- function(q, prob, norm, a, b, mu, sigma2, sc, fc, se, fe, posterior){
 #' @return P{pC <= q|data} - prob.
 #' @export
 #'
-prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
+prob_pC <- function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
   
   gride = seq(0.001, 0.999, by=0.001)
   midp1 = (0.00001 + 0.001)*0.5
@@ -120,6 +122,7 @@ prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
   we  = vector(mode="numeric", length=le)
   we[1] = (gride[3]-gride[1])/6
   we[le] = (gride[le] - gride[le-2])/6
+  
   for(i in seq(2, (le-1), by=2)){
     we[i] = 4*(gride[i+1] - gride[i-1])/6
   }
@@ -133,6 +136,7 @@ prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
   
   x1 = floor((q - 0.001)/0.004)
   uppbd = 0.001 + x1*0.004
+  
   if(x1 == ((q-0.001)/0.004)){
     gridc = seq(0.001, q, by = 0.002)
   }else{
@@ -169,10 +173,10 @@ prob_pC <-function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2){
 }
 
 
-#' prob_theta
+#' Probability of theta
 #'
 #' @param q hypothesized 100*prob percentile of the distribution.	
-#' @param prob 
+#' @param prob Probability
 #' @param norm normalisation constant of joint posterior distribution of (pC, theta)
 #' @param se,sc,fe,fc number of successes and failures on treatments CYC and experimental arm
 #' @param a,b parameters of priors pC~Beta(a,b)
@@ -194,6 +198,7 @@ prob_theta <- function(q, prob, norm, se, sc, fe, fc, a, b, mu, sigma2, postexp,
   wc  = vector(mode="numeric", length=lc)
   wc[1] = (gridc[3]-gridc[1])/6
   wc[lc] = (gridc[lc] - gridc[lc-2])/6
+  
   for(i in seq(2, (lc-1), by=2)){
     wc[i] = 4*(gridc[i+1] - gridc[i-1])/6
   }

@@ -99,8 +99,9 @@ prior_theta <- function(pi1, gamma, a, b, margin){
   }
   
   ## Search variable here is 1/sigma, which is 1 over the prior sd of theta.
-  z = uniroot(calc_thetavar, interval=c(low, upp), mu_sigma, a, b, gamma, margin,
-              lower = low, upper=upp, f.lower=fval[1], f.upper=fval[2])
+  z = uniroot(f = calc_thetavar, interval=c(low, upp), mu_sigma, a, b, gamma, margin,
+              lower = low, upper=upp,
+              f.lower=fval[1], f.upper=fval[2])
   param = vector(mode="numeric", length=2)
   
   ## theta ~ normal(mu, sigma^2)
@@ -163,7 +164,7 @@ calc_thetavar <- function(sigmainv, mu_sigma, a, b, gamma, margin){
       gride = as.double(append(seq(upp, u1, by = 0.001),
                                append(c(midp1), 0.99999) ))
       le = length(gride)
-    
+      
       if(floor(le/2.0) == (le/2.0)){
         stop("mesh for Experimental remission rate contains even number of elements when odd number are expected.")	
       }
@@ -248,6 +249,7 @@ prior_e <- function(a, b, mu, sigma2){
   dens1 = vector(mode="numeric", length=lc)
   int = vector(mode="numeric", length=le)
   
+  #?
   for(i in 1:le){
     dens = (gridc^(a-1))*((1-gridc)^(b-1))/(gride[i]*(1-gride[i]))
     dens1 = (-0.5/sigma2)*((log(gride[i]*(1-gridc)/(gridc*(1-gride[i]))) - mu)^2)
@@ -256,34 +258,10 @@ prior_e <- function(a, b, mu, sigma2){
   }
   int = int/(beta(a,b)*sqrt(2*pi*sigma2))  
   
-  ## Checking to see whether marginal prior density for pE is a U or L shaped function of pE.
-  ## Integrate prior pE density over the interval [lim1, lim2]
-  ## If probability in this interval is less than would be the case under a flat density, we conclude
-  ## the density could be U or L shaped. 
-  
-  lim1 = 0.001
-  lim2 = 0.999
-  
-  ## Create a grid for pE covering only the interval (lim1, lim2)
-  gride2 = seq(0.001, 0.999, by=0.001)
-  le2 = length(gride2)
-  we2 = vector(mode="numeric", length=le2)
-  we2[1] = (gride2[3]-gride2[1])/6
-  we2[le2] = (gride2[le2] - gride2[le2-2])/6
-  
-  for(i in seq(2, le2-1, by=2)){
-    we2[i] = 4*(gride2[i+1] - gride2[i-1])/6
-  }
-  for(i in seq(3, le2-2, by=2)){
-    we2[i] = (gride2[i+2] - gride2[i-2])/6
-  }
-  int2 = int[which(gride >= lim1 & gride <= lim2)] 	
-  istop = sum(we2*int2)
-  
-  if(istop < (lim2 - lim1)){
+  if (check_shape_pE_U_or_L(int, gride)) {
     shinyalert::shinyalert("This combination of Q1 and Q2 does not permit the construction of a prior distribution", "Try different values", type = "error")
     stop("Prior density Experimental remission rate is U (or L) shaped function of pE. Can't guarantee accuracy of numerical integration routines")
-  }else{
+  } else {
     ## calculate the prior mean and variance of pe
     expect = sum(we*gride*int)
     sd1 = sqrt(sum(we*gride*gride*int) - (expect^2))
@@ -316,15 +294,51 @@ prior_e <- function(a, b, mu, sigma2){
   }
 }
 
+#' check_shape_pE_U_or_L
+#' 
+#' Check to see whether marginal prior density for pE is a U or L shaped function of pE
+#' Integrate prior pE density over the interval [lim1, lim2].
+#' If probability in this interval is less than would be the case under a flat density, we conclude
+#' the density could be U or L shaped. 
+#' 
+#' @param int 
+#' @param gride 
+#' 
+check_shape_pE_U_or_L <- function(int, gride) {
+  
+  lim1 = 0.001
+  lim2 = 0.999
+  
+  ## Create a grid for pE covering only the interval (lim1, lim2)
+  gride2 = seq(0.001, 0.999, by=0.001)
+  le2 = length(gride2)
+  we2 = vector(mode="numeric", length=le2)
+  we2[1] = (gride2[3] - gride2[1])/6
+  we2[le2] = (gride2[le2] - gride2[le2-2])/6
+  
+  for(i in seq(2, le2-1, by=2)){
+    we2[i] = 4*(gride2[i+1] - gride2[i-1])/6
+  }
+  for(i in seq(3, le2-2, by=2)){
+    we2[i] = (gride2[i+2] - gride2[i-2])/6
+  }
+  
+  int2 = int[which(gride >= lim1 & gride <= lim2)] 	
+  istop = sum(we2*int2)
+  
+  istop < (lim2 - lim1)
+}
+
+
 
 #' Calculate variance of prior distribution of log[pc/(1-pc)]
 #'
-#' @param a,b parameters of prior distribution of pC
+#' @param a,b Parameters of prior distribution of pC
 #'
 #' @return prior variance of log[pC/(1-pC)] (used for evaluating prior ESS of log-odds)
 #' @export
 #'
-logoddspc <- function(a,b){
+logoddspc <- function(a, b){
   ## set up a grid for theta1 = log[pc/(1-pc)]
   r = as.integer(64)
   mesh = as.integer(6*r - 1)
@@ -344,14 +358,16 @@ logoddspc <- function(a,b){
     }else{
       grid1[i] = mu + sqrt(3.0)*(3 + 4*log(r/(6*r - i)))
     }
-  }   
+  }
+  
   ## calculating mesh mid-points 
   for(i in seq(1, mesh, by=1)){
     gridt[2*i-1] = grid1[i]	
   }
   for(i in seq(2, mesh1-1, by=2)){
     gridt[i] = (gridt[i+1] + gridt[i-1])/2
-  }    
+  }
+  
   ## calculating Simpson's integration weights
   wtheta  = vector(mode="numeric", length=mesh1)
   wtheta[1] = (gridt[3]-gridt[1])/6
