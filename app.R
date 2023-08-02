@@ -126,14 +126,14 @@ ui <- fluidPage(
                
                tabsetPanel(
                  
-                 tabPanel("Control arm posterior",plotOutput(outputId = "marginal_posterior_plot_pc")
+                 tabPanel("Control arm posterior", plotOutput(outputId = "marginal_posterior_plot_pc")
                           #, plotOutput(outputId = "joint_posterior_plot")
                           ),
                  
-                 tabPanel("Experimental arm posterior",plotOutput(outputId = "marginal_posterior_plot_pe")
+                 tabPanel("Experimental arm posterior", plotOutput(outputId = "marginal_posterior_plot_pe")
                           , plotOutput(outputId = "joint_posterior_plot")),
                  
-                 tabPanel("All posteriors",plotOutput(outputId = "all_posteriors")
+                 tabPanel("All posteriors", plotOutput(outputId = "all_posteriors")
                           )
                )    
                ),
@@ -198,16 +198,21 @@ server <- function(input, output) {
   ## Control arm prior plot
   output$control_prior <- renderPlot({
     
-    #define range
+    # define range
     p = seq(0,1, length=100)
+    prior_c <- dbeta(p, control_beta_a(), control_beta_b())
+    cdf <- cumsum(prior_c)
     
-    #create plot of corresponding Beta distribution
-    control_prior <- plot(p, dbeta(p, control_beta_a(), control_beta_b()), ylab='density',
-         type ='l', lwd=1.5, xlab="Control arm response rate", col='red', main='Control arm prior density for response rate')
-    control_prior
+    # create plot of corresponding Beta distribution
+    plot(p, prior_c,
+         ylab='density', xlab="Control arm response rate",
+         main='Control arm prior density for response rate',
+         type='l', lwd=1.5, col='red')
+    polygon(c(p[cdf >= 75], 1, min(p[cdf >= 75])), c(prior_c[cdf >= 75], 0, 0), col="lightblue", border=NA)
+    abline(v = p[prior_c == max(prior_c)], lty = 2, col = "black")
   })
   
-  ## Proba greater than mode as reactive
+  ## Probability greater than mode as reactive
   
   proba_greater_mode <- reactive({
     
@@ -215,12 +220,12 @@ server <- function(input, output) {
     round(proba,2)*100
   })
   
-  # output of the proba greater than mode
+  # output of the probability greater than mode
   output$proba_greater_mode <- renderText({ 
     paste("The parameters for Q1 and Q2 that you have selected correspond to a probability beyond the mode of", proba_greater_mode(),"%")
   })
   
-  ## Proba lower p75 as reactive
+  ## Probability lower p75 as reactive
   
   proba_lower_p75 <- reactive({
     
@@ -228,7 +233,7 @@ server <- function(input, output) {
     round(proba_p75,2)*100
   })
   
-  # output of the proba lower p75
+  # output of the probability lower p75
   output$proba_lower_p75 <- renderText({ 
     paste("The mode and p75 that you have selected correspond to a probability to the left of p75 of", proba_lower_p75(),"%")
   })
@@ -371,7 +376,7 @@ server <- function(input, output) {
     control_prior <- plot(p, dbeta(p, control_beta_a(), control_beta_b()), ylab='density',
                           type ='l', lwd=1.5, xlab="Control arm response rate", col='red', main='Control arm prior density for response rate')
     
-    marginal_prior <- plot(pe,marginal_prior_density(), ylab='density',
+    marginal_prior <- plot(pe, marginal_prior_density(), ylab='density',
                            type ='l', lwd=1.5, xlab="Experimental arm response rate", 
                            col='purple', main='Experimental arm prior density for response rate')
     
@@ -467,27 +472,32 @@ server <- function(input, output) {
   
   
   output$all_posteriors <- renderPlot({
-    par(mfrow=c(2,2)) 
+    p = seq(0,1, length=100)
     
-    plot(pc,marginal_posterior_density_pc(), ylab='density',
+    par(mfrow=c(2,2)) 
+
+    prior_c <- dbeta(p, control_beta_a(), control_beta_b())
+    plot(pc, marginal_posterior_density_pc(), ylab='density',
          type ='l', lwd=1.5, xlab="Control arm response rate", 
          col='red', main='Control arm posterior density for response rate')
+    lines(p, prior_c/sum(prior_c), lwd=1.5, lty = 2, col='red')
     
-    plot(pe,marginal_posterior_density_pe(), ylab='density',
+    plot(pe, marginal_posterior_density_pe(), ylab='density',
          type ='l', lwd=1.5, xlab="Experimental arm response rate", 
          col='purple', main='Experimental arm posterior density for response rate')
+    lines(pe, marginal_prior_density()/sum(marginal_prior_density()), lwd=1.5, lty = 2, col='purple')
     
     plot(pc,marginal_posterior_density_pc(), ylab='density',
          type ='l', lwd=1.5, xlab="Control arm response rate", 
          col='red', main='Control arm posterior density for response rate')
-    lines(pe,marginal_posterior_density_pe(),type ='l', lwd=1.5, col='purple')
+    lines(pe, marginal_posterior_density_pe(),type ='l', lwd=1.5, col='purple')
 
     })
 
   output$summary = renderUI({
     summary_text <- paste(
       glue::glue("Prior distributions are determined by the opinions:
-                 <br/> Q1 = {input$Q1} <br/> Q2 = {input$Q2} <br/> Q3 = {input$Q3}% <br/> Q4 = {input$Q4}%"),
+                 <br/> Q1 = {input$Q1} <br/> Q2 = {input$Q2} <br/> Q3 = {100*input$Q3}% <br/> Q4 = {100*input$Q4}%"),
       "<br/><br/>Summary of the prior distribution of the 6-month remission rate on control arm/steroids:",
       glue::glue("<ul><li>90% credibility interval for control arm remission rate is ({round(0, 2)}, {round(0, 2)})"),
       glue::glue("<li>Your distribution is Beta with parameters {round(control_beta_a(),2)} and {round(control_beta_b(),2)}</li>"),
