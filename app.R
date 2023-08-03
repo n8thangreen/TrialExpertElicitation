@@ -528,5 +528,4 @@ server <- function(input, output) {
 
 shinyApp(ui = ui, server = server)
 
-#setwd("S:/SLMS_CTU_Analysis/Hakim files/BAR-JDM/BAR JDM workshop")
 #rsconnect::deployApp()
