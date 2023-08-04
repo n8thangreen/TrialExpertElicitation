@@ -8,6 +8,27 @@ library(rriskDistributions)
 #install.packages("zipfR")
 library(zipfR)
 
+to_prob_scale <- function(x)
+  x/sum(x)
+
+#
+integrand <- function(x, a, b, theta, n) {
+  (x^(a-1)*(1-x)^(b-1))/((1-x) + x*exp(theta))^n
+}
+
+#
+get_integral <- function(a, b, theta, n) {
+  integrate(integrand, lower = 0, upper = 1,
+            a = a, b  = b, theta = theta, n = n)
+}
+
+#
+post_logOR <- function(a, b, theta, n, sE, mu, sigma) {
+  num_integral <- get_integral(a, b, theta, n)$value
+  exp(theta*sE) * exp(-((theta - mu)^2)/(2*sigma^2)) * num_integral
+}
+
+
 # Define UI for app ----
 ui <- fluidPage(
   
@@ -113,7 +134,7 @@ ui <- fluidPage(
                    ,         
                    # panel 4
                    tabPanel("All priors"
-                            ,plotOutput(outputId = "all_priors")
+                            , plotOutput(outputId = "all_priors")
                             #, plotOutput(outputId = "joint_posterior_plot")
                    )
                    
@@ -126,14 +147,14 @@ ui <- fluidPage(
                  
                  tabsetPanel(
                    
-                   tabPanel("Control arm posterior",plotOutput(outputId = "marginal_posterior_plot_pc")
+                   tabPanel("Control arm posterior", plotOutput(outputId = "marginal_posterior_plot_pc")
                             #, plotOutput(outputId = "joint_posterior_plot")
                    ),
                    
-                   tabPanel("Experimental arm posterior",plotOutput(outputId = "marginal_posterior_plot_pe")
+                   tabPanel("Experimental arm posterior", plotOutput(outputId = "marginal_posterior_plot_pe")
                             , plotOutput(outputId = "joint_posterior_plot")),
                    
-                   tabPanel("All posteriors",plotOutput(outputId = "all_posteriors")
+                   tabPanel("All posteriors", plotOutput(outputId = "all_posteriors")
                    )
                    
                  )    
@@ -173,7 +194,6 @@ ui <- fluidPage(
                  ) # end of tabsetPanel within Summary 
                  
         ) # end of summary tabPanel
-        
         
       ) 
       
@@ -229,29 +249,38 @@ server <- function(input, output) {
   ## Control arm prior plot
   output$control_prior <- renderPlot({
     
-    #define range
+    # define range
     p = seq(0,1, length=100)
+    prior_c <- to_prob_scale(dbeta(p, control_beta_a(), control_beta_b()))
+    cdf <- cumsum(prior_c)
+    mode_c <- round(p[prior_c == max(prior_c)], 2)
+    min75 <- round(min(p[cdf >= 0.75]), 2)
     
-    #create plot of corresponding Beta distribution
-    control_prior <- plot(p, dbeta(p, control_beta_a(), control_beta_b()), ylab='density',
-                          type ='l', lwd=1.5, xlab="Control arm response rate", col='red', main='Control arm prior density for response rate')
-    control_prior
+    # create plot of corresponding Beta distribution
+    plot(p, prior_c,
+         ylab='density', xlab="Control arm response rate",
+         main='Control arm prior density for response rate',
+         type='l', lwd=1.5, col='red', xaxt='n')
+    polygon(c(p[cdf >= 0.75], 1, min(p[cdf >= 0.75])), c(prior_c[cdf >= 0.75], 0, 0), col="lightblue", border=NA)
+    abline(v = mode_c, lty = 2, col = "black")
+    
+    axis(1, at = sort(c(min75, mode_c, seq(0, 1, 0.2))), label=TRUE)
   })
   
-  ## Proba greater than mode as reactive
+  ## Probability greater than mode as reactive
   
   proba_greater_mode <- reactive({
     
-    proba <- pbeta(input$Q1, shape1=control_beta_a(), shape2=control_beta_b(),lower.tail = FALSE)
+    proba <- pbeta(input$Q1, shape1=control_beta_a(), shape2=control_beta_b(), lower.tail = FALSE)
     round(proba,2)*100
   })
   
-  # output of the proba greater than mode
+  # output of the probability greater than mode
   output$proba_greater_mode <- renderText({ 
     paste("The parameters for Q1 and Q2 that you have selected correspond to a probability beyond the mode of", proba_greater_mode(),"%")
   })
   
-  ## Proba lower p75 as reactive
+  ## Probability lower p75 as reactive
   
   proba_lower_p75 <- reactive({
     
@@ -259,7 +288,7 @@ server <- function(input, output) {
     round(proba_p75,2)*100
   })
   
-  # output of the proba lower p75
+  # output of the probability lower p75
   output$proba_lower_p75 <- renderText({ 
     paste("The mode and p75 that you have selected correspond to a probability to the left of p75 of", proba_lower_p75(),"%")
   })
@@ -283,8 +312,8 @@ server <- function(input, output) {
   ## parameters of the normal distribution of log OR as reactives
   
   mean_normal <- reactive({
-    p1=1-input$Q3
-    p2=1-input$Q4
+    p1 = 1-input$Q3
+    p2 = 1-input$Q4
     
     params <- get.norm.par(p = c(p1, p2), q=c(0,log(1.25)),plot=FALSE, show.output=FALSE)
     mean = as.numeric(params[1])
@@ -293,8 +322,8 @@ server <- function(input, output) {
   })
   
   sd_normal <- reactive({
-    p1=1-input$Q3
-    p2=1-input$Q4
+    p1 = 1-input$Q3
+    p2 = 1-input$Q4
     
     params <- get.norm.par(p = c(p1, p2), q=c(0,log(1.25)),plot=FALSE, show.output=FALSE)
     #mean = as.numeric(params[1])
@@ -308,13 +337,12 @@ server <- function(input, output) {
     #define range for log normal
     p = seq(-2.5,2.5, length=100)
     
+    plogOR <- to_prob_scale(dnorm(p, mean=mean_normal(), sd=sd_normal()))
+    
     #create plot of corresponding Normal distribution for log OR
     
-    logOR_prior <- plot(p, dnorm(p, mean=mean_normal(), sd=sd_normal()), ylab='density',
-                        type ='l', lwd=1.5, xlab="log OR",col='red', main='Prior density for the log odds ratio')
-    
-    logOR_prior
-    
+    plot(p, plogOR, ylab='density',
+         type ='l', lwd=1.5, xlab="log OR",col='red', main='Prior density for the log odds ratio')
   })
   
   output$OR_prior <- renderPlot({
@@ -322,11 +350,11 @@ server <- function(input, output) {
     #define range for OR
     x = seq(-10,1, length=1000)
     
-    #create plot of corresponding distribution for OR
+    pOR <- to_prob_scale(exp(dnorm(x, mean=mean_normal(), sd=sd_normal())))
     
-    OR_prior <- plot(exp(x), exp(dnorm(x, mean=mean_normal(), sd=sd_normal())), ylab='density',
-                     type ='l', lwd=1.5, xlab="OR", col='red', main='Prior density for the odds ratio')
-    
+    # create plot of corresponding distribution for OR
+    plot(exp(x), pOR, ylab='density',
+         type ='l', lwd=1.5, xlab="OR", col='red', main='Prior density for the odds ratio')
   })
   
   
@@ -367,17 +395,18 @@ server <- function(input, output) {
   
   marginal_prior_density <- reactive({
     
-    marginal_density <- 100 * (rowSums(joint_prior_density())/sum(rowSums(joint_prior_density())) )
+    marginal_density <- 100 * to_prob_scale(rowSums(joint_prior_density()))
     #marginal_density <- rowSums(joint_prior_density())
-    
   })
   
   output$marginal_prior_plot <- renderPlot({
     
-    marginal_prior <- plot(pe,marginal_prior_density(), ylab='density',
-                           type ='l', lwd=1.5, xlab="Experimental arm response rate", 
-                           col='purple', main='Experimental arm prior density for response rate')
-    marginal_prior
+    dens <- to_prob_scale(marginal_prior_density())
+    
+    plot(pe, dens,
+         ylab='density', xlab="Experimental arm response rate", 
+         main='Experimental arm prior density for response rate',
+         type ='l', lwd=1.5, col='purple')
   })
   
   
@@ -399,20 +428,19 @@ server <- function(input, output) {
     p = seq(0,1, length=100)
     
     #create plot of corresponding Beta distribution
-    control_prior <- plot(p, dbeta(p, control_beta_a(), control_beta_b()), ylab='density',
-                          type ='l', lwd=1.5, xlab="Control arm response rate", col='red', main='Control arm prior density for response rate')
+    plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='density',
+         type ='l', lwd=1.5, xlab="Control arm response rate", col='red', main='Control arm prior density for response rate')
     
-    marginal_prior <- plot(pe,marginal_prior_density(), ylab='density',
-                           type ='l', lwd=1.5, xlab="Experimental arm response rate", 
-                           col='purple', main='Experimental arm prior density for response rate')
+    plot(pe, to_prob_scale(marginal_prior_density()), ylab='density',
+         type ='l', lwd=1.5, xlab="Experimental arm response rate", 
+         col='purple', main='Experimental arm prior density for response rate')
     
-    OR_prior <- plot(exp(x), exp(dnorm(x, mean=mean_normal(), sd=sd_normal())), ylab='density',
-                     type ='l', lwd=1.5, xlab="OR", col='red', main='Prior density for the odds ratio')
+    plot(exp(x), to_prob_scale(exp(dnorm(x, mean=mean_normal(), sd=sd_normal()))), ylab='density',
+         type ='l', lwd=1.5, xlab="OR", col='red', main='Prior density for the odds ratio')
     
-    plot(p, dbeta(p, control_beta_a(), control_beta_b()), ylab='density',
+    plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='density',
          type ='l', lwd=1.5, xlab="Response rate", col='red', main='Prior densities for response rate')
-    lines(pe,marginal_prior_density(), 
-          type ='l', lwd=1.5,col='purple')
+    lines(pe, to_prob_scale(marginal_prior_density()), lwd=1.5,col='purple')
     
     #logOR_prior <- plot(p, dnorm(p, mean=mean_normal(), sd=sd_normal()), ylab='density',
     #                    type ='l', lwd=1.5, xlab="log OR",col='red', main='Prior density for the log odds ratio')
@@ -469,20 +497,27 @@ server <- function(input, output) {
   
   marginal_posterior_density_pe <- reactive({
     
-    marginal_density_post_pe <- rowSums(joint_posterior_density())/sum(rowSums(joint_posterior_density()))
-    
+    marginal_density_post_pe <- to_prob_scale(rowSums(joint_posterior_density()))
   })
   
   
   marginal_posterior_density_pc <- reactive({
     
-    marginal_density_post_pc <- colSums(joint_posterior_density())/sum(colSums(joint_posterior_density()))
-    
+    marginal_density_post_pc <- to_prob_scale(colSums(joint_posterior_density()))
   })
+  
+  # log OR
+  marginal_posterior_density_theta <- reactive({
+    val <- seq(-5, 5, by = 0.1)
+    dens <- purrr::map_dbl(theta, \(x) post_logOR(a = control_beta_a(), b = control_beta_b(),
+                                                  theta = x, n = 2, sE = 1, mu = 1, sigma = 1))
+    tibble::lst(val, dens)
+  })
+  
   
   output$marginal_posterior_plot_pe <- renderPlot({
     
-    marginal_posterior_plot_pe <- plot(pe,marginal_posterior_density_pe(), ylab='density',
+    marginal_posterior_plot_pe <- plot(pe, marginal_posterior_density_pe(), ylab='density',
                                        type ='l', lwd=1.5, xlab="Experimental arm response rate", 
                                        col='purple', main='Experimental arm posterior density for response rate')
     marginal_posterior_plot_pe
@@ -490,7 +525,7 @@ server <- function(input, output) {
   
   output$marginal_posterior_plot_pc <- renderPlot({
     
-    marginal_posterior_plot_pc <- plot(pc,marginal_posterior_density_pc(), ylab='density',
+    marginal_posterior_plot_pc <- plot(pc, marginal_posterior_density_pc(), ylab='density',
                                        type ='l', lwd=1.5, xlab="Control arm response rate", 
                                        col='red', main='Control arm posterior density for response rate')
     marginal_posterior_plot_pc
@@ -498,21 +533,31 @@ server <- function(input, output) {
   
   
   output$all_posteriors <- renderPlot({
+    p = seq(0,1, length=100)
+    
     par(mfrow=c(2,2)) 
     
-    plot(pc,marginal_posterior_density_pc(), ylab='density',
+    prior_c <- dbeta(p, control_beta_a(), control_beta_b())
+    plot(pc, marginal_posterior_density_pc(), ylab='density',
          type ='l', lwd=1.5, xlab="Control arm response rate", 
          col='red', main='Control arm posterior density for response rate')
+    lines(p, to_prob_scale(prior_c), lwd=1.5, lty = 2, col='red')
     
-    plot(pe,marginal_posterior_density_pe(), ylab='density',
+    plot(pe, marginal_posterior_density_pe(), ylab='density',
          type ='l', lwd=1.5, xlab="Experimental arm response rate", 
          col='purple', main='Experimental arm posterior density for response rate')
+    lines(pe, to_prob_scale(marginal_prior_density()), lwd=1.5, lty = 2, col='purple')
     
-    plot(pc,marginal_posterior_density_pc(), ylab='density',
+    plot(pc, marginal_posterior_density_pc(), ylab='density',
          type ='l', lwd=1.5, xlab="Control arm response rate", 
-         col='red', main='Posterior densities for response rate')
-    lines(pe,marginal_posterior_density_pe(),type ='l', lwd=1.5,col='purple')
+         col='red', main='Control arm posterior density for response rate')
+    lines(pe, marginal_posterior_density_pe(), type ='l', lwd=1.5, col='purple')
     
+    # log OR
+    theta <- marginal_posterior_density_theta()
+    plot(theta$val, theta$dens, ylab='density',
+         type ='l', lwd=1.5, xlab="Log-odds ratio", 
+         col='black', main='Log-odds ratio posterior density')
   })
   
   
