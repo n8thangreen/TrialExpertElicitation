@@ -8,26 +8,52 @@ library(rriskDistributions)
 #install.packages("zipfR")
 library(zipfR)
 
+#
 to_prob_scale <- function(x)
   x/sum(x)
 
 #
-integrand <- function(x, a, b, theta, n) {
+integrand_theta <- function(x, a, b, theta, n, ...) {
   (x^(a-1)*(1-x)^(b-1))/((1-x) + x*exp(theta))^n
 }
 
 #
-get_integral <- function(a, b, theta, n) {
-  integrate(integrand, lower = 0, upper = 1,
-            a = a, b  = b, theta = theta, n = n)
+integrand_or <- function(x, a, b, or, n, ...) {
+  (x^(a-1)*(1-x)^(b-1))/((1-x) + x*or)^n
 }
 
 #
+set_integral <- function(integrand, lower = 0, upper = 1) {
+  force(integrand)
+  force(lower)
+  force(upper)
+  
+  function(...) {
+    args <- c(f = integrand,
+              lower = lower,
+              upper = upper,
+              list(...))
+    do.call(integrate, args)
+  }
+}
+
+#
+integrate_logor <- set_integral(integrand = integrand_theta)
+integrate_or <- set_integral(integrand = integrand_or)
+
+#
 post_logOR <- function(a, b, theta, n, sE, mu, sigma) {
-  num_integral <- get_integral(a, b, theta, n)$value
+  args <- tibble::lst(a, b, theta, n)
+  num_integral <- do.call(integrate_logor, args)$value
   exp(theta*sE) * exp(-((theta - mu)^2)/(2*sigma^2)) * num_integral
 }
 
+#
+post_OR <- function(a, b, or, n, sE, mu, sigma) {
+  args <- tibble::lst(a, b, or, n)
+  num_integral <- do.call(integrate_or, args)$value
+  or^(sE-1) * exp(-((log(or) - mu)^2)/(2*sigma^2)) * num_integral
+}
 
 # Define UI for app ----
 ui <- fluidPage(
@@ -364,19 +390,19 @@ server <- function(input, output) {
   
   joint_prior_density <- reactive({ 
     
-    # An empty matrix z
     z = matrix(data=NA, nrow=length(pc), ncol=length(pe))
-    z
-    
+
     for(i in 1:length(pe))
     {
       for(j in 1:length(pc))
       {
-        term1=((pc[j]^(control_beta_a()-1))*((1-pc[j])^(control_beta_b()-1)))/(pe[i]*(1-pe[i]))
+        term1 <- ((pc[j]^(control_beta_a()-1))*((1-pc[j])^(control_beta_b()-1)))/(pe[i]*(1-pe[i]))
         
-        term2=exp((-1/(2*sd_normal()^2))*((log((pe[i]*(1-pc[j]))/(pc[j]*(1-pe[i]))) - mean_normal())^2))
+        odds_ratio <- (pe[i]*(1-pc[j])) / (pc[j]*(1-pe[i]))
         
-        z[i,j] = term1*term2  
+        term2 <- exp((-1/(2*sd_normal()^2))*((log(odds_ratio) - mean_normal())^2))
+        
+        z[i,j] <- term1*term2  
       }
     }
     z
@@ -509,11 +535,20 @@ server <- function(input, output) {
   # log OR
   marginal_posterior_density_theta <- reactive({
     val <- seq(-5, 5, by = 0.1)
-    dens <- purrr::map_dbl(theta, \(x) post_logOR(a = control_beta_a(), b = control_beta_b(),
-                                                  theta = x, n = 2, sE = 1, mu = 1, sigma = 1))
+    dens <- purrr::map_dbl(val, \(x) post_logOR(a = control_beta_a(), b = control_beta_b(),
+                                                theta = x, n = 2, sE = 1,
+                                                mu = mean_normal(), sigma = sd_normal()))
     tibble::lst(val, dens)
   })
   
+  # OR
+  marginal_posterior_density_OR <- reactive({
+    val <- seq(0, 5, by = 0.1)
+    dens <- purrr::map_dbl(val, \(x) post_OR(a = control_beta_a(), b = control_beta_b(),
+                                             or = x, n = 2, sE = 1,
+                                             mu = mean_normal(), sigma = sd_normal()))
+    tibble::lst(val, dens)
+  })
   
   output$marginal_posterior_plot_pe <- renderPlot({
     
@@ -535,7 +570,7 @@ server <- function(input, output) {
   output$all_posteriors <- renderPlot({
     p = seq(0,1, length=100)
     
-    par(mfrow=c(2,2)) 
+    par(mfrow=c(2,3)) 
     
     prior_c <- dbeta(p, control_beta_a(), control_beta_b())
     plot(pc, marginal_posterior_density_pc(), ylab='density',
@@ -558,6 +593,12 @@ server <- function(input, output) {
     plot(theta$val, theta$dens, ylab='density',
          type ='l', lwd=1.5, xlab="Log-odds ratio", 
          col='black', main='Log-odds ratio posterior density')
+    
+    # OR
+    etheta <- marginal_posterior_density_OR()
+    plot(etheta$val, etheta$dens, ylab='density',
+         type ='l', lwd=1.5, xlab="Odds ratio", 
+         col='black', main='Odds ratio posterior density')
   })
   
   
