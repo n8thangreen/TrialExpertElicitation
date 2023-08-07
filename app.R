@@ -316,23 +316,23 @@ server <- function(input, output) {
   
   # output of the probability lower p75
   output$proba_lower_p75 <- renderText({ 
-    paste("The mode and p75 that you have selected correspond to a probability to the left of p75 of", proba_lower_p75(),"%")
+    paste("The blue area under the curve corresponds to a probability of", proba_lower_p75(),"%")
   })
   
   # output alpha and beta parameters
   
   output$alpha <- renderText({ 
-    paste("The mode and p75 that you have selected correspond to alpha of", round(control_beta_a(),2))
+    # paste("The mode and p75 that you have selected correspond to alpha of", round(control_beta_a(),2))
   })
   
   output$beta <- renderText({ 
-    paste("The mode and p75 that you have selected correspond to beta of", round(control_beta_b(),2))
+    # paste("The mode and p75 that you have selected correspond to beta of", round(control_beta_b(),2))
   })
   
   # output the mode
   
   output$mode <- renderText({ 
-    paste("The current mode is", round((control_beta_a()-1)/(control_beta_a()+control_beta_b()-2),2))
+    paste("The current mode is indicated with the vertical dashed line at ", round((control_beta_a()-1)/(control_beta_a()+control_beta_b()-2),2))
   })
   
   ## parameters of the normal distribution of log OR as reactives
@@ -483,11 +483,22 @@ server <- function(input, output) {
   failures_control <- reactive({ 
     n_failures_control = input$Q5 - input$Q6
   })
+
+  total_sample <- reactive({ 
+    input$Q5
+  })
+  
+  success_control <- reactive({ 
+    input$Q6
+  })
+
+  success_exp <- reactive({ 
+    input$Q7
+  })
   
   failures_exp <- reactive({ 
     n_failures_exp = input$Q5 - input$Q7
   })
-  
   
   
   joint_posterior_density <- reactive({ 
@@ -535,8 +546,10 @@ server <- function(input, output) {
   # log OR
   marginal_posterior_density_theta <- reactive({
     val <- seq(-5, 5, by = 0.1)
-    dens <- purrr::map_dbl(val, \(x) post_logOR(a = control_beta_a(), b = control_beta_b(),
-                                                theta = x, n = 2, sE = 1,
+    success <- success_exp() + success_control()
+    fail <- failures_exp() + failures_control()
+    dens <- purrr::map_dbl(val, \(x) post_logOR(a = success + control_beta_a(), b = fail + control_beta_b(),
+                                                theta = x, n = total_sample(), sE = success_exp(),
                                                 mu = mean_normal(), sigma = sd_normal()))
     tibble::lst(val, dens)
   })
@@ -544,8 +557,10 @@ server <- function(input, output) {
   # OR
   marginal_posterior_density_OR <- reactive({
     val <- seq(0, 5, by = 0.1)
-    dens <- purrr::map_dbl(val, \(x) post_OR(a = control_beta_a(), b = control_beta_b(),
-                                             or = x, n = 2, sE = 1,
+    success <- success_exp() + success_control()
+    fail <- failures_exp() + failures_control()
+    dens <- purrr::map_dbl(val, \(x) post_OR(a = success + control_beta_a(), b = fail + control_beta_b(),
+                                             or = x, n = total_sample(), sE = success_exp(),
                                              mu = mean_normal(), sigma = sd_normal()))
     tibble::lst(val, dens)
   })
