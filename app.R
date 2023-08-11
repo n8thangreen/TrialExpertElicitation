@@ -122,7 +122,9 @@ ui <- fluidPage(
                              min = 4,
                              max = 40,
                              value = 5),
-                 
+                 actionButton("button_add_data", "Add to evidence"),
+                 checkboxInput("chk_box_all_data", "Use all data", FALSE),
+                 tableOutput("combinedTable")
         ) 
         
       )
@@ -228,8 +230,24 @@ ui <- fluidPage(
 ) # end of UI
 #)
 
+
 # Define server logic ----
 server <- function(input, output) {
+  
+  combined_df <- reactiveVal(NULL)
+  
+  observeEvent(input$button_add_data, {
+    current <- combined_df()
+    new_df <- rbind(current, c(Q5 = input$Q5,
+                               Q6 = input$Q6,
+                               Q7 = input$Q7))
+    combined_df(new_df)
+  })
+  
+  # Display the combined data frame
+  output$combinedTable <- renderTable({
+    combined_df()
+  })
   
   # a and b parameters of the beta distribution for control arm as reactives
   
@@ -479,10 +497,6 @@ server <- function(input, output) {
   ## hypothetical trial and posteriors
   
   ##############################################################################
-  
-  failures_control <- reactive({ 
-    n_failures_control = input$Q5 - input$Q6
-  })
 
   total_sample <- reactive({ 
     input$Q5
@@ -494,6 +508,10 @@ server <- function(input, output) {
 
   success_exp <- reactive({ 
     input$Q7
+  })
+  
+  failures_control <- reactive({ 
+    n_failures_control = input$Q5 - input$Q6
   })
   
   failures_exp <- reactive({ 
