@@ -143,10 +143,10 @@ ui <- fluidPage(
                    # panel 1
                    tabPanel("Control arm prior", plotOutput(outputId = "control_prior")
                             
+                            , textOutput("mode")
                             , textOutput("proba_lower_p75")
                             , textOutput("alpha")
                             , textOutput("beta")
-                            , textOutput("mode")
                    )
                    ,
                    
@@ -211,13 +211,22 @@ ui <- fluidPage(
                      textOutput("responders_exp"),
                      
                      br(),
-                     h4("Posterior distributions given prior distributions and trial results:"),
+                     h4("Posterior distribution of the response rate in the Experimental arm, given prior distributions and trial results:"),
                      #textOutput("proba_post_exp_greater_20pct"),
                      textOutput("proba_post_exp_greater_20pct_text"),
                      textOutput("proba_post_exp_greater_30pct_text"),
                      textOutput("proba_post_exp_greater_40pct_text"),
-                     textOutput("proba_post_exp_greater_50pct_text")
+                     textOutput("proba_post_exp_greater_50pct_text"),
+                                          
+                     br(),
+                     textOutput("odds_ratio_posterior_text"),
                      
+                     br(),
+                     h4("Posterior distribution of the response rate in the Control arm, given prior distributions and trial results:"),
+                     textOutput("proba_post_control_greater_20pct_text"),
+                     textOutput("proba_post_control_greater_30pct_text"),
+                     textOutput("proba_post_control_greater_40pct_text"),
+                     textOutput("proba_post_control_greater_50pct_text"),
                    )
                  ) # end of tabsetPanel within Summary 
                  
@@ -334,7 +343,7 @@ server <- function(input, output) {
   
   # output of the probability lower p75
   output$proba_lower_p75 <- renderText({ 
-    paste("The blue area under the curve corresponds to a probability of", proba_lower_p75(),"%")
+    glue::glue("The blue area to the right of {input$Q2} is 25%. It means that you think that there is one chance out of 4 that the response rate will be greater than {input$Q2}.") 
   })
   
   # output alpha and beta parameters
@@ -350,7 +359,7 @@ server <- function(input, output) {
   # output the mode
   
   output$mode <- renderText({ 
-    paste("The current mode is indicated with the vertical dashed line at ", round((control_beta_a()-1)/(control_beta_a()+control_beta_b()-2),2))
+    glue::glue("The mode, which is the value that you think is most likely for the response rate in the Control arm, is {input$Q1}. It is indicated by a vertical dashed line on the plot.")
   })
   
   ## parameters of the normal distribution of log OR as reactives
@@ -359,7 +368,7 @@ server <- function(input, output) {
     p1 = 1-input$Q3
     p2 = 1-input$Q4
     
-    params <- get.norm.par(p = c(p1, p2), q=c(0,log(1.25)),plot=FALSE, show.output=FALSE)
+    params <- get.norm.par(p = c(p1, p2), q=c(0,log(1.25)), plot=FALSE, show.output=FALSE)
     mean = as.numeric(params[1])
     #sd = as.numeric(params[2])
     mean
@@ -369,7 +378,7 @@ server <- function(input, output) {
     p1 = 1-input$Q3
     p2 = 1-input$Q4
     
-    params <- get.norm.par(p = c(p1, p2), q=c(0,log(1.25)),plot=FALSE, show.output=FALSE)
+    params <- get.norm.par(p = c(p1, p2), q=c(0,log(1.25)), plot=FALSE, show.output=FALSE)
     #mean = as.numeric(params[1])
     sd = as.numeric(params[2])
     sd
@@ -673,12 +682,7 @@ server <- function(input, output) {
     paste("3 / The number of responders in the Experimental arm is", input$Q7,"patients")
   })
   
-  # posterior proba that response rate is greater than 20 pct, 30 pct etc
-  
-  #posterior_exp_dataset = reactive({data.frame(pe=pe, dens=marginal_posterior_density_pe() )
-  # }) 
-  
-  # posterior_exp_dataset = data.frame(pe=pe, dens=marginal_posterior_density_pe() )
+  # experimental arm
   
   proba_post_exp_greater_20pct <- reactive({
     posterior_exp_dataset = data.frame(pe=pe, dens=marginal_posterior_density_pe() )
@@ -720,6 +724,48 @@ server <- function(input, output) {
     paste("4 / The posterior probability that the response rate is greater than 50% is", round(100*proba_post_exp_greater_50pct(),0),"%")
   })
   
+  output$odds_ratio_posterior_text <- renderText({ 
+    paste("The posterior probability that the response rate is greater than 50% is", round(100*proba_post_exp_greater_50pct(),0),"%")
+  })
+  
+  # control arm
+  ##TODO: update for control arm...
+  
+  proba_post_control_greater_20pct <- reactive({
+    posterior_exp_dataset = data.frame(pe=pe, dens=marginal_posterior_density_pe() )
+    sum(posterior_exp_dataset[which(posterior_exp_dataset$pe>0.2), 2])/sum(posterior_exp_dataset[,2])
+  })        
+  
+  proba_post_control_greater_30pct <- reactive({
+    posterior_exp_dataset = data.frame(pe=pe, dens=marginal_posterior_density_pe() )
+    sum(posterior_exp_dataset[which(posterior_exp_dataset$pe>0.3), 2])/sum(posterior_exp_dataset[,2])
+  })
+  
+  proba_post_control_greater_40pct <- reactive({
+    posterior_exp_dataset = data.frame(pe=pe, dens=marginal_posterior_density_pe() )
+    sum(posterior_exp_dataset[which(posterior_exp_dataset$pe>0.4), 2])/sum(posterior_exp_dataset[,2])
+  })
+  
+  proba_post_control_greater_50pct <- reactive({
+    posterior_exp_dataset = data.frame(pe=pe, dens=marginal_posterior_density_pe() )
+    sum(posterior_exp_dataset[which(posterior_exp_dataset$pe>0.5), 2])/sum(posterior_exp_dataset[,2])
+  })
+  
+  output$proba_post_control_greater_20pct_text <- renderText({ 
+    paste("1 / The posterior probability that the response rate is greater than 20% is", round(100*proba_post_control_greater_20pct(),0),"%")
+  })
+  
+  output$proba_post_control_greater_30pct_text <- renderText({ 
+    paste("2 / The posterior probability that the response rate is greater than 30% is", round(100*proba_post_control_greater_30pct(),0),"%")
+  })
+  
+  output$proba_post_control_greater_40pct_text <- renderText({ 
+    paste("3 / The posterior probability that the response rate is greater than 40% is", round(100*proba_post_control_greater_40pct(),0),"%")
+  })
+  
+  output$proba_post_control_greater_50pct_text <- renderText({ 
+    paste("4 / The posterior probability that the response rate is greater than 50% is", round(100*proba_post_control_greater_50pct(),0),"%")
+  })
 }
 
 shinyApp(ui = ui, server = server)
