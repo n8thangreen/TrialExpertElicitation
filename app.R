@@ -124,7 +124,8 @@ ui <- fluidPage(
                              value = 5),
                  actionButton("button_add_data", "Add to evidence"),
                  checkboxInput("chk_box_all_data", "Use all data", FALSE),
-                 tableOutput("combinedTable")
+                 tableOutput("combinedTable"),
+                 textOutput("totals_hypo_trial")
         ) 
         
       )
@@ -257,6 +258,14 @@ server <- function(input, output) {
   output$combinedTable <- renderTable({
     combined_df()
   })
+  
+  output$totals_hypo_trial <- renderText({
+    if (is.null(combined_df())) {
+      " "
+    } else {
+      c(N_sample(), success_control(), success_exp())
+    }
+    })
   
   # a and b parameters of the beta distribution for control arm as reactives
   
@@ -507,24 +516,36 @@ server <- function(input, output) {
   
   ##############################################################################
 
-  total_sample <- reactive({ 
-    input$Q5
+  N_sample <- reactive({ 
+    if (input$chk_box_all_data) {
+      sum(combined_df()[, "Q5"])
+    } else {
+      input$Q5
+    }
   })
   
   success_control <- reactive({ 
-    input$Q6
+    if (input$chk_box_all_data) {
+      sum(combined_df()[, "Q6"])
+    } else {
+      input$Q6
+    }
   })
 
   success_exp <- reactive({ 
-    input$Q7
+    if (input$chk_box_all_data) {
+      sum(combined_df()[, "Q7"])
+    } else {
+      input$Q7
+    }
   })
   
   failures_control <- reactive({ 
-    n_failures_control = input$Q5 - input$Q6
+    n_failures_control = N_sample() - success_control()
   })
   
   failures_exp <- reactive({ 
-    n_failures_exp = input$Q5 - input$Q7
+    n_failures_exp = N_sample() - success_exp()
   })
   
   
@@ -538,7 +559,7 @@ server <- function(input, output) {
     {
       for(j in 1:length(pc))
       {
-        term1=((pc[j]^(input$Q6+control_beta_a()-1))*((1-pc[j])^(failures_control()+control_beta_b()-1)))*((pe[i]^(input$Q7-1))*((1-pe[i])^(failures_exp()-1) ))
+        term1=((pc[j]^(input$Q6+control_beta_a()-1))*((1-pc[j])^(failures_control() + control_beta_b()-1)))*((pe[i]^(input$Q7-1))*((1-pe[i])^(failures_exp()-1) ))
         
         term2=exp((-1/(2*sd_normal()^2))*((log((pe[i]*(1-pc[j]))/(pc[j]*(1-pe[i]))) - mean_normal())^2))
         
@@ -576,7 +597,7 @@ server <- function(input, output) {
     success <- success_exp() + success_control()
     fail <- failures_exp() + failures_control()
     dens <- purrr::map_dbl(val, \(x) post_logOR(a = success + control_beta_a(), b = fail + control_beta_b(),
-                                                theta = x, n = total_sample(), sE = success_exp(),
+                                                theta = x, n = N_sample(), sE = success_exp(),
                                                 mu = mean_normal(), sigma = sd_normal()))
     tibble::lst(val, dens)
   })
@@ -587,7 +608,7 @@ server <- function(input, output) {
     success <- success_exp() + success_control()
     fail <- failures_exp() + failures_control()
     dens <- purrr::map_dbl(val, \(x) post_OR(a = success + control_beta_a(), b = fail + control_beta_b(),
-                                             or = x, n = total_sample(), sE = success_exp(),
+                                             or = x, n = N_sample(), sE = success_exp(),
                                              mu = mean_normal(), sigma = sd_normal()))
     tibble::lst(val, dens)
   })
