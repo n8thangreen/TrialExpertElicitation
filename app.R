@@ -73,14 +73,14 @@ ui <- fluidPage(
                  br(),
                  # Input Q1  ----
                  sliderInput(inputId = "Q1",
-                             label = "Q1: What's the mode for the Control arm prior:",
+                             label = "Q1: I think the response rate on methotrexate will be:",
                              min = 0,
                              max = 1,
                              value = 0.3),
                  
                  # Input Q2  ----
                  sliderInput(inputId = "Q2",
-                             label = "Q2: What's p75:",
+                             label = "Q2: I am 25% sure the response rate on methotrexate might be greater than:",
                              min = 0,
                              max = 1,
                              value = 0.5),
@@ -89,14 +89,14 @@ ui <- fluidPage(
                  
                  # Input Q3  ----
                  sliderInput(inputId = "Q3",
-                             label = "Q3: Chance that Experimental arm will do better:",
+                             label = "Q3: What is the chance (in your opinion) that the response rate on baricitinib exceeds that on methotrexate? In other words that the Odds Ratio will be greater than 1?",
                              min = 0,
                              max = 1,
                              value = 0.5),
                  
                  # Input Q4  ----
                  sliderInput(inputId = "Q4",
-                             label = "Q4: Chance that Experimental arm will do at least 25% better:",
+                             label = "Q4: What is the chance (in your opinion) that baricitinib will relatively outperform methotrexate by at least 25%?",
                              min = 0,
                              max = 1,
                              value = 0.25)
@@ -112,13 +112,13 @@ ui <- fluidPage(
                              value = 20), 
                  
                  sliderInput(inputId = "Q6",
-                             label = "Q6: # successes in Control arm:",
+                             label = "Q6: Number of successes in methotrexate arm:",
                              min = 4,
                              max = 40,
                              value = 5),
                  
                  sliderInput(inputId = "Q7",
-                             label = "Q7: # successes in Experimental arm:",
+                             label = "Q7: Number of successes in baricitinib arm:",
                              min = 4,
                              max = 40,
                              value = 5)
