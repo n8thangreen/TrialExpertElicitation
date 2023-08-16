@@ -378,6 +378,7 @@ server <- function(input, output) {
     
     plot(p, plogOR, ylab='density',
          type ='l', lwd=1.5, xlab="log OR",col='red', main='Prior density for the log odds ratio')
+    abline(v = 0, lty = 2)
   })
   
   output$OR_prior <- renderPlot({
@@ -390,6 +391,7 @@ server <- function(input, output) {
     # create plot of corresponding distribution for OR
     plot(exp(x), pOR, ylab='density',
          type ='l', lwd=1.5, xlab="OR", col='red', main='Prior density for the odds ratio')
+    abline(v = 1, lty = 2)
   })
   
   
