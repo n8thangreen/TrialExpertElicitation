@@ -121,11 +121,7 @@ ui <- fluidPage(
                              label = "Q7: # successes in Experimental arm:",
                              min = 4,
                              max = 40,
-                             value = 5),
-                 actionButton("button_add_data", "Add to evidence"),
-                 checkboxInput("chk_box_all_data", "Use all data", FALSE),
-                 tableOutput("combinedTable"),
-                 textOutput("totals_hypo_trial")
+                             value = 5)
         ) 
         
       )
@@ -243,29 +239,6 @@ ui <- fluidPage(
 
 # Define server logic ----
 server <- function(input, output) {
-  
-  combined_df <- reactiveVal(NULL)
-  
-  observeEvent(input$button_add_data, {
-    current <- combined_df()
-    new_df <- rbind(current, c(Q5 = input$Q5,
-                               Q6 = input$Q6,
-                               Q7 = input$Q7))
-    combined_df(new_df)
-  })
-  
-  # Display the combined data frame
-  output$combinedTable <- renderTable({
-    combined_df()
-  })
-  
-  output$totals_hypo_trial <- renderText({
-    if (is.null(combined_df())) {
-      " "
-    } else {
-      c(N_sample(), success_control(), success_exp())
-    }
-    })
   
   # a and b parameters of the beta distribution for control arm as reactives
   
@@ -517,27 +490,15 @@ server <- function(input, output) {
   ##############################################################################
 
   N_sample <- reactive({ 
-    if (input$chk_box_all_data) {
-      sum(combined_df()[, "Q5"])
-    } else {
       input$Q5
-    }
   })
   
   success_control <- reactive({ 
-    if (input$chk_box_all_data) {
-      sum(combined_df()[, "Q6"])
-    } else {
       input$Q6
-    }
   })
 
   success_exp <- reactive({ 
-    if (input$chk_box_all_data) {
-      sum(combined_df()[, "Q7"])
-    } else {
       input$Q7
-    }
   })
   
   failures_control <- reactive({ 
