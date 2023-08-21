@@ -79,27 +79,15 @@ ui <- fluidPage(
                             , textOutput("pseudo_obs")
         ), # end of tabset panel for Priors
         
-        tabPanel("Posteriors", 
-                 
-                 tabsetPanel(
-                   
-                   tabPanel("Control arm posterior", plotOutput(outputId = "marginal_posterior_plot_pc")
-                   ),
-
-                   tabPanel("All posteriors", plotOutput(outputId = "all_posteriors")
-                   )
-                   
-                 )    
+        tabPanel("Posteriors",  plotOutput(outputId = "posterior_plot")
         )
       ) 
       
     ) # end of main panel
   ) # end of sidebarLayout
 ) # end of UI
-#)
 
-
-# Define server logic ----
+#
 server <- function(input, output) {
   
   combined_df <- reactiveVal(NULL)
@@ -124,20 +112,16 @@ server <- function(input, output) {
     }
     })
   
-  # a and b parameters of the beta distribution as reactives
-  
   control_beta_a <- reactive({
     
-    mode=input$Q1
-    p75=input$Q2
+    mode <- input$Q1
+    p75 <- input$Q2
     
     min.SS <- function(params) {
-      
-      alpha=params[1]
-      beta=params[2]
+      alpha <- params[1]
+      beta <- params[2]
       
       ((alpha-1)/(alpha+beta-2) - mode)^2 + (Rbeta(p75,a=alpha,b=beta)-0.75)^2
-      
     }
     
     optim_result <- optim(par = c(1.5, 2), fn = min.SS, lower=c(1,1), method="L-BFGS-B")
@@ -145,23 +129,19 @@ server <- function(input, output) {
   })
   
   control_beta_b <- reactive({
-    
-    mode=input$Q1
-    p75=input$Q2
+    mode <- input$Q1
+    p75 <- input$Q2
     
     min.SS <- function(params) {
-      
-      alpha=params[1]
-      beta=params[2]
+      alpha <- params[1]
+      beta <- params[2]
       
       ((alpha-1)/(alpha+beta-2) - mode)^2 + (Rbeta(p75,a=alpha,b=beta)-0.75)^2
-      
     }
     
     optim_result <- optim(par = c(1.5, 2), fn = min.SS, lower=c(1,1), method="L-BFGS-B")
     optim_result$par[2]
   })
-  
   
   ## Prior plot
   output$control_prior <- renderPlot({
@@ -192,12 +172,13 @@ server <- function(input, output) {
   
   # output of the probability greater than mode
   output$proba_greater_mode <- renderText({ 
-    paste("The parameters for Q1 and Q2 that you have selected correspond to a probability beyond the mode of", proba_greater_mode(),"%")
+    paste("The parameters for Q1 and Q2 that you have selected correspond to a probability beyond the mode of",
+          proba_greater_mode(), "%")
   })
   
   ## Probability lower p75 as reactive
   proba_lower_p75 <- reactive({
-    proba_p75 <- pbeta(input$Q2, shape1=control_beta_a(), shape2=control_beta_b(),lower.tail = TRUE)
+    proba_p75 <- pbeta(input$Q2, shape1=control_beta_a(), shape2=control_beta_b(), lower.tail = TRUE)
     round(proba_p75,2)*100
   })
   
@@ -230,7 +211,6 @@ server <- function(input, output) {
   
   ############################################################################## 
   ## trial and posteriors
-  ##############################################################################
 
   N_sample <- reactive({ 
     if (input$chk_box_all_data) {
@@ -248,37 +228,23 @@ server <- function(input, output) {
     }
   })
 
-  failures_control <- reactive({ 
+  failures_control <- reactive({
     n_failures_control = N_sample() - success_control()
   })
   
-  marginal_posterior_density_pc <- reactive({
-    marginal_density_post_pc <- to_prob_scale(colSums(joint_posterior_density()))
+  beta_posterior <- reactive({
+    probs <- seq(0, 1, length=100)
+    list(p = probs,
+         vals = dbeta(probs, shape1 = control_beta_a() + success_control(),
+                      shape2 = control_beta_b() + failures_control()))
   })
   
-  output$marginal_posterior_plot_pc <- renderPlot({
-    marginal_posterior_plot_pc <- plot(pc, marginal_posterior_density_pc(), ylab='density',
-                                       type ='l', lwd=1.5, xlab="Proportion of black blocks", 
-                                       col='red', main='')
-    marginal_posterior_plot_pc
-  })
-  
-  
-  output$all_posteriors <- renderPlot({
-    p = seq(0,1, length=100)
-    
-    par(mfrow=c(2,3)) 
-    
-    prior_c <- dbeta(p, control_beta_a(), control_beta_b())
-    plot(pc, marginal_posterior_density_pc(), ylab='density',
-         type ='l', lwd=1.5, xlab="Proportion of black blocks", 
-         col='red', main='Posterior density')
-    lines(p, to_prob_scale(prior_c), lwd=1.5, lty = 2, col='red')
-    
-    plot(pc, marginal_posterior_density_pc(), ylab='density',
-         type ='l', lwd=1.5, xlab="Proportion of black blocks", 
-         col='red', main='Posterior density')
-    lines(pe, marginal_posterior_density_pe(), type ='l', lwd=1.5, col='purple')
+  #
+  output$posterior_plot <- renderPlot({
+    plot( beta_posterior()$p, beta_posterior()$vals,
+          ylab='density', xlab="Proportion of black blocks",
+          type ='l', lwd=1.5, 
+          col='red', main='')
   })
   
   ############################################################################## 
