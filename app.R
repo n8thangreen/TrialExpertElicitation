@@ -74,9 +74,9 @@ ui <- fluidPage(
         tabPanel("Priors", plotOutput(outputId = "control_prior")
                             
                             , textOutput("mode")
-                            , textOutput("proba_lower_p75")
-                            , textOutput("alpha")
-                            , textOutput("beta")
+                            , textOutput("r_and_s")
+                            , textOutput("beta_credble_intervals")
+                            , textOutput("pseudo_obs")
         ), # end of tabset panel for Priors
         
         tabPanel("Posteriors", 
@@ -232,7 +232,7 @@ server <- function(input, output) {
   
   # output of the probability lower p75
   output$proba_lower_p75 <- renderText({ 
-    glue::glue("The blue area to the right of {input$Q2} is 25%. It means that you think that there is one chance out of 4 that the response rate will be greater than {input$Q2}.") 
+    glue::glue("- The blue area to the right of {input$Q2} is 25%. It means that you think that there is one chance out of 4 that the response rate will be greater than {input$Q2}.") 
   })
   
   output$alpha <- renderText({ 
@@ -241,10 +241,6 @@ server <- function(input, output) {
   
   output$beta <- renderText({ 
     # paste("The mode and p75 that you have selected correspond to beta of", round(control_beta_b(),2))
-  })
-  
-  output$mode <- renderText({ 
-    glue::glue("The mode, which is the value that you think is most likely for the response rate, is {input$Q1}. It is indicated by a vertical dashed line on the plot.")
   })
   
   output$all_priors <- renderPlot({
@@ -314,13 +310,43 @@ server <- function(input, output) {
     lines(pe, marginal_posterior_density_pe(), type ='l', lwd=1.5, col='purple')
   })
   
-  
   ############################################################################## 
   ## summary stats page
-  ##############################################################################  
   
-  output$mode_prior_control <- renderText({ 
-    paste("1/ The current mode, which is the value for the response rate that you think is most probable, is", 100*round((control_beta_a()-1)/(control_beta_a()+control_beta_b()-2),2),"%")
+  output$mode <- renderText({
+    para_a <- control_beta_a()
+    para_b <- control_beta_b()
+    
+    paste0("- The mode is ", 100*round((para_a - 1)/(para_a + para_b - 2), 2), "%. ",
+    "The mean is ", 100*round(para_a/(para_a + para_b), 2), "%. ",
+    "The standard deviation is ", 100*round(sqrt((para_a*para_b)/((para_a + para_b)^2*(para_a+para_b+1))), 2), "%")
+  })
+  
+  output$r_and_s <- renderText({
+    para_a <- control_beta_a()
+    para_b <- control_beta_b()
+    
+    paste0("- Values of r and s are ", round(para_a,2), " and ", round(para_b,2))
+  })
+
+  output$pseudo_obs <- renderText({
+    para_a <- control_beta_a()
+    para_b <- control_beta_b()
+    
+    paste0("- The number of “pseudo-observations” to which the prior is equivalent is ",
+           round(para_a + para_b, 2), " and the number of them which are black is ", round(para_a, 2))
+  })
+
+  output$beta_credble_intervals <- renderText({
+    para_a <- control_beta_a()
+    para_b <- control_beta_b()
+    
+    paste0("- The 50% credible interval is (",
+           round(qbeta(0.25, para_a, para_b), 2), ", ",
+           round(qbeta(0.75, para_a, para_b), 2), "). ",
+           "The 95% credible interval is (",
+           round(qbeta(0.025, para_a, para_b), 2), ", ",
+           round(qbeta(0.975, para_a, para_b), 2), ")")
   })
   
   # output of the proba greater than mode
