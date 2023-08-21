@@ -56,7 +56,7 @@ ui <- fluidPage(
                              max = 5,
                              value = 0),
 
-                 actionButton("button_add_data", "Add to evidence"),
+                 actionButton("button_add_data", "Add repeated sampling"),
                  checkboxInput("chk_box_all_data", "Use all data", FALSE),
                  tableOutput("combinedTable"),
                  textOutput("totals_hypo_trial")
@@ -80,6 +80,7 @@ ui <- fluidPage(
         ), # end of tabset panel for Priors
         
         tabPanel("Posteriors",  plotOutput(outputId = "posterior_plot")
+                            , textOutput("posterior_mode")
         )
       ) 
       
@@ -108,9 +109,9 @@ server <- function(input, output) {
     if (is.null(combined_df())) {
       " "
     } else {
-      c(N_sample(), success_control())
+      glue::glue("Sample size used is {N_sample()} and number of black blocks used is {success_control()}")
     }
-    })
+  })
   
   control_beta_a <- reactive({
     
@@ -196,11 +197,10 @@ server <- function(input, output) {
   })
   
   output$all_priors <- renderPlot({
-    par(mfrow=c(2,2))
-    
     x = seq(-10,1, length=1000)
     p = seq(0,1, length=100)
     
+    par(mfrow=c(2,2))
     plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='density',
          type ='l', lwd=1.5, xlab="Proportion of black blocks", col='red', main='')
     
@@ -214,7 +214,7 @@ server <- function(input, output) {
 
   N_sample <- reactive({ 
     if (input$chk_box_all_data) {
-      sum(combined_df()[, "Q5"])
+      sum(combined_df()[, "Sample size"])
     } else {
       input$Q5
     }
@@ -222,7 +222,7 @@ server <- function(input, output) {
   
   success_control <- reactive({ 
     if (input$chk_box_all_data) {
-      sum(combined_df()[, "Q6"])
+      sum(combined_df()[, "# black blocks"])
     } else {
       input$Q6
     }
@@ -309,6 +309,14 @@ server <- function(input, output) {
     paste("2 / The number of responders is", input$Q6,"patients")
   })
   
+  output$posterior_mode <- renderText({
+    para_a <- control_beta_a() + success_control()
+    para_b <- control_beta_b() + failures_control()
+    
+    paste0("- The posterior mode is ", 100*round((para_a - 1)/(para_a + para_b - 2), 2), "%. ",
+           "The mean is ", 100*round(para_a/(para_a + para_b), 2), "%. ",
+           "The standard deviation is ", 100*round(sqrt((para_a*para_b)/((para_a + para_b)^2*(para_a+para_b+1))), 2), "%")
+  })
 
   # control arm
   ##TODO: update for control arm...
