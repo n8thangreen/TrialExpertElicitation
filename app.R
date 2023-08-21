@@ -90,36 +90,7 @@ ui <- fluidPage(
                    )
                    
                  )    
-        ),
-        tabPanel("Summary",
-                 
-                 tabsetPanel(
-                   tabPanel(
-                     "Priors",
-                     br(),
-                     h4("Control arm characteristics given your answers to Q1 and Q2:"),
-                     textOutput("mode_prior_control"),
-                     textOutput("proba_greater_mode")
-                   ),
-                   
-                   tabPanel(
-                     "Posteriors", 
-                     br(),
-                     h4("Trial:"),
-                     textOutput("trial_size"),
-                     textOutput("responders_ctrl"),
-                     
-                     br(),
-                     h4("Posterior distribution of the response rate, given prior distributions and trial results:"),
-                     textOutput("proba_post_control_greater_20pct_text"),
-                     textOutput("proba_post_control_greater_30pct_text"),
-                     textOutput("proba_post_control_greater_40pct_text"),
-                     textOutput("proba_post_control_greater_50pct_text"),
-                   )
-                 ) # end of tabsetPanel within Summary 
-                 
-        ) # end of summary tabPanel
-        
+        )
       ) 
       
     ) # end of main panel
