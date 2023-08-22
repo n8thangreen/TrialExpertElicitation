@@ -1,0 +1,12 @@
+name: TrialExpertElicitation-main
+title: TrialExpertElicitation-main
+username: n8thangreen
+account: n8thangreen
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9651221
+bundleId: 7596013
+url: https://n8thangreen.shinyapps.io/TrialExpertElicitation-main/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
