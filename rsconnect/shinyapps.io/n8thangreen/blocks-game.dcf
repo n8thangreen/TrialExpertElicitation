@@ -1,0 +1,12 @@
+name: blocks-game
+title: blocks-game
+username: n8thangreen
+account: n8thangreen
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9651235
+bundleId: 7596021
+url: https://n8thangreen.shinyapps.io/blocks-game/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
