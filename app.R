@@ -88,10 +88,10 @@ ui <- fluidPage(
         ),
         
         tabPanel("Posteriors",  plotOutput(outputId = "posterior_plot")
+                 , textOutput("posterior_sample")
                  , textOutput("posterior_mode")
                  , textOutput("posterior_r_and_s")
                  , textOutput("posterior_beta_credble_intervals")
-                 , textOutput("posterior_pseudo_obs")
         )
       ) 
       
@@ -283,6 +283,8 @@ server <- function(input, output) {
     para_a <- control_beta_a()
     para_b <- control_beta_b()
     
+    stats <- combined_df()
+    
     paste0("(i) The mode is ", round((para_a - 1)/(para_a + para_b - 2), 2), ". ",
     "The mean is ", round(para_a/(para_a + para_b), 2), ". ",
     "The standard deviation is ", round(sqrt((para_a*para_b)/((para_a + para_b)^2*(para_a+para_b+1))), 2))
@@ -336,6 +338,10 @@ server <- function(input, output) {
     paste("2 / The number of responders is", input$Q6,"patients")
   })
   
+  output$posterior_sample <- renderText({
+    paste0("Posterior density after a sample of ", N_sample(), " blocks of which ", success_control(), " were black.")
+  })
+  
   output$posterior_mode <- renderText({
     para_a <- posterior_a()
     para_b <- posterior_b()
@@ -362,14 +368,6 @@ server <- function(input, output) {
            "The 95% credible interval is (",
            round(qbeta(0.025, para_a, para_b), 2), ", ",
            round(qbeta(0.975, para_a, para_b), 2), ")")
-  })
-  
-  output$posterior_pseudo_obs <- renderText({
-    para_a <- posterior_a()
-    para_b <- posterior_b()
-    
-    paste0("(iv) The number of “pseudo-observations” to which the prior is equivalent is ",
-           round(para_a + para_b, 2), " and the number of them which are black is ", round(para_a, 2))
   })
   
   # control arm
