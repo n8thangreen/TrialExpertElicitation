@@ -58,8 +58,17 @@ ui <- fluidPage(
 
                  actionButton("button_add_data", "Add repeated sampling"),
                  checkboxInput("chk_box_all_data", "Use all data", FALSE),
+                 
+                 sliderInput(inputId = "subset_samples",
+                             label = "Number of samples plotted",
+                             min = 1,
+                             max = 1,
+                             step = 1,
+                             value = 1),
+                 
                  tableOutput("combinedTable"),
-                 textOutput("totals_hypo_trial")
+                 textOutput("totals_hypo_trial"),
+                 actionButton("button_new_trial", "Start new trial")
         ) 
         
       )
@@ -71,16 +80,18 @@ ui <- fluidPage(
       
       tabsetPanel(
         
-        tabPanel("Priors", plotOutput(outputId = "control_prior")
-                            
-                            , textOutput("mode")
-                            , textOutput("r_and_s")
-                            , textOutput("beta_credble_intervals")
-                            , textOutput("pseudo_obs")
-        ), # end of tabset panel for Priors
+        tabPanel("Prior", plotOutput(outputId = "control_prior")
+                 , textOutput("mode")
+                 , textOutput("r_and_s")
+                 , textOutput("beta_credble_intervals")
+                 , textOutput("pseudo_obs")
+        ),
         
         tabPanel("Posteriors",  plotOutput(outputId = "posterior_plot")
-                            , textOutput("posterior_mode")
+                 , textOutput("posterior_mode")
+                 , textOutput("posterior_r_and_s")
+                 , textOutput("posterior_beta_credble_intervals")
+                 , textOutput("posterior_pseudo_obs")
         )
       ) 
       
@@ -100,9 +111,13 @@ server <- function(input, output) {
     combined_df(new_df)
   })
   
-  # Display the combined data frame
   output$combinedTable <- renderTable({
     combined_df()
+  })
+  
+  observe({
+    val <- nrow(combined_df())
+    updateSliderInput(inputId = "subset_samples", max = val)
   })
   
   output$totals_hypo_trial <- renderText({
@@ -111,6 +126,12 @@ server <- function(input, output) {
     } else {
       glue::glue("Sample size used is {N_sample()} and number of black blocks used is {success_control()}")
     }
+  })
+  
+  observeEvent(input$button_new_trial, {
+    combined_df(NULL)
+    
+    updateSliderInput(inputId = "subset_samples", max = 1)
   })
   
   control_beta_a <- reactive({
@@ -214,7 +235,7 @@ server <- function(input, output) {
 
   N_sample <- reactive({ 
     if (input$chk_box_all_data) {
-      sum(combined_df()[, "Sample size"])
+      sum(combined_df()[1:input$subset_samples, "Sample size"])
     } else {
       input$Q5
     }
@@ -222,7 +243,7 @@ server <- function(input, output) {
   
   success_control <- reactive({ 
     if (input$chk_box_all_data) {
-      sum(combined_df()[, "# black blocks"])
+      sum(combined_df()[1:input$subset_samples, "# black blocks"])
     } else {
       input$Q6
     }
@@ -239,12 +260,20 @@ server <- function(input, output) {
                       shape2 = control_beta_b() + failures_control()))
   })
   
+  posterior_a <- reactive({
+    control_beta_a() + success_control()
+  })
+  
+  posterior_b <- reactive({
+    control_beta_b() + failures_control()
+  })
+  
   #
   output$posterior_plot <- renderPlot({
-    plot( beta_posterior()$p, beta_posterior()$vals,
-          ylab='density', xlab="Proportion of black blocks",
-          type ='l', lwd=1.5, 
-          col='red', main='')
+    plot(beta_posterior()$p, beta_posterior()$vals,
+         ylab='density', xlab="Proportion of black blocks",
+         type ='l', lwd=1.5, 
+         col='red', main='')
   })
   
   ############################################################################## 
@@ -254,31 +283,23 @@ server <- function(input, output) {
     para_a <- control_beta_a()
     para_b <- control_beta_b()
     
-    paste0("- The mode is ", 100*round((para_a - 1)/(para_a + para_b - 2), 2), "%. ",
-    "The mean is ", 100*round(para_a/(para_a + para_b), 2), "%. ",
-    "The standard deviation is ", 100*round(sqrt((para_a*para_b)/((para_a + para_b)^2*(para_a+para_b+1))), 2), "%")
+    paste0("(i) The mode is ", round((para_a - 1)/(para_a + para_b - 2), 2), ". ",
+    "The mean is ", round(para_a/(para_a + para_b), 2), ". ",
+    "The standard deviation is ", round(sqrt((para_a*para_b)/((para_a + para_b)^2*(para_a+para_b+1))), 2))
   })
   
   output$r_and_s <- renderText({
     para_a <- control_beta_a()
     para_b <- control_beta_b()
     
-    paste0("- Values of r and s are ", round(para_a,2), " and ", round(para_b,2))
-  })
-
-  output$pseudo_obs <- renderText({
-    para_a <- control_beta_a()
-    para_b <- control_beta_b()
-    
-    paste0("- The number of “pseudo-observations” to which the prior is equivalent is ",
-           round(para_a + para_b, 2), " and the number of them which are black is ", round(para_a, 2))
+    paste0("(ii) Values of r and s are ", round(para_a,2), " and ", round(para_b,2))
   })
 
   output$beta_credble_intervals <- renderText({
     para_a <- control_beta_a()
     para_b <- control_beta_b()
     
-    paste0("- The 50% credible interval is (",
+    paste0("(iii) The 50% credible interval is (",
            round(qbeta(0.25, para_a, para_b), 2), ", ",
            round(qbeta(0.75, para_a, para_b), 2), "). ",
            "The 95% credible interval is (",
@@ -286,12 +307,18 @@ server <- function(input, output) {
            round(qbeta(0.975, para_a, para_b), 2), ")")
   })
   
-  # output of the proba greater than mode
+  output$pseudo_obs <- renderText({
+    para_a <- control_beta_a()
+    para_b <- control_beta_b()
+    
+    paste0("(iv) The number of “pseudo-observations” to which the prior is equivalent is ",
+           round(para_a + para_b, 2), " and the number of them which are black is ", round(para_a, 2))
+  })
+
   output$proba_greater_mode <- renderText({ 
     paste("2 / The probability that a response rate greater than the mode will be observed is estimated at", proba_greater_mode(),"%")
   })
   
-  # output of chance of an positive treatment effect
   output$positive_trt_effect <- renderText({ 
     paste("1 / The probability that there will be an improvement thanks to the experimental treatment strategy is estimated at", 100*input$Q3,"%")
   })
@@ -310,14 +337,41 @@ server <- function(input, output) {
   })
   
   output$posterior_mode <- renderText({
-    para_a <- control_beta_a() + success_control()
-    para_b <- control_beta_b() + failures_control()
+    para_a <- posterior_a()
+    para_b <- posterior_b()
     
-    paste0("- The posterior mode is ", 100*round((para_a - 1)/(para_a + para_b - 2), 2), "%. ",
-           "The mean is ", 100*round(para_a/(para_a + para_b), 2), "%. ",
-           "The standard deviation is ", 100*round(sqrt((para_a*para_b)/((para_a + para_b)^2*(para_a+para_b+1))), 2), "%")
+    paste0("(i) The posterior mode is ", round((para_a - 1)/(para_a + para_b - 2), 2), ". ",
+           "The mean is ", round(para_a/(para_a + para_b), 2), ". ",
+           "The standard deviation is ", round(sqrt((para_a*para_b)/((para_a + para_b)^2*(para_a+para_b+1))), 2))
   })
 
+  output$posterior_r_and_s <- renderText({
+    para_a <- posterior_a()
+    para_b <- posterior_b()
+    
+    paste0("(ii) Values of r and s are ", round(para_a,2), " and ", round(para_b,2))
+  })
+  
+  output$posterior_beta_credble_intervals <- renderText({
+    para_a <- posterior_a()
+    para_b <- posterior_b()
+    
+    paste0("(iii) The 50% credible interval is (",
+           round(qbeta(0.25, para_a, para_b), 2), ", ",
+           round(qbeta(0.75, para_a, para_b), 2), "). ",
+           "The 95% credible interval is (",
+           round(qbeta(0.025, para_a, para_b), 2), ", ",
+           round(qbeta(0.975, para_a, para_b), 2), ")")
+  })
+  
+  output$posterior_pseudo_obs <- renderText({
+    para_a <- posterior_a()
+    para_b <- posterior_b()
+    
+    paste0("(iv) The number of “pseudo-observations” to which the prior is equivalent is ",
+           round(para_a + para_b, 2), " and the number of them which are black is ", round(para_a, 2))
+  })
+  
   # control arm
   ##TODO: update for control arm...
   
