@@ -61,10 +61,10 @@ ui <- fluidPage(
                  
                  sliderInput(inputId = "subset_samples",
                              label = "Number of samples plotted",
-                             min = 1,
+                             min = 0,
                              max = 1,
                              step = 1,
-                             value = 1),
+                             value = 0),
                  
                  tableOutput("combinedTable"),
                  textOutput("totals_hypo_trial"),
@@ -131,7 +131,7 @@ server <- function(input, output) {
   observeEvent(input$button_new_trial, {
     combined_df(NULL)
     
-    updateSliderInput(inputId = "subset_samples", max = 1)
+    updateSliderInput(inputId = "subset_samples", max = 0)
   })
   
   control_beta_a <- reactive({
@@ -235,7 +235,7 @@ server <- function(input, output) {
 
   N_sample <- reactive({ 
     if (input$chk_box_all_data) {
-      sum(combined_df()[1:input$subset_samples, "Sample size"])
+      sum(combined_df()[seq_len(input$subset_samples), "Sample size"])
     } else {
       input$Q5
     }
@@ -243,7 +243,7 @@ server <- function(input, output) {
   
   success_control <- reactive({ 
     if (input$chk_box_all_data) {
-      sum(combined_df()[1:input$subset_samples, "# black blocks"])
+      sum(combined_df()[seq_len(input$subset_samples), "# black blocks"])
     } else {
       input$Q6
     }
