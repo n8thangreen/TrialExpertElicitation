@@ -205,6 +205,14 @@ ui <- fluidPage(
 # Define server logic ----
 server <- function(input, output) {
   
+  observe({
+    updateSliderInput(inputId = "Q6", max = input$Q5_mtx)
+  })
+
+  observe({
+    updateSliderInput(inputId = "Q7", max = input$Q5_bar)
+  })
+  
   # a and b parameters of the beta distribution for control arm as reactives
   
   control_beta_a <- reactive({
