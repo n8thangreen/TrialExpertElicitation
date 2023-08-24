@@ -71,14 +71,12 @@ ui <- fluidPage(
         
         tabPanel("Priors",
                  br(),
-                 # Input Q1  ----
                  sliderInput(inputId = "Q1",
                              label = "Q1: I think the response rate on methotrexate will be:",
                              min = 0,
                              max = 1,
                              value = 0.3),
                  
-                 # Input Q2  ----
                  sliderInput(inputId = "Q2",
                              label = "Q2: I am 75% sure that the response rate on methotrexate will be less than:",
                              min = 0,
@@ -87,42 +85,48 @@ ui <- fluidPage(
                  
                  br(),
                  
-                 # Input Q3  ----
                  sliderInput(inputId = "Q3",
                              label = "Q3: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.00 with probability:",
                              min = 0,
                              max = 100,
                              step = 5,
+                             post = " %",
                              value = 5),
                  
-                 # Input Q4  ----
                  sliderInput(inputId = "Q4",
-                             label = "Q4: :  I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.25 with probability:",
+                             label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.25 with probability:",
                              min = 0,
                              max = 100,
                              step = 5,
+                             post = " %",
                              value = 0)
                  
         ) ,
         
         tabPanel("Hypothetical trial",
                  br(),
-                 sliderInput(inputId = "Q5",
-                             label = "Q5: Sample size per arm of hypothetical trial:",
-                             min = 4,
-                             max = 40,
-                             value = 20), 
+                 sliderInput(inputId = "Q5_mtx",
+                             label = "Qa: Sample size of methotrexate arm:",
+                             min = 0,
+                             max = 20,
+                             value = 10), 
+                 
+                 sliderInput(inputId = "Q5_bar",
+                             label = "Qb: Sample size of baricitinib arm:",
+                             min = 0,
+                             max = 20,
+                             value = 10), 
                  
                  sliderInput(inputId = "Q6",
-                             label = "Q6: Number of successes in methotrexate arm:",
-                             min = 4,
-                             max = 40,
+                             label = "Qc: Number of successes in methotrexate arm:",
+                             min = 0,
+                             max = 20,
                              value = 5),
                  
                  sliderInput(inputId = "Q7",
-                             label = "Q7: Number of successes in baricitinib arm:",
-                             min = 4,
-                             max = 40,
+                             label = "Qd: Number of successes in baricitinib arm:",
+                             min = 0,
+                             max = 20,
                              value = 5)
         ) 
         
@@ -246,18 +250,19 @@ server <- function(input, output) {
   output$control_prior <- renderPlot({
     
     # define range
-    p = seq(0,1, length=100)
-    prior_c <- to_prob_scale(dbeta(p, control_beta_a(), control_beta_b()))
+    p <- seq(0,1, length=100)
+    prior_val <- dbeta(p, control_beta_a(), control_beta_b())
+    prior_c <- to_prob_scale(prior_val)
     cdf <- cumsum(prior_c)
     mode_c <- round(p[prior_c == max(prior_c)], 2)
     min75 <- round(min(p[cdf >= 0.75]), 2)
     
     # create plot of corresponding Beta distribution
-    plot(p, prior_c,
+    plot(p, prior_val,
          ylab='density', xlab="Control arm response rate",
          main='Control arm prior density for response rate',
          type='l', lwd=1.5, col='red', xaxt='n')
-    polygon(c(p[cdf >= 0.75], 1, min(p[cdf >= 0.75])), c(prior_c[cdf >= 0.75], 0, 0), col="lightblue", border=NA)
+    polygon(c(p[cdf >= 0.75], 1, min(p[cdf >= 0.75])), c(prior_val[cdf >= 0.75], 0, 0), col="lightblue", border=NA)
     abline(v = mode_c, lty = 2, col = "black")
     
     axis(1, at = sort(c(min75, mode_c, seq(0, 1, 0.2))), label=TRUE)
@@ -408,17 +413,18 @@ server <- function(input, output) {
   
   output$marginal_prior_plot <- renderPlot({
     
-    dens <- to_prob_scale(marginal_prior_density())
+    dens_val <- marginal_prior_density()
+    dens <- to_prob_scale(dens_val)
     
     cdf <- cumsum(dens)
     mode_c <- round(pe[dens == max(dens)], 2)
     min75 <- round(min(pe[cdf >= 0.75]), 2)
     
-    plot(pe, dens,
+    plot(pe, dens_val,
          ylab='density', xlab="Experimental arm response rate", 
          main='Experimental arm prior density for response rate',
          type ='l', lwd=1.5, col='purple')
-    polygon(c(pe[cdf >= 0.75], 1, min(pe[cdf >= 0.75])), c(dens[cdf >= 0.75], 0, 0), col="lightblue", border=NA)
+    polygon(c(pe[cdf >= 0.75], 1, min(pe[cdf >= 0.75])), c(dens_val[cdf >= 0.75], 0, 0), col="lightblue", border=NA)
     abline(v = mode_c, lty = 2, col = "black")
     
   })
@@ -467,41 +473,44 @@ server <- function(input, output) {
   ## hypothetical trial and posteriors
   
   ##############################################################################
-
-   odd_ratio_gt_1 <- reactive({ 
-      input$Q3/100
-  })
-
-   odd_ratio_gt_1.25 <- reactive({ 
-      input$Q4/100
+  
+  odd_ratio_gt_1 <- reactive({ 
+    input$Q3/100
   })
   
-  N_sample <- reactive({ 
-      input$Q5
+  odd_ratio_gt_1.25 <- reactive({ 
+    input$Q4/100
+  })
+  
+  N_sample_control <- reactive({ 
+    input$Q5_mtx
+  })
+  
+  N_sample_exp <- reactive({ 
+    input$Q5_bar
   })
   
   success_control <- reactive({ 
-      input$Q6
+    input$Q6
   })
-
+  
   success_exp <- reactive({ 
-      input$Q7
+    input$Q7
   })
   
   failures_control <- reactive({ 
-    n_failures_control = N_sample() - success_control()
+    N_sample_control() - success_control()
   })
   
   failures_exp <- reactive({ 
-    n_failures_exp = N_sample() - success_exp()
+    N_sample_exp() - success_exp()
   })
   
   
   joint_posterior_density <- reactive({ 
     
-    # An empty matrix x
+    # empty matrix
     x = matrix(data=NA, nrow=length(pc), ncol=length(pe))
-    x
     
     for(i in 1:length(pe))
     {
@@ -517,26 +526,22 @@ server <- function(input, output) {
     x
   })
   
-  
   output$joint_posterior_plot <- renderPlot({
     
-    persp(pe,pc,joint_posterior_density(), #shade=0.5, 
+    persp(pe, pc, joint_posterior_density(), #shade=0.5, 
           theta=30, phi=25,
-          axes=TRUE,scale=TRUE , box=TRUE, expand = 0.5,
+          axes=TRUE, scale=TRUE , box=TRUE, expand = 0.5,
           nticks=3, #ticktype="detailed", 
-          xlim = c(0,1),ylim=c(0,1), col="lightgreen", xlab="Control \narm", 
-          ylab="Experimental \narm", zlab="density", main="Joint posterior density")
+          xlim = c(0,1), ylim=c(0,1), col="lightgreen",
+          xlab="Control \narm", ylab="Experimental \narm", zlab="density", main="Joint posterior density")
   })
   
   marginal_posterior_density_pe <- reactive({
-    
-    marginal_density_post_pe <- to_prob_scale(rowSums(joint_posterior_density()))
+    to_prob_scale(rowSums(joint_posterior_density()))
   })
   
-  
   marginal_posterior_density_pc <- reactive({
-    
-    marginal_density_post_pc <- to_prob_scale(colSums(joint_posterior_density()))
+    to_prob_scale(colSums(joint_posterior_density()))
   })
   
   # log OR
@@ -544,8 +549,9 @@ server <- function(input, output) {
     val <- seq(-5, 5, by = 0.1)
     success <- success_exp() + success_control()
     fail <- failures_exp() + failures_control()
+    
     dens <- purrr::map_dbl(val, \(x) post_logOR(a = success + control_beta_a(), b = fail + control_beta_b(),
-                                                theta = x, n = N_sample(), sE = success_exp(),
+                                                theta = x, n = N_sample_exp(), sE = success_exp(),
                                                 mu = mean_normal(), sigma = sd_normal()))
     tibble::lst(val, dens)
   })
@@ -555,31 +561,28 @@ server <- function(input, output) {
     val <- seq(0, 5, by = 0.1)
     success <- success_exp() + success_control()
     fail <- failures_exp() + failures_control()
+    
     dens <- purrr::map_dbl(val, \(x) post_OR(a = success + control_beta_a(), b = fail + control_beta_b(),
-                                             or = x, n = N_sample(), sE = success_exp(),
+                                             or = x, n = N_sample_exp(), sE = success_exp(),
                                              mu = mean_normal(), sigma = sd_normal()))
     tibble::lst(val, dens)
   })
   
   output$marginal_posterior_plot_pe <- renderPlot({
-    
-    marginal_posterior_plot_pe <- plot(pe, marginal_posterior_density_pe(), ylab='density',
-                                       type ='l', lwd=1.5, xlab="Experimental arm response rate", 
-                                       col='purple', main='Experimental arm posterior density for response rate')
-    marginal_posterior_plot_pe
+    plot(pe, marginal_posterior_density_pe(),
+         xlab="Experimental arm response rate", ylab='density',
+         type ='l', lwd=1.5, col='purple', main='Experimental arm posterior density for response rate')
   })
   
   output$marginal_posterior_plot_pc <- renderPlot({
-    
-    marginal_posterior_plot_pc <- plot(pc, marginal_posterior_density_pc(), ylab='density',
-                                       type ='l', lwd=1.5, xlab="Control arm response rate", 
-                                       col='red', main='Control arm posterior density for response rate')
-    marginal_posterior_plot_pc
+    plot(pc, marginal_posterior_density_pc(),
+         xlab="Control arm response rate", ylab='density',
+         type ='l', lwd=1.5, col='red', main='Control arm posterior density for response rate')
   })
   
   
   output$all_posteriors <- renderPlot({
-    p = seq(0,1, length=100)
+    p <- seq(0,1, length=100)
     
     par(mfrow=c(2,3)) 
     
