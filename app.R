@@ -170,17 +170,18 @@ server <- function(input, output) {
     
     # define range
     p = seq(0,1, length=100)
-    prior_c <- to_prob_scale(dbeta(p, control_beta_a(), control_beta_b()))
+    prior_val <- dbeta(p, control_beta_a(), control_beta_b())
+    prior_c <- to_prob_scale(prior_val)
     cdf <- cumsum(prior_c)
     mode_c <- round(p[prior_c == max(prior_c)], 2)
     min75 <- round(min(p[cdf >= 0.75]), 2)
     
     # create plot of corresponding Beta distribution
-    plot(p, prior_c,
+    plot(p, prior_val,
          ylab='density', xlab="Proportion of black blocks",
          main='',
          type='l', lwd=1.5, col='red', xaxt='n')
-    polygon(c(p[cdf >= 0.75], 1, min(p[cdf >= 0.75])), c(prior_c[cdf >= 0.75], 0, 0), col="lightblue", border=NA)
+    polygon(c(p[cdf >= 0.75], 1, min(p[cdf >= 0.75])), c(prior_val[cdf >= 0.75], 0, 0), col="lightblue", border=NA)
     abline(v = mode_c, lty = 2, col = "black")
     
     axis(1, at = sort(c(min75, mode_c, seq(0, 1, 0.2))), label=TRUE)
@@ -215,19 +216,6 @@ server <- function(input, output) {
   
   output$beta <- renderText({ 
     # paste("The mode and p75 that you have selected correspond to beta of", round(control_beta_b(),2))
-  })
-  
-  output$all_priors <- renderPlot({
-    x = seq(-10,1, length=1000)
-    p = seq(0,1, length=100)
-    
-    par(mfrow=c(2,2))
-    plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='density',
-         type ='l', lwd=1.5, xlab="Proportion of black blocks", col='red', main='')
-    
-    plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='density',
-         type ='l', lwd=1.5, xlab="Response rate", col='red', main='')
-    lines(pe, to_prob_scale(marginal_prior_density()), lwd=1.5,col='purple')
   })
   
   ############################################################################## 
