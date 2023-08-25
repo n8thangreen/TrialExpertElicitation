@@ -8,6 +8,13 @@ library(rriskDistributions)
 #install.packages("zipfR")
 library(zipfR)
 
+#install.packages("cubature")
+library(cubature)
+
+
+############
+# functions
+
 #
 to_prob_scale <- function(x)
   x/sum(x)
@@ -55,7 +62,60 @@ post_OR <- function(a, b, or, n, sE, mu, sigma) {
   or^(sE-1) * exp(-((log(or) - mu)^2)/(2*sigma^2)) * num_integral
 }
 
-# Define UI for app ----
+#
+make_one_over_K_times_ESS <- function(a, b, mu, stdev) {
+  force(a)
+  force(b)
+  force(mu)
+  force(stdev)
+  
+  one_over_K_integrand <- make_one_over_K_integrand(a, b, mu, stdev)
+  
+  function(x) {
+    pE <- x[1]
+    pC <- x[2]
+    
+    one_over_K_integrand(c(pE, pC))*(stdev^2)*(1/16)*(pE + pC)*(2-pE-pC)
+  }
+}
+
+#
+calc_ESS <- function(a, b, mu, stdev) {
+  K <- calc_K(a, b, mu, stdev)
+  one_over_K_ESS_integrand <- make_one_over_K_times_ESS(a, b, mu, stdev)
+  
+  res <- cubature::adaptIntegrate(one_over_K_ESS_integrand,
+                                  lowerLimit = c(0,0), upperLimit = c(1,1))
+  1/(res$integral*K)
+}
+
+#
+make_one_over_K_integrand <- function(a, b, mu, stdev) {
+  force(a)
+  force(b)
+  force(mu)
+  force(stdev)
+  
+  function(x) {
+    pE <- x[1]
+    pC <- x[2]
+    
+    ((pC^(a-1))*((1-pC)^(b-1))/(pE*(1-pE))*
+        exp((-1/(2*(stdev^2)))*((log10((pE*(1-pC))/(pC*(1-pE)))-mu)^2)))
+    
+  }
+}
+
+#
+calc_K <- function(a, b, mu, stdev) {
+  K_integrand <- make_one_over_K_integrand(a, b, mu, stdev)
+  res_K <- cubature::adaptIntegrate(K_integrand, lowerLimit = c(0,0), upperLimit = c(1,1))
+  
+  1/res_K$integral
+}
+
+
+#
 ui <- fluidPage(
   
   # App title ----
@@ -129,9 +189,7 @@ ui <- fluidPage(
                              max = 20,
                              value = 5)
         ) 
-        
       )
-      
     ),
     
     # Main panel for displaying outputs ----
@@ -149,6 +207,7 @@ ui <- fluidPage(
                             , textOutput("proba_lower_p75")
                             , textOutput("alpha")
                             , textOutput("beta")
+                            , textOutput("ESS")
                    )
                    ,
                    
@@ -193,9 +252,7 @@ ui <- fluidPage(
                    )
                  )    
         )
-        
       ) 
-      
     ) # end of main panel
   ) # end of sidebarLayout
 ) # end of UI
@@ -216,12 +273,10 @@ server <- function(input, output) {
   # a and b parameters of the beta distribution for control arm as reactives
   
   control_beta_a <- reactive({
-    
-    mode=input$Q1
-    p75=input$Q2
+    mode <- input$Q1
+    p75 <- input$Q2
     
     min.SS <- function(params) {
-      
       alpha=params[1]
       beta=params[2]
       
@@ -231,26 +286,21 @@ server <- function(input, output) {
     
     optim_result <- optim(par = c(1.5, 2), fn = min.SS, lower=c(1,1), method="L-BFGS-B")
     optim_result$par[1]
-    
   })
   
   control_beta_b <- reactive({
-    
-    mode=input$Q1
-    p75=input$Q2
+    mode <- input$Q1
+    p75 <- input$Q2
     
     min.SS <- function(params) {
-      
-      alpha=params[1]
-      beta=params[2]
+      alpha <- params[1]
+      beta <- params[2]
       
       ((alpha-1)/(alpha+beta-2) - mode)^2 + (Rbeta(p75,a=alpha,b=beta)-0.75)^2
-      
     }
     
     optim_result <- optim(par = c(1.5, 2), fn = min.SS, lower=c(1,1), method="L-BFGS-B")
     optim_result$par[2]
-    
   })
   
   
@@ -281,7 +331,7 @@ server <- function(input, output) {
   proba_greater_mode <- reactive({
     
     proba <- pbeta(input$Q1, shape1=control_beta_a(), shape2=control_beta_b(), lower.tail = FALSE)
-    round(proba,2)*100
+    round(proba, 2)*100
   })
   
   # output of the probability greater than mode
@@ -293,8 +343,8 @@ server <- function(input, output) {
   
   proba_lower_p75 <- reactive({
     
-    proba_p75 <- pbeta(input$Q2, shape1=control_beta_a(), shape2=control_beta_b(),lower.tail = TRUE)
-    round(proba_p75,2)*100
+    proba_p75 <- pbeta(input$Q2, shape1=control_beta_a(), shape2=control_beta_b(), lower.tail = TRUE)
+    round(proba_p75, 2)*100
   })
   
   output$mode <- renderText({ 
@@ -306,6 +356,12 @@ server <- function(input, output) {
   output$proba_lower_p75 <- renderText({ 
     glue::glue("The blue area to the right of {input$Q2} is 25%. It means that you think that there is one chance out of 4 ",
                "that the response rate will be greater than {input$Q2}.") 
+  })
+
+  output$ESS <- renderText({
+    ess <- calc_ESS(a = control_beta_a(), b = control_beta_b(),
+                    mu = mean_normal(), stdev = sd_normal())
+    glue::glue("The Effective Sample Size (ESS) is {round(ess,0)}") 
   })
   
   # output alpha and beta parameters

@@ -5,7 +5,7 @@ account: n8thangreen
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9651221
-bundleId: 7604415
+bundleId: 7609648
 url: https://n8thangreen.shinyapps.io/TrialExpertElicitation-main/
 version: 1
 asMultiple: FALSE
