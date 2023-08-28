@@ -101,7 +101,7 @@ make_one_over_K_integrand <- function(a, b, mu, stdev) {
     pC <- x[2]
     
     ((pC^(a-1))*((1-pC)^(b-1))/(pE*(1-pE))*
-        exp((-1/(2*(stdev^2)))*((log10((pE*(1-pC))/(pC*(1-pE)))-mu)^2)))
+        exp((-1/(2*(stdev^2))) * ((log((pE*(1-pC))/(pC*(1-pE))) - mu)^2)))
     
   }
 }
