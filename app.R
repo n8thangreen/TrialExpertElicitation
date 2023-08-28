@@ -115,7 +115,9 @@ calc_K <- function(a, b, mu, stdev) {
 }
 
 
-#
+######
+# app
+
 ui <- fluidPage(
   
   # App title ----
@@ -146,7 +148,7 @@ ui <- fluidPage(
                  br(),
                  
                  sliderInput(inputId = "Q3",
-                             label = "Q3: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.00 with probability:",
+                             label = "Q3: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.0 with probability:",
                              min = 0,
                              max = 100,
                              step = 5,
@@ -155,7 +157,7 @@ ui <- fluidPage(
                  
                  sliderInput(inputId = "Q4",
                              # label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.25 with probability:",
-                             label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 2 with probability:",
+                             label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 2.0 with probability:",
                              min = 0,
                              max = 100,
                              step = 5,
@@ -213,7 +215,8 @@ ui <- fluidPage(
                    ,
                    
                    # panel 2
-                   tabPanel("Relative effect prior", plotOutput(outputId = "logOR_prior")
+                   tabPanel("Relative effect prior",
+                            plotOutput(outputId = "logOR_prior")
                             , plotOutput(outputId = "OR_prior")
                    )
                    ,
@@ -246,7 +249,14 @@ ui <- fluidPage(
                             #, plotOutput(outputId = "joint_posterior_plot")
                    ),
                    
-                   tabPanel("Experimental arm posterior", plotOutput(outputId = "marginal_posterior_plot_pe")
+                   # panel 2
+                   tabPanel("Relative effect posterior",
+                            plotOutput(outputId = "logOR_posterior")
+                            , plotOutput(outputId = "OR_posterior")
+                   )
+                   ,
+                   tabPanel("Experimental arm posterior",
+                            plotOutput(outputId = "marginal_posterior_plot_pe")
                             , plotOutput(outputId = "joint_posterior_plot")),
                    
                    tabPanel("All posteriors", plotOutput(outputId = "all_posteriors")
@@ -445,6 +455,25 @@ server <- function(input, output) {
     abline(v = 2, lty = 2)
   })
   
+  # Relative effect prior plots (log OR and OR)
+  output$logOR_posterior <- renderPlot({
+    theta <- marginal_posterior_density_theta()
+    
+    plot(theta$val, theta$dens, ylab='density',
+         type ='l', lwd=1.5, xlab="Log-odds ratio", 
+         col='black', main='Log-odds ratio posterior density')
+    abline(v = 0, lty = 2)
+  })
+  
+  output$OR_posterior <- renderPlot({
+    etheta <- marginal_posterior_density_OR()
+    
+    plot(etheta$val, etheta$dens, ylab='density',
+         type ='l', lwd=1.5, xlab="Odds ratio", 
+         col='black', main='Odds ratio posterior density')
+    abline(v = 1, lty = 2)
+    abline(v = 2, lty = 2)
+  })
   
   #### Experimental arm prior 
   pc <- seq(0.01, 0.99, by = 0.01)
@@ -600,7 +629,7 @@ server <- function(input, output) {
   
   # log OR
   marginal_posterior_density_theta <- reactive({
-    val <- seq(-5, 5, by = 0.1)
+    val <- seq(-2.5, 2.5, length=1000)
     success <- success_exp() + success_control()
     fail <- failures_exp() + failures_control()
     
@@ -612,7 +641,7 @@ server <- function(input, output) {
   
   # OR
   marginal_posterior_density_OR <- reactive({
-    val <- seq(0, 5, by = 0.1)
+    val <- exp(seq(-10, 1.5, length=1000))
     success <- success_exp() + success_control()
     fail <- failures_exp() + failures_control()
     
