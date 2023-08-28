@@ -210,7 +210,6 @@ ui <- fluidPage(
                             , textOutput("proba_lower_p75")
                             , textOutput("alpha")
                             , textOutput("beta")
-                            , textOutput("ESS")
                    )
                    ,
                    
@@ -218,6 +217,7 @@ ui <- fluidPage(
                    tabPanel("Relative effect prior",
                             plotOutput(outputId = "logOR_prior")
                             , plotOutput(outputId = "OR_prior")
+                            , textOutput("ESS")
                    )
                    ,
                    
@@ -256,8 +256,8 @@ ui <- fluidPage(
                    )
                    ,
                    tabPanel("Experimental arm posterior",
-                            plotOutput(outputId = "marginal_posterior_plot_pe")
-                            , plotOutput(outputId = "joint_posterior_plot")),
+                            plotOutput(outputId = "marginal_posterior_plot_pe")),
+                            # plotOutput(outputId = "joint_posterior_plot")),
                    
                    tabPanel("All posteriors", plotOutput(outputId = "all_posteriors")
                    )
@@ -609,15 +609,15 @@ server <- function(input, output) {
     x
   })
   
-  output$joint_posterior_plot <- renderPlot({
-    
-    persp(pe, pc, joint_posterior_density(), #shade=0.5, 
-          theta=30, phi=25,
-          axes=TRUE, scale=TRUE , box=TRUE, expand = 0.5,
-          nticks=3, #ticktype="detailed", 
-          xlim = c(0,1), ylim=c(0,1), col="lightgreen",
-          xlab="Control \narm", ylab="Experimental \narm", zlab="density", main="Joint posterior density")
-  })
+  # output$joint_posterior_plot <- renderPlot({
+  #   
+  #   persp(pe, pc, joint_posterior_density(), #shade=0.5, 
+  #         theta=30, phi=25,
+  #         axes=TRUE, scale=TRUE , box=TRUE, expand = 0.5,
+  #         nticks=3, #ticktype="detailed", 
+  #         xlim = c(0,1), ylim=c(0,1), col="lightgreen",
+  #         xlab="Control \narm", ylab="Experimental \narm", zlab="density", main="Joint posterior density")
+  # })
   
   marginal_posterior_density_pe <- reactive({
     to_prob_scale(rowSums(joint_posterior_density()))
