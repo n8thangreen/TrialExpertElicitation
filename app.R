@@ -154,7 +154,8 @@ ui <- fluidPage(
                              value = 5),
                  
                  sliderInput(inputId = "Q4",
-                             label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.25 with probability:",
+                             # label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.25 with probability:",
+                             label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 2 with probability:",
                              min = 0,
                              max = 100,
                              step = 5,
@@ -399,29 +400,27 @@ server <- function(input, output) {
     # paste("The mode and p75 that you have selected correspond to beta of", round(control_beta_b(),2))
   })
   
-  ## parameters of the normal distribution of log OR
-  
-  mean_normal <- reactive({
+  logOR_normal_params <- reactive({
     p1 <- 1 - odd_ratio_gt_1()
-    p2 <- 1 - odd_ratio_gt_1.25()
+    p2 <- 1 - odd_ratio_gt_1.x()
     
-    params <- get.norm.par(p = c(p1, p2), q=c(0,log(1.25)), plot=FALSE, show.output=FALSE)
-    as.numeric(params[1])
+    # get.norm.par(p = c(p1, p2), q = c(0, log(1.25)), plot=FALSE, show.output=FALSE)
+    get.norm.par(p = c(p1, p2), q = c(0, log(2)), plot=FALSE, show.output=FALSE)
+  })
+
+  mean_normal <- reactive({
+    as.numeric(logOR_normal_params()[1])
   })
   
   sd_normal <- reactive({
-    p1 <- 1 - odd_ratio_gt_1()
-    p2 <- 1 - odd_ratio_gt_1.25()
-    
-    params <- get.norm.par(p = c(p1, p2), q=c(0,log(1.25)), plot=FALSE, show.output=FALSE)
-    as.numeric(params[2])
+    as.numeric(logOR_normal_params()[2])
   })
   
   # Relative effect prior plots (log OR and OR)
   output$logOR_prior <- renderPlot({
     
     # range for log normal
-    p <- seq(-2.5,2.5, length=100)
+    p <- seq(-2.5, 2.5, length=100)
     
     plogOR <- to_prob_scale(dnorm(p, mean=mean_normal(), sd=sd_normal()))
     
@@ -429,12 +428,13 @@ server <- function(input, output) {
     plot(p, plogOR, ylab='density',
          type ='l', lwd=1.5, xlab="log OR",col='red', main='Prior density for the log odds ratio')
     abline(v = 0, lty = 2)
+    abline(v = log(2), lty = 2)
   })
   
   output$OR_prior <- renderPlot({
     
     # range for OR
-    x <- seq(-10,1, length=1000)
+    x <- seq(-10, 1.5, length=1000)
     
     pOR <- to_prob_scale(exp(dnorm(x, mean=mean_normal(), sd=sd_normal())))
     
@@ -442,16 +442,17 @@ server <- function(input, output) {
     plot(exp(x), pOR, ylab='density',
          type ='l', lwd=1.5, xlab="OR", col='red', main='Prior density for the odds ratio')
     abline(v = 1, lty = 2)
+    abline(v = 2, lty = 2)
   })
   
   
   #### Experimental arm prior 
-  pc =  seq(0.01,0.99,0.01) # seq(0,1, length=100) #
-  pe = seq(0.01,0.99,0.01)
+  pc <- seq(0.01, 0.99, by = 0.01)
+  pe <- seq(0.01, 0.99, by = 0.01)
   
   joint_prior_density <- reactive({ 
     
-    z = matrix(data=NA, nrow=length(pc), ncol=length(pe))
+    z <- matrix(data=NA, nrow=length(pc), ncol=length(pe))
 
     for(i in 1:length(pe))
     {
@@ -490,7 +491,6 @@ server <- function(input, output) {
          type ='l', lwd=1.5, col='purple')
     polygon(c(pe[cdf >= 0.75], 1, min(pe[cdf >= 0.75])), c(dens_val[cdf >= 0.75], 0, 0), col="lightblue", border=NA)
     abline(v = mode_c, lty = 2, col = "black")
-    
   })
   
   
@@ -498,18 +498,13 @@ server <- function(input, output) {
   #http://www.countbio.com/web_pages/left_object/R_for_biology/R_fundamentals/3D_surface_plot_R.html
   
   output$all_priors <- renderPlot({
-    par(mfrow=c(2,2))
     
+    # define range
     # p = seq(-2.5,2.5, length=100)
+    x <- seq(-10, 1.5, length=1000)
+    p <- seq(0, 1, length=100)
     
-    #create plot of corresponding Normal distribution for log OR
-    
-    x = seq(-10,1, length=1000)
-    
-    #create plot of corresponding distribution for OR
-    
-    #define range
-    p = seq(0,1, length=100)
+    par(mfrow=c(2,2))
     
     #create plot of corresponding Beta distribution
     plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='density',
@@ -528,21 +523,16 @@ server <- function(input, output) {
     
     #logOR_prior <- plot(p, dnorm(p, mean=mean_normal(), sd=sd_normal()), ylab='density',
     #                    type ='l', lwd=1.5, xlab="log OR",col='red', main='Prior density for the log odds ratio')
-    
   })
   
-  
-  ############################################################################## 
-  
+  ############################################################ 
   ## hypothetical trial and posteriors
-  
-  ##############################################################################
   
   odd_ratio_gt_1 <- reactive({ 
     input$Q3/100
   })
   
-  odd_ratio_gt_1.25 <- reactive({ 
+  odd_ratio_gt_1.x <- reactive({ 
     input$Q4/100
   })
   
