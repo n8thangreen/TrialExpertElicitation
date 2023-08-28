@@ -245,8 +245,10 @@ ui <- fluidPage(
                  
                  tabsetPanel(
                    
-                   tabPanel("Control arm posterior", plotOutput(outputId = "marginal_posterior_plot_pc")
+                   tabPanel("Control arm posterior",
+                            plotOutput(outputId = "marginal_posterior_plot_pc")
                             #, plotOutput(outputId = "joint_posterior_plot")
+                            , textOutput("mode_posterior")
                    ),
                    
                    # panel 2
@@ -256,8 +258,10 @@ ui <- fluidPage(
                    )
                    ,
                    tabPanel("Experimental arm posterior",
-                            plotOutput(outputId = "marginal_posterior_plot_pe")),
+                            plotOutput(outputId = "marginal_posterior_plot_pe"),
+                            textOutput("experimental_mode_posterior")
                             # plotOutput(outputId = "joint_posterior_plot")),
+                   ),
                    
                    tabPanel("All posteriors", plotOutput(outputId = "all_posteriors")
                    )
@@ -373,6 +377,20 @@ server <- function(input, output) {
     ess <- calc_ESS(a = control_beta_a(), b = control_beta_b(),
                     mu = mean_normal(), stdev = sd_normal())
     glue::glue("The Effective Sample Size (ESS) is {round(ess,0)}") 
+  })
+  
+  output$mode_posterior <- renderText({
+    dens <- to_prob_scale(marginal_posterior_density_pc())
+    mode_c <- round(pe[dens == max(dens)], 2)
+    
+    glue::glue("The mode, which is the value that you think is most likely for the response rate in the Control arm, is {mode_c}.")
+  })
+  
+  output$experimental_mode_posterior <- renderText({
+    dens <- to_prob_scale(marginal_posterior_density_pe())
+    mode_c <- round(pe[dens == max(dens)], 2)
+    
+    glue::glue("The mode, which is the value that you think is most likely for the response rate in the Experimental arm, is {mode_c}.")
   })
   
   # output alpha and beta parameters
