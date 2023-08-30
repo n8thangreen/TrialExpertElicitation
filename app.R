@@ -151,16 +151,15 @@ ui <- fluidPage(
                              label = "Q3: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.0 with probability:",
                              min = 0,
                              max = 100,
-                             step = 5,
+                             step = 1,
                              post = " %",
                              value = 5),
                  
                  sliderInput(inputId = "Q4",
-                             # label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 1.25 with probability:",
                              label = "Q4: I think that the odds ratio on response for baricitinib relative to methotrexate will exceed 2.0 with probability:",
                              min = 0,
                              max = 100,
-                             step = 5,
+                             step = 1,
                              post = " %",
                              value = 0)
                  
@@ -171,25 +170,25 @@ ui <- fluidPage(
                  sliderInput(inputId = "Q5_mtx",
                              label = "Qa: Sample size of methotrexate arm:",
                              min = 0,
-                             max = 20,
+                             max = 100,
                              value = 10), 
                  
                  sliderInput(inputId = "Q5_bar",
                              label = "Qb: Sample size of baricitinib arm:",
                              min = 0,
-                             max = 20,
+                             max = 100,
                              value = 10), 
                  
                  sliderInput(inputId = "Q6",
                              label = "Qc: Number of successes in methotrexate arm:",
                              min = 0,
-                             max = 20,
+                             max = 100,
                              value = 5),
                  
                  sliderInput(inputId = "Q7",
                              label = "Qd: Number of successes in baricitinib arm:",
                              min = 0,
-                             max = 20,
+                             max = 100,
                              value = 5)
         ) 
       )
