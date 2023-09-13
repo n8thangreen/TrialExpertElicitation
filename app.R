@@ -217,6 +217,7 @@ ui <- fluidPage(
                             plotOutput(outputId = "logOR_prior")
                             , plotOutput(outputId = "OR_prior")
                             , textOutput("ESS")
+                            , textOutput("logOR_mean_sd")
                    )
                    ,
                    
@@ -426,6 +427,13 @@ server <- function(input, output) {
   output$experimental_beta <- renderText({ 
     # paste("The mode and p75 that you have selected correspond to beta of", round(control_beta_b(),2))
   })
+  
+  output$logOR_mean_sd <- renderText({
+    
+    glue::glue("The mean of the log odds ratio is {round(mean_normal(),2)}. ",
+               "The standard deviation of the log odds ratio is {round(sd_normal(),2)}")
+  })
+  
   
   logOR_normal_params <- reactive({
     p1 <- 1 - odd_ratio_gt_1()
