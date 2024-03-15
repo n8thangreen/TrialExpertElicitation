@@ -574,13 +574,14 @@ server <- function(input, output) {
     plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='density',
          type ='l', lwd=1.5, xlab="Response rate", col='red', main='Prior densities for response rate')
     lines(pe, to_prob_scale(marginal_prior_density()), lwd=1.5,col='purple')
-    
-    png("figures/prior_plot.png")
-    plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='Density',
-         type ='l', lwd=2, xlab="Response rate", col='green')
-    lines(pe, to_prob_scale(marginal_prior_density()), lty=2, lwd=2, col='red')
-    legend("topleft", legend = c("MTX", "BARI"), col = c("green", "red"), lty = c(1,2))
-    dev.off()
+
+    ## save figure to file    
+    # png("figures/prior_plot.png")
+    # plot(p, to_prob_scale(dbeta(p, control_beta_a(), control_beta_b())), ylab='Density',
+    #      type ='l', lwd=2, xlab="Response rate", col='green')
+    # lines(pe, to_prob_scale(marginal_prior_density()), lty=2, lwd=2, col='red')
+    # legend("topleft", legend = c("MTX", "BARI"), col = c("green", "red"), lty = c(1,2))
+    # dev.off()
     
     #logOR_prior <- plot(p, dnorm(p, mean=mean_normal(), sd=sd_normal()), ylab='density',
     #                    type ='l', lwd=1.5, xlab="log OR",col='red', main='Prior density for the log odds ratio')
